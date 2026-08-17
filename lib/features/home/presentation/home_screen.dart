@@ -111,9 +111,9 @@ class HomeScreen extends ConsumerWidget {
                 ),
               ),
             ),
-            SliverToBoxAdapter(
+            const SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 28, 20, 12),
+                padding: EdgeInsets.fromLTRB(20, 28, 20, 12),
                 child: SectionHeader(title: 'Recommended for You'),
               ),
             ),

@@ -57,7 +57,7 @@ class ScenarioCard extends StatelessWidget {
               const SizedBox(height: 14),
               Row(
                 children: [
-                  Icon(Icons.schedule, size: 14, color: AppColors.textSecondaryLight),
+                  const Icon(Icons.schedule, size: 14, color: AppColors.textSecondaryLight),
                   const SizedBox(width: 4),
                   Text('${scenario.estimatedMinutes} min',
                       style: theme.textTheme.labelMedium),

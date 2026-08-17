@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/skill_color.dart';
+import '../../../models/scenario.dart';
 import '../../../shared/widgets/difficulty_stars.dart';
 import '../../../shared/widgets/practice_safely_sheet.dart';
 import '../../conversation/providers/conversation_providers.dart';

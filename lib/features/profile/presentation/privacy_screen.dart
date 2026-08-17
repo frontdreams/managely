@@ -14,25 +14,25 @@ class PrivacyScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
         children: [
-          _Section(
+          const _Section(
             icon: Icons.theater_comedy_outlined,
             title: 'Use fictional scenarios whenever possible',
             body:
                 'Managely works best with fictional or composite situations. You don\'t need real names, real details, or real outcomes to get useful practice.',
           ),
-          _Section(
+          const _Section(
             icon: Icons.no_accounts_outlined,
             title: 'Avoid personal information',
             body:
                 'Avoid entering real employees\' names, medical information, family details, or anything you wouldn\'t want stored or reviewed.',
           ),
-          _Section(
+          const _Section(
             icon: Icons.psychology_alt_outlined,
             title: 'AI feedback is coaching, not HR advice',
             body:
                 'Evaluations describe your communication patterns in this conversation only. They are not professional, legal, medical, or HR guidance.',
           ),
-          _Section(
+          const _Section(
             icon: Icons.gavel_outlined,
             title: 'Managely does not make employment decisions',
             body:

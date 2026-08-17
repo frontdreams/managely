@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../models/user_profile.dart';
 import '../providers/profile_providers.dart';
 
 class ProfileScreen extends ConsumerWidget {

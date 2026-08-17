@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/skill_color.dart';
+import '../../../models/scenario.dart';
 import '../../../shared/widgets/skill_progress_bar.dart';
 import '../../../shared/widgets/animated_score_counter.dart';
 import '../../conversation/providers/conversation_providers.dart';

@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/skill_color.dart';
+import '../../../models/scenario.dart';
 import '../../../shared/widgets/section_header.dart';
 import '../../../shared/widgets/skill_progress_bar.dart';
 import '../../../shared/widgets/empty_state.dart';
@@ -62,7 +63,7 @@ class ProgressScreen extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 28),
-          SectionHeader(title: 'Skill Development'),
+          const SectionHeader(title: 'Skill Development'),
           const SizedBox(height: 12),
           Card(
             child: Padding(
@@ -84,7 +85,7 @@ class ProgressScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 28),
-          SectionHeader(title: 'Recent Practice'),
+          const SectionHeader(title: 'Recent Practice'),
           const SizedBox(height: 12),
           if (sessions.isEmpty)
             EmptyState(
@@ -106,7 +107,7 @@ class ProgressScreen extends ConsumerWidget {
               ),
             ),
           const SizedBox(height: 28),
-          SectionHeader(title: 'Your Growth Area'),
+          const SectionHeader(title: 'Your Growth Area'),
           const SizedBox(height: 12),
           Card(
             child: Padding(
