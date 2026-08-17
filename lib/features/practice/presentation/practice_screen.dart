@@ -1,0 +1,144 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../models/scenario.dart';
+import '../../../shared/widgets/scenario_card.dart';
+import '../../../shared/widgets/empty_state.dart';
+import '../providers/practice_providers.dart';
+
+class PracticeScreen extends ConsumerWidget {
+  const PracticeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final selectedCategory = ref.watch(selectedCategoryProvider);
+    final scenarios = ref.watch(filteredScenariosProvider);
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Practice')),
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
+              child: Text('Choose a skill', style: theme.textTheme.titleLarge),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: 40,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                children: [
+                  _CategoryChip(
+                    label: 'All',
+                    icon: Icons.apps_rounded,
+                    selected: selectedCategory == null,
+                    onTap: () =>
+                        ref.read(selectedCategoryProvider.notifier).state = null,
+                  ),
+                  const SizedBox(width: 8),
+                  ...SkillCategory.values.map((c) => Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: _CategoryChip(
+                          label: c.label,
+                          icon: c.icon,
+                          selected: selectedCategory == c,
+                          onTap: () =>
+                              ref.read(selectedCategoryProvider.notifier).state = c,
+                        ),
+                      )),
+                ],
+              ),
+            ),
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 20)),
+          if (scenarios.isEmpty)
+            SliverToBoxAdapter(
+              child: EmptyState(
+                icon: Icons.search_off_rounded,
+                title: 'No scenarios here yet',
+                message: 'Try a different category to find a scenario to practise.',
+              ),
+            )
+          else
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
+              sliver: SliverList.separated(
+                itemCount: scenarios.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 14),
+                itemBuilder: (context, i) {
+                  final scenario = scenarios[i];
+                  return TweenAnimationBuilder<double>(
+                    tween: Tween(begin: 0, end: 1),
+                    duration: Duration(milliseconds: 300 + i * 40),
+                    curve: Curves.easeOutCubic,
+                    builder: (context, v, child) => Opacity(
+                      opacity: v,
+                      child: Transform.translate(
+                        offset: Offset(0, (1 - v) * 16),
+                        child: child,
+                      ),
+                    ),
+                    child: ScenarioCard(
+                      scenario: scenario,
+                      onTap: () => context.push('/scenario/${scenario.id}'),
+                    ),
+                  );
+                },
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CategoryChip extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _CategoryChip({
+    required this.label,
+    required this.icon,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        decoration: BoxDecoration(
+          color: selected ? AppColors.primary : Theme.of(context).cardTheme.color,
+          borderRadius: BorderRadius.circular(AppTheme.radiusPill),
+          border: Border.all(
+            color: selected ? AppColors.primary : AppColors.borderLight,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 16, color: selected ? Colors.white : AppColors.textSecondaryLight),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: selected ? Colors.white : null,
+                  ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
