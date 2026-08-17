@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 import '../../models/scenario.dart';
@@ -16,12 +17,12 @@ const _uuid = Uuid();
 /// Wire this in by replacing the override in `service_providers.dart`:
 ///
 /// ```dart
-/// final aiConversationServiceProvider = Provider<AIConversationService>((ref) {
-///   return RemoteAIConversationService(
-///     baseUrl: 'https://your-backend.example.com',
-///     appSharedSecret: 'the same secret you set in the backend .env',
-///   );
-/// });
+final aiConversationServiceProvider = Provider<AIConversationService>((ref) {
+   return RemoteAIConversationService(
+     baseUrl: 'https://managely-backend.onrender.com',
+     appSharedSecret: '43a7d7aed10e26ee6346d84e23253204',
+   );
+ });
 /// ```
 class RemoteAIConversationService implements AIConversationService {
   RemoteAIConversationService({

@@ -27,13 +27,16 @@ import 'remote_ai_conversation_service.dart';
 /// lets staging/production builds point at different backends without a
 /// code change:
 /// `flutter run --dart-define=MANAGELY_BACKEND_URL=https://... --dart-define=MANAGELY_APP_SECRET=...`
-final aiConversationServiceProvider = Provider<AIConversationService>((ref) {
-  return MockAIConversationService();
+const _remoteBackendUrl = String.fromEnvironment('MANAGELY_BACKEND_URL');
 
-  // return RemoteAIConversationService(
-  //   baseUrl: const String.fromEnvironment('MANAGELY_BACKEND_URL'),
-  //   appSharedSecret: const String.fromEnvironment('MANAGELY_APP_SECRET'),
-  // );
+final aiConversationServiceProvider = Provider<AIConversationService>((ref) {
+  if (_remoteBackendUrl.isEmpty) {
+    return MockAIConversationService();
+  }
+  return RemoteAIConversationService(
+    baseUrl: _remoteBackendUrl,
+    appSharedSecret: const String.fromEnvironment('MANAGELY_APP_SECRET'),
+  );
 });
 
 final firebaseAuthProvider = Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);
