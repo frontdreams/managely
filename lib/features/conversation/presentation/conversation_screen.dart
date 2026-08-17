@@ -5,6 +5,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/skill_color.dart';
 import '../../../models/message.dart';
+import '../../../models/scenario.dart';
 import '../../../shared/widgets/difficulty_stars.dart';
 import '../providers/conversation_providers.dart';
 

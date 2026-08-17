@@ -58,7 +58,7 @@ class PracticeScreen extends ConsumerWidget {
           ),
           const SliverToBoxAdapter(child: SizedBox(height: 20)),
           if (scenarios.isEmpty)
-            SliverToBoxAdapter(
+            const SliverToBoxAdapter(
               child: EmptyState(
                 icon: Icons.search_off_rounded,
                 title: 'No scenarios here yet',
@@ -70,7 +70,7 @@ class PracticeScreen extends ConsumerWidget {
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
               sliver: SliverList.separated(
                 itemCount: scenarios.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 14),
+                separatorBuilder: (context, index) => const SizedBox(height: 14),
                 itemBuilder: (context, i) {
                   final scenario = scenarios[i];
                   return TweenAnimationBuilder<double>(
