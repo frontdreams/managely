@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "156202336382",
+    "project_id": "managely-app",
+    "storage_bucket": "managely-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:156202336382:android:af18b5722e80673121182f",
+        "android_client_info": {
+          "package_name": "com.managely.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "156202336382-65hl3derds7k1pob7vppeuibsmp605ag.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.managely.app",
+            "certificate_hash": "a17a547b21c61e204d5d512ba35115c6e4a1256a"
+          }
+        },
+        {
+          "client_id": "156202336382-or3mdka5q5bqq5bhqpfsrdh5o6io3rkt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDzKZ1_kMokngXFtf1s9mKpqUVSgUOZvUc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "156202336382-or3mdka5q5bqq5bhqpfsrdh5o6io3rkt.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "156202336382-9ffjkohdsfjtfu2c640jdveh8trqsiuk.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.managely.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -125,13 +125,13 @@ class _IntroPage extends StatelessWidget {
           const SizedBox(height: 36),
           Text(
             content.headline,
-            style: theme.textTheme.headlineMedium,
+            style: theme.textTheme.headlineMedium?.copyWith(color: AppColors.textOnBrand),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 14),
           Text(
             content.body,
-            style: theme.textTheme.bodyLarge,
+            style: theme.textTheme.bodyLarge?.copyWith(color: AppColors.textOnBrandMuted),
             textAlign: TextAlign.center,
           ),
         ],
@@ -163,11 +163,14 @@ class _SkillSelectionPage extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('What would you like to improve?', style: theme.textTheme.headlineSmall),
+          Text(
+            'What would you like to improve?',
+            style: theme.textTheme.headlineSmall?.copyWith(color: AppColors.textOnBrand),
+          ),
           const SizedBox(height: 8),
           Text(
             'Pick a few areas — Managely will recommend scenarios based on them.',
-            style: theme.textTheme.bodyMedium,
+            style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.textOnBrandMuted),
           ),
           const SizedBox(height: 24),
           Wrap(
@@ -184,9 +187,11 @@ class _SkillSelectionPage extends ConsumerWidget {
                   duration: const Duration(milliseconds: 200),
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
-                    color: isSelected ? color.withOpacity(0.14) : Colors.transparent,
+                    color: isSelected
+                        ? Color.alphaBlend(color.withOpacity(0.16), Colors.white)
+                        : Colors.white.withOpacity(0.1),
                     border: Border.all(
-                      color: isSelected ? color : AppColors.borderLight,
+                      color: isSelected ? color : Colors.white54,
                       width: isSelected ? 1.5 : 1,
                     ),
                     borderRadius: BorderRadius.circular(AppTheme.radiusPill),
@@ -201,7 +206,7 @@ class _SkillSelectionPage extends ConsumerWidget {
                       Text(
                         entry.value,
                         style: theme.textTheme.labelLarge?.copyWith(
-                          color: isSelected ? color : theme.textTheme.bodyLarge?.color,
+                          color: isSelected ? color : AppColors.textOnBrand,
                         ),
                       ),
                     ],
@@ -233,7 +238,7 @@ class _PageDots extends StatelessWidget {
           width: active ? 22 : 8,
           height: 8,
           decoration: BoxDecoration(
-            color: active ? AppColors.primary : AppColors.borderLight,
+            color: active ? Colors.white : Colors.white.withOpacity(0.3),
             borderRadius: BorderRadius.circular(AppTheme.radiusPill),
           ),
         );

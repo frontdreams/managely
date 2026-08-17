@@ -39,7 +39,7 @@ class PracticeSafelySheet extends StatelessWidget {
                 color: AppColors.accentLight,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.shield_outlined, color: AppColors.accent),
+              child: const Icon(Icons.shield_outlined, color: AppColors.primary),
             ),
             const SizedBox(height: 16),
             Text('Practice Safely', style: theme.textTheme.headlineSmall),

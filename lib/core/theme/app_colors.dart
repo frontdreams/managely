@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 
-/// Managely's brand palette — calm, intelligent, trustworthy.
-/// Primary is a deep indigo/blue (leadership, trust); accent is a warm
-/// teal-green (growth). Kept deliberately restrained for a premium feel.
+/// Managely's brand palette — deep navy and indigo for a modern,
+/// professional feel, with a warm gold accent used sparingly for highlights.
 class AppColors {
   AppColors._();
 
   // Brand
-  static const Color primary = Color(0xFF4F5FF7); // indigo-blue
-  static const Color primaryDark = Color(0xFF3A47D1);
-  static const Color primaryLight = Color(0xFFEAECFF);
+  static const Color primary = Color(0xFF2F3276); // deep navy
+  static const Color primaryDark = Color(0xFF23255C);
+  static const Color primaryLight = Color(0xFFE6E6EF);
 
-  static const Color accent = Color(0xFF19B39A); // growth teal
-  static const Color accentLight = Color(0xFFE1F7F3);
+  static const Color accent = Color(0xFFF8DF78); // gold
+  static const Color accentLight = Color(0xFFFEF9E4);
 
   // Semantic
   static const Color success = Color(0xFF1FAA6D);
@@ -20,11 +19,15 @@ class AppColors {
   static const Color danger = Color(0xFFE05A5A);
 
   // Neutrals — light
-  static const Color bgLight = Color(0xFFF7F8FC);
+  static const Color bgLight = Color(0xFF4D50A1); // indigo
   static const Color surfaceLight = Color(0xFFFFFFFF);
   static const Color borderLight = Color(0xFFE7E9F3);
   static const Color textPrimaryLight = Color(0xFF1B1D2A);
   static const Color textSecondaryLight = Color(0xFF6B7086);
+
+  // Text sitting directly on the bgLight background (outside cards).
+  static const Color textOnBrand = Colors.white;
+  static const Color textOnBrandMuted = Colors.white70;
 
   // Neutrals — dark
   static const Color bgDark = Color(0xFF0F1117);
@@ -42,7 +45,7 @@ class AppColors {
   static const Color skillBoundary = Color(0xFF4BA0E0);
 
   static const List<Color> heroGradient = [
-    Color(0xFF4F5FF7),
-    Color(0xFF6C7BFF),
+    Color(0xFF2F3276),
+    Color(0xFF686AAF),
   ];
 }

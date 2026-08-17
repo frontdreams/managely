@@ -30,6 +30,7 @@ class HomeScreen extends ConsumerWidget {
 
     return Scaffold(
       body: SafeArea(
+        bottom: false,
         child: CustomScrollView(
           slivers: [
             SliverToBoxAdapter(
@@ -41,9 +42,17 @@ class HomeScreen extends ConsumerWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(_greeting(), style: theme.textTheme.bodyMedium),
+                        Text(
+                          _greeting(),
+                          style: theme.textTheme.bodyMedium
+                              ?.copyWith(color: AppColors.textOnBrandMuted),
+                        ),
                         const SizedBox(height: 2),
-                        Text('Ready to practise?', style: theme.textTheme.headlineMedium),
+                        Text(
+                          'Ready to practise?',
+                          style: theme.textTheme.headlineMedium
+                              ?.copyWith(color: AppColors.textOnBrand),
+                        ),
                       ],
                     ),
                     CircleAvatar(
@@ -119,7 +128,7 @@ class HomeScreen extends ConsumerWidget {
             ),
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 110),
                 child: _RecommendedCard(
                   scenario: recommended,
                   weakestSkill: profile.weakestSkill,
@@ -153,6 +162,13 @@ class _StartPracticeCta extends StatelessWidget {
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 16,
+              offset: const Offset(0, 8),
+            ),
+          ],
         ),
         child: Row(
           children: [
@@ -213,7 +229,7 @@ class _ContinuePractisingCard extends StatelessWidget {
                   color: AppColors.accentLight,
                   borderRadius: BorderRadius.circular(AppTheme.radiusSm),
                 ),
-                child: const Icon(Icons.replay_rounded, color: AppColors.accent),
+                child: const Icon(Icons.replay_rounded, color: AppColors.primary),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -256,7 +272,7 @@ class _RecommendedCard extends StatelessWidget {
           padding: const EdgeInsets.only(bottom: 10, left: 4),
           child: Text(
             'Your ${weakestSkill.label.toLowerCase()} score has room to grow. Try this scenario next.',
-            style: theme.textTheme.bodyMedium,
+            style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.textOnBrandMuted),
           ),
         ),
         ScenarioCard(scenario: scenario, onTap: onTap),

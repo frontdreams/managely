@@ -24,7 +24,10 @@ class PracticeScreen extends ConsumerWidget {
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
-              child: Text('Choose a skill', style: theme.textTheme.titleLarge),
+              child: Text(
+                'Choose a skill',
+                style: theme.textTheme.titleLarge?.copyWith(color: AppColors.textOnBrand),
+              ),
             ),
           ),
           SliverToBoxAdapter(
@@ -67,7 +70,7 @@ class PracticeScreen extends ConsumerWidget {
             )
           else
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 110),
               sliver: SliverList.separated(
                 itemCount: scenarios.length,
                 separatorBuilder: (context, index) => const SizedBox(height: 14),

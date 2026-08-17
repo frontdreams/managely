@@ -27,6 +27,11 @@ class UserProfile {
   final bool themeIsDark;
   final bool notificationsEnabled;
 
+  /// True once this profile has been loaded from Firestore for the signed-in
+  /// user (or confirmed to not exist yet, for a brand-new account). Used by
+  /// routing to avoid flashing onboarding before the real profile arrives.
+  final bool isHydrated;
+
   const UserProfile({
     this.name = 'You',
     this.level = ManagerLevel.newManager,
@@ -45,6 +50,7 @@ class UserProfile {
     this.onboardingComplete = false,
     this.themeIsDark = false,
     this.notificationsEnabled = true,
+    this.isHydrated = false,
   });
 
   int get averageScore {
@@ -70,6 +76,7 @@ class UserProfile {
     bool? onboardingComplete,
     bool? themeIsDark,
     bool? notificationsEnabled,
+    bool? isHydrated,
   }) {
     return UserProfile(
       name: name ?? this.name,
@@ -82,6 +89,7 @@ class UserProfile {
       onboardingComplete: onboardingComplete ?? this.onboardingComplete,
       themeIsDark: themeIsDark ?? this.themeIsDark,
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
+      isHydrated: isHydrated ?? this.isHydrated,
     );
   }
 }

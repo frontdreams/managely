@@ -28,24 +28,32 @@ class EmptyState extends StatelessWidget {
           Container(
             width: 72,
             height: 72,
-            decoration: const BoxDecoration(
-              color: AppColors.primaryLight,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.14),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: AppColors.primary, size: 32),
+            child: Icon(icon, color: AppColors.textOnBrand, size: 32),
           ),
           const SizedBox(height: 20),
           Text(title,
-              style: theme.textTheme.titleLarge, textAlign: TextAlign.center),
+              style: theme.textTheme.titleLarge?.copyWith(color: AppColors.textOnBrand),
+              textAlign: TextAlign.center),
           const SizedBox(height: 8),
           Text(
             message,
-            style: theme.textTheme.bodyMedium,
+            style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.textOnBrandMuted),
             textAlign: TextAlign.center,
           ),
           if (actionLabel != null) ...[
             const SizedBox(height: 20),
-            OutlinedButton(onPressed: onAction, child: Text(actionLabel!)),
+            OutlinedButton(
+              onPressed: onAction,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.textOnBrand,
+                side: const BorderSide(color: Colors.white54),
+              ),
+              child: Text(actionLabel!),
+            ),
           ],
         ],
       ),

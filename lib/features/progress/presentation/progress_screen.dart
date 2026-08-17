@@ -26,7 +26,7 @@ class ProgressScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Your Progress')),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
+        padding: const EdgeInsets.fromLTRB(20, 4, 20, 110),
         children: [
           GridView.count(
             crossAxisCount: 2,
@@ -143,6 +143,10 @@ class ProgressScreen extends ConsumerWidget {
           const SizedBox(height: 12),
           OutlinedButton(
             onPressed: () => context.go('/practice'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.textOnBrand,
+              side: const BorderSide(color: Colors.white54),
+            ),
             child: Text('Practise ${weakest.label}'),
           ),
         ],

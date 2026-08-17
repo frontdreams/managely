@@ -4,11 +4,35 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/services/service_providers.dart';
 import '../../../models/user_profile.dart';
 import '../providers/profile_providers.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
+
+  Future<void> _confirmSignOut(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Log Out?'),
+        content: const Text("You'll need to sign back in to keep practising."),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Log Out'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      await ref.read(authServiceProvider).signOut();
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -20,7 +44,7 @@ class ProfileScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Profile')),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
+        padding: const EdgeInsets.fromLTRB(20, 4, 20, 110),
         children: [
           Center(
             child: Column(
@@ -35,7 +59,10 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
-                Text(profile.name, style: theme.textTheme.headlineSmall),
+                Text(
+                  profile.name,
+                  style: theme.textTheme.headlineSmall?.copyWith(color: AppColors.textOnBrand),
+                ),
                 const SizedBox(height: 4),
                 Chip(label: Text(profile.level.label)),
               ],
@@ -54,7 +81,10 @@ class ProfileScreen extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 28),
-          Text('Settings', style: theme.textTheme.titleLarge),
+          Text(
+            'Settings',
+            style: theme.textTheme.titleLarge?.copyWith(color: AppColors.textOnBrand),
+          ),
           const SizedBox(height: 12),
           Card(
             child: Column(
@@ -104,6 +134,12 @@ class ProfileScreen extends ConsumerWidget {
                     ],
                   ),
                 ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.logout_rounded, color: AppColors.danger),
+                  title: const Text('Log Out', style: TextStyle(color: AppColors.danger)),
+                  onTap: () => _confirmSignOut(context, ref),
+                ),
               ],
             ),
           ),
@@ -119,7 +155,7 @@ class ProfileScreen extends ConsumerWidget {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.verified_user_outlined, color: AppColors.accent),
+                    const Icon(Icons.verified_user_outlined, color: AppColors.primary),
                     const SizedBox(width: 8),
                     Text('Responsible AI', style: theme.textTheme.titleSmall),
                   ],
@@ -145,9 +181,16 @@ class _StatBlock extends StatelessWidget {
     final theme = Theme.of(context);
     return Column(
       children: [
-        Text(value, style: theme.textTheme.headlineSmall),
+        Text(
+          value,
+          style: theme.textTheme.headlineSmall?.copyWith(color: AppColors.textOnBrand),
+        ),
         const SizedBox(height: 2),
-        Text(label, style: theme.textTheme.labelMedium, textAlign: TextAlign.center),
+        Text(
+          label,
+          style: theme.textTheme.labelMedium?.copyWith(color: AppColors.textOnBrandMuted),
+          textAlign: TextAlign.center,
+        ),
       ],
     );
   }

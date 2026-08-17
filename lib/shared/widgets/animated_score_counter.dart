@@ -32,7 +32,7 @@ class AnimatedScoreCounter extends StatelessWidget {
                 child: CircularProgressIndicator(
                   value: progress * (score / 100),
                   strokeWidth: 10,
-                  backgroundColor: color.withOpacity(0.12),
+                  backgroundColor: Colors.white.withOpacity(0.18),
                   valueColor: AlwaysStoppedAnimation(color),
                   strokeCap: StrokeCap.round,
                 ),
@@ -49,7 +49,7 @@ class AnimatedScoreCounter extends StatelessWidget {
                   ),
                   Text(
                     '/ 100',
-                    style: Theme.of(context).textTheme.labelMedium,
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white70),
                   ),
                 ],
               ),

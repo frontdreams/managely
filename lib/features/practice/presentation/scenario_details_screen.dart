@@ -47,7 +47,7 @@ class ScenarioDetailsScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.08),
+                color: Color.alphaBlend(color.withOpacity(0.08), Colors.white),
                 borderRadius: BorderRadius.circular(AppTheme.radiusLg),
               ),
               child: Column(
@@ -120,7 +120,7 @@ class ScenarioDetailsScreen extends ConsumerWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.shield_outlined, color: AppColors.accent, size: 20),
+                  const Icon(Icons.shield_outlined, color: AppColors.primary, size: 20),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(

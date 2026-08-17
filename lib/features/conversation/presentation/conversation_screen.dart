@@ -103,7 +103,7 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
     final scenario = state.scenario;
 
     if (scenario == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(body: Center(child: CircularProgressIndicator(color: Colors.white)));
     }
 
     final color = skillColor(scenario.primarySkill);
@@ -124,14 +124,23 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(scenario.title, style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              scenario.title,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(color: AppColors.textOnBrand),
+            ),
             Row(
               children: [
                 DifficultyStars(filled: scenario.difficulty.stars, size: 11),
                 const SizedBox(width: 6),
                 Text(
                   state.roundNumber > 1 ? 'Round ${state.roundNumber}' : scenario.difficulty.label,
-                  style: Theme.of(context).textTheme.labelMedium,
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelMedium
+                      ?.copyWith(color: AppColors.textOnBrandMuted),
                 ),
               ],
             ),
@@ -143,7 +152,7 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 12),
-            color: color.withOpacity(0.06),
+            color: Color.alphaBlend(color.withOpacity(0.06), Colors.white),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -186,7 +195,7 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.danger.withOpacity(0.1),
+                  color: Color.alphaBlend(AppColors.danger.withOpacity(0.1), Colors.white),
                   borderRadius: BorderRadius.circular(AppTheme.radiusSm),
                 ),
                 child: Row(
@@ -235,7 +244,7 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
                     onPressed: state.messages.length > 1 ? _endConversation : null,
                     icon: const Icon(Icons.flag_outlined, size: 18),
                     label: const Text('End Conversation'),
-                    style: TextButton.styleFrom(foregroundColor: AppColors.textSecondaryLight),
+                    style: TextButton.styleFrom(foregroundColor: AppColors.textOnBrandMuted),
                   ),
                 ],
               ),
@@ -273,7 +282,9 @@ class _MessageBubble extends StatelessWidget {
           constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.74),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: isManager ? AppColors.primary : employeeColor.withOpacity(0.1),
+            color: isManager
+                ? AppColors.primary
+                : Color.alphaBlend(employeeColor.withOpacity(0.12), Colors.white),
             borderRadius: BorderRadius.only(
               topLeft: const Radius.circular(18),
               topRight: const Radius.circular(18),
@@ -328,7 +339,7 @@ class _TypingBubbleState extends State<_TypingBubble> with SingleTickerProviderS
         margin: const EdgeInsets.symmetric(vertical: 6),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: widget.color.withOpacity(0.1),
+          color: Color.alphaBlend(widget.color.withOpacity(0.1), Colors.white),
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(18),
             topRight: Radius.circular(18),

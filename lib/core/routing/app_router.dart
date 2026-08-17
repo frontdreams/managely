@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../features/auth/presentation/login_screen.dart';
+import '../../features/auth/presentation/register_screen.dart';
+import '../../features/auth/presentation/forgot_password_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/practice/presentation/practice_screen.dart';
@@ -12,22 +15,62 @@ import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/profile/presentation/privacy_screen.dart';
 import '../../features/profile/providers/profile_providers.dart';
 import '../../shared/widgets/app_shell.dart';
+import '../../shared/widgets/splash_screen.dart';
+import '../services/service_providers.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
+const _authRoutes = {'/login', '/register', '/forgot-password'};
+
 final appRouterProvider = Provider<GoRouter>((ref) {
+  final authState = ref.watch(authStateChangesProvider);
   final profile = ref.watch(userProfileProvider);
 
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: '/onboarding',
+    initialLocation: '/splash',
     redirect: (context, state) {
-      final atOnboarding = state.matchedLocation == '/onboarding';
-      if (!profile.onboardingComplete && !atOnboarding) return '/onboarding';
-      if (profile.onboardingComplete && atOnboarding) return '/home';
+      final loc = state.matchedLocation;
+
+      if (authState.isLoading) {
+        return loc == '/splash' ? null : '/splash';
+      }
+
+      final user = authState.valueOrNull;
+      if (user == null) {
+        return _authRoutes.contains(loc) ? null : '/login';
+      }
+
+      if (!profile.isHydrated) {
+        return loc == '/splash' ? null : '/splash';
+      }
+
+      if (!profile.onboardingComplete) {
+        return loc == '/onboarding' ? null : '/onboarding';
+      }
+
+      if (_authRoutes.contains(loc) || loc == '/onboarding' || loc == '/splash') {
+        return '/home';
+      }
       return null;
     },
     routes: [
+      GoRoute(
+        path: '/splash',
+        builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: '/login',
+        builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/register',
+        builder: (context, state) => const RegisterScreen(),
+      ),
+      GoRoute(
+        path: '/forgot-password',
+        builder: (context, state) => const ForgotPasswordScreen(),
+      ),
       GoRoute(
         path: '/onboarding',
         builder: (context, state) => const OnboardingScreen(),

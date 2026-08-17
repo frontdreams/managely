@@ -50,9 +50,12 @@ class _EvaluationScreenState extends ConsumerState<EvaluationScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const CircularProgressIndicator(),
+                const CircularProgressIndicator(color: Colors.white),
                 const SizedBox(height: 20),
-                Text('Evaluating your conversation…', style: theme.textTheme.bodyMedium),
+                Text(
+                  'Evaluating your conversation…',
+                  style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.textOnBrandMuted),
+                ),
               ],
             ),
           ),
@@ -82,7 +85,10 @@ class _EvaluationScreenState extends ConsumerState<EvaluationScreen> {
                 children: [
                   AnimatedScoreCounter(score: evaluation.overallScore, color: scoreColor),
                   const SizedBox(height: 10),
-                  Text(scenario.title, style: theme.textTheme.titleMedium),
+                  Text(
+                    scenario.title,
+                    style: theme.textTheme.titleMedium?.copyWith(color: AppColors.textOnBrand),
+                  ),
                   if (evaluation.improvement != null) ...[
                     const SizedBox(height: 10),
                     _ImprovementPill(
@@ -150,6 +156,10 @@ class _EvaluationScreenState extends ConsumerState<EvaluationScreen> {
                 ref.read(conversationProvider.notifier).reset();
                 context.go('/home');
               },
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.textOnBrand,
+                side: const BorderSide(color: Colors.white54),
+              ),
               child: const Text('Back to Home'),
             ),
           ],
@@ -177,7 +187,7 @@ class _ImprovementPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
+        color: Color.alphaBlend(color.withOpacity(0.12), Colors.white),
         borderRadius: BorderRadius.circular(AppTheme.radiusPill),
       ),
       child: Row(
