@@ -10,3 +10,7 @@ android/.gradle/
 .flutter-plugins
 .flutter-plugins-dependencies
 pubspec.lock
+
+# Backend (Node)
+node_modules/
+.env

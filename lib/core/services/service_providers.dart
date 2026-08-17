@@ -6,12 +6,34 @@ import 'ai_conversation_service.dart';
 import 'auth_service.dart';
 import 'firestore_user_repository.dart';
 import 'mock_ai_conversation_service.dart';
+import 'remote_ai_conversation_service.dart';
 
 /// Single source of truth for the active [AIConversationService]
-/// implementation. Swap the override in [ProviderScope] (e.g. in main.dart
-/// or in tests) to plug in a real backend-backed implementation later.
+/// implementation.
+///
+/// Today this returns [MockAIConversationService] (no setup required, runs
+/// fully offline). To go live against the real Managely backend, deploy
+/// `/managely-backend` (see its README), then swap the return value below
+/// for [RemoteAIConversationService]:
+///
+/// ```dart
+/// return RemoteAIConversationService(
+///   baseUrl: const String.fromEnvironment('MANAGELY_BACKEND_URL'),
+///   appSharedSecret: const String.fromEnvironment('MANAGELY_APP_SECRET'),
+/// );
+/// ```
+///
+/// Reading these from `--dart-define` flags (rather than hardcoding them)
+/// lets staging/production builds point at different backends without a
+/// code change:
+/// `flutter run --dart-define=MANAGELY_BACKEND_URL=https://... --dart-define=MANAGELY_APP_SECRET=...`
 final aiConversationServiceProvider = Provider<AIConversationService>((ref) {
   return MockAIConversationService();
+
+  // return RemoteAIConversationService(
+  //   baseUrl: const String.fromEnvironment('MANAGELY_BACKEND_URL'),
+  //   appSharedSecret: const String.fromEnvironment('MANAGELY_APP_SECRET'),
+  // );
 });
 
 final firebaseAuthProvider = Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);

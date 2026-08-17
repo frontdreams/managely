@@ -62,7 +62,7 @@ class ProgressScreen extends ConsumerWidget {
               ),
             ],
           ),
-        //  const SizedBox(height: 28),
+          const SizedBox(height: 28),
           const SectionHeader(title: 'Skill Development'),
           const SizedBox(height: 12),
           Card(
