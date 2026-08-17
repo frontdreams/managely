@@ -37,6 +37,10 @@
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Managely uses the camera so you can take a new profile photo.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Managely uses your photo library so you can choose a profile photo.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

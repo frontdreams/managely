@@ -19,21 +19,33 @@ class UserProfileNotifier extends StateNotifier<UserProfile> {
     if (uid == null) return;
     final repo = _ref.read(firestoreUserRepositoryProvider);
     final loaded = await repo.loadProfile(uid);
-    final authName = _ref.read(firebaseAuthProvider).currentUser?.displayName;
+    final authUser = _ref.read(firebaseAuthProvider).currentUser;
+    final authName = authUser?.displayName;
+    final authPhoto = authUser?.photoURL;
 
     if (loaded != null) {
-      state = (authName != null &&
-              authName.isNotEmpty &&
-              authName != loaded.name)
-          ? loaded.copyWith(name: authName)
-          : loaded;
+      var next = loaded;
+      if (authName != null && authName.isNotEmpty && authName != loaded.name) {
+        next = next.copyWith(name: authName);
+      }
+      // Only fill in the Google photo when the profile has none yet — a
+      // user who picked their own photo shouldn't have it silently
+      // replaced by their Google avatar on a later login.
+      if ((loaded.photoUrl == null || loaded.photoUrl!.isEmpty) &&
+          authPhoto != null &&
+          authPhoto.isNotEmpty) {
+        next = next.copyWith(photoUrl: authPhoto);
+      }
+      state = next;
       return;
     }
 
-    // Brand-new account: seed a fresh profile (using the auth display name,
-    // if any) and persist it immediately so the doc exists going forward.
+    // Brand-new account: seed a fresh profile (using the auth display name
+    // and, for Google sign-ins, their Google profile photo) and persist it
+    // immediately so the doc exists going forward.
     final seeded = UserProfile(
       name: (authName != null && authName.isNotEmpty) ? authName : 'You',
+      photoUrl: (authPhoto != null && authPhoto.isNotEmpty) ? authPhoto : null,
       isHydrated: true,
     );
     state = seeded;
@@ -51,6 +63,24 @@ class UserProfileNotifier extends StateNotifier<UserProfile> {
       onboardingComplete: true,
       focusSkills: focusSkills,
     );
+    await _persist();
+  }
+
+  /// Updates the editable fields on the "Edit Profile" screen.
+  Future<void> updateProfile({String? name, ManagerLevel? level}) async {
+    state = state.copyWith(name: name, level: level);
+    await _persist();
+  }
+
+  /// Sets the profile photo — either a base64-encoded JPEG picked by the
+  /// user, or an `http(s)` URL copied from a Google account.
+  Future<void> updatePhoto(String photoUrl) async {
+    state = state.copyWith(photoUrl: photoUrl);
+    await _persist();
+  }
+
+  Future<void> removePhoto() async {
+    state = state.copyWith(clearPhoto: true);
     await _persist();
   }
 

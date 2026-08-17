@@ -62,23 +62,25 @@ class ProgressScreen extends ConsumerWidget {
               ),
             ],
           ),
-          const SizedBox(height: 28),
+        //  const SizedBox(height: 28),
           const SectionHeader(title: 'Skill Development'),
           const SizedBox(height: 12),
           Card(
             child: Padding(
-              padding: const EdgeInsets.all(18),
+              padding: const EdgeInsets.all(14),
               child: Column(
                 children: [
                   for (final entry in profile.skillScores.entries) ...[
                     SkillProgressBar(
                       label: entry.key.label,
                       value: entry.value,
-                      color: skillColor(entry.key),
+                      color: AppColors.primary,
                       icon: entry.key.icon,
+                      barHeight: 5,
+                      compact: true,
                     ),
                     if (entry.key != profile.skillScores.keys.last)
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 12),
                   ],
                 ],
               ),

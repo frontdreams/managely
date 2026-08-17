@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:uuid/uuid.dart';
 import '../../models/scenario.dart';
 import '../../models/message.dart';
 import '../../models/evaluation.dart';
@@ -6,7 +7,7 @@ import 'ai_conversation_service.dart';
 
 /// Local, offline implementation of [AIConversationService].
 ///
-/// It does two jobs:
+/// It does three jobs:
 ///  1. Plays the "employee" by doing lightweight tone detection on the
 ///     manager's latest message and picking a matching canned reply from
 ///     the active [Scenario].
@@ -14,12 +15,15 @@ import 'ai_conversation_service.dart';
 ///     simple communication signals across the whole transcript (message
 ///     length, use of empathetic language, presence of a clear ask,
 ///     question-asking, absence of blame language, etc).
+///  3. Turns a free-text situation the user describes into a fictional,
+///     playable [Scenario] (see [generateCustomScenario]).
 ///
 /// This is intentionally simple — it exists so the UI has something
 /// realistic to work with while a real LLM-backed service is built behind
 /// a secure backend (see [AIConversationService] doc comment).
 class MockAIConversationService implements AIConversationService {
   final Random _random = Random();
+  static const _uuid = Uuid();
 
   // ---------------------------------------------------------------------
   // Tone detection (very lightweight keyword heuristics — not NLP)
@@ -248,5 +252,130 @@ class MockAIConversationService implements AIConversationService {
       tryNextTime: tryNextTime,
       previousScore: previousScore,
     );
+  }
+
+  // ---------------------------------------------------------------------
+  // Custom scenario generation
+  // ---------------------------------------------------------------------
+
+  static const _genericEmployeeNames = [
+    'Jordan',
+    'Alex',
+    'Taylor',
+    'Sam',
+    'Casey',
+    'Riley',
+    'Morgan',
+  ];
+
+  @override
+  Future<Scenario> generateCustomScenario({required String prompt}) async {
+    // Simulate the latency of an LLM interpreting and structuring the
+    // user's free-text description into a scenario.
+    await Future.delayed(Duration(milliseconds: 1000 + _random.nextInt(900)));
+
+    final cleanedPrompt = prompt.trim();
+    final tone = _detectTone(cleanedPrompt);
+    final employeeName =
+        _genericEmployeeNames[_random.nextInt(_genericEmployeeNames.length)];
+
+    final personality = switch (tone) {
+      'aggressive' => 'Defensive and quick to push back',
+      'vague' => 'A little uncertain, looking for a clear ask',
+      'empathetic' => 'Open to feedback, but still processing it',
+      'clear' => 'Direct and receptive when expectations are clear',
+      _ => 'Reacts naturally based on how the conversation goes',
+    };
+
+    final primarySkill = switch (tone) {
+      'aggressive' => ManagerSkill.conflictManagement,
+      'vague' => ManagerSkill.clarity,
+      'empathetic' => ManagerSkill.empathy,
+      'clear' => ManagerSkill.assertiveness,
+      _ => ManagerSkill.clarity,
+    };
+
+    final title = _titleFromPrompt(cleanedPrompt);
+    final description = cleanedPrompt.length > 110
+        ? '${cleanedPrompt.substring(0, 110)}…'
+        : cleanedPrompt;
+
+    return Scenario(
+      id: 'custom-${_uuid.v4()}',
+      title: title,
+      description: description,
+      category: SkillCategory.difficultConversations,
+      difficulty: ScenarioDifficulty.medium,
+      primarySkill: primarySkill,
+      estimatedMinutes: 6,
+      skillsPractised: const [
+        ManagerSkill.clarity,
+        ManagerSkill.empathy,
+        ManagerSkill.assertiveness,
+      ],
+      employeeName: employeeName,
+      employeeRole: 'Employee',
+      employeePersonality: personality,
+      // The situation is always framed as fictional practice, regardless
+      // of what the user typed — Managely never stores or treats this as
+      // a real personnel record.
+      situation: cleanedPrompt,
+      objective:
+          'Navigate this conversation with clarity, empathy, and confidence.',
+      openingMessage: _openingForTone(tone),
+      possibleResponses: _genericPossibleResponses(employeeName),
+      learningPoints: const [
+        'Stay specific about what you need to change or communicate.',
+        'Acknowledge the other person\'s perspective before pushing your point.',
+        'Close the conversation with a clear, agreed-upon next step.',
+      ],
+    );
+  }
+
+  String _titleFromPrompt(String prompt) {
+    if (prompt.isEmpty) return 'Custom Scenario';
+    final words = prompt.split(RegExp(r'\s+'));
+    final short = words.take(6).join(' ');
+    return short.length < prompt.length ? '$short…' : short;
+  }
+
+  String _openingForTone(String tone) {
+    switch (tone) {
+      case 'aggressive':
+        return 'Okay, I can tell something\'s up. Just say what you need to say.';
+      case 'vague':
+        return 'Hey — you wanted to talk? I\'m not totally sure what this is about, but go ahead.';
+      case 'empathetic':
+        return 'Hi, thanks for making time. I have a feeling I know what this might be about.';
+      case 'clear':
+        return 'Hey, I got your message. What did you want to go over?';
+      default:
+        return 'Hey, thanks for grabbing me. What\'s going on?';
+    }
+  }
+
+  List<PossibleResponse> _genericPossibleResponses(String employeeName) {
+    return [
+      PossibleResponse(triggerTone: 'empathetic', replies: [
+        'I appreciate you saying that. It helps to know you actually see where I\'m coming from.',
+        'Thanks for putting it that way — I\'m more open to hearing the rest now.',
+      ]),
+      PossibleResponse(triggerTone: 'aggressive', replies: [
+        'I don\'t think that tone is necessary. I\'m trying to hear you out here.',
+        'Okay, that feels a bit harsh — can we take a step back?',
+      ]),
+      PossibleResponse(triggerTone: 'vague', replies: [
+        'I\'m still not totally clear on what you\'re asking me to do differently.',
+        'Okay... but what would that actually look like in practice?',
+      ]),
+      PossibleResponse(triggerTone: 'clear', replies: [
+        'Okay, that\'s clear — I can work with that.',
+        'Got it, thanks for being direct. That actually makes this easier.',
+      ]),
+      PossibleResponse(triggerTone: 'default', replies: [
+        'Okay, I\'m listening — go on.',
+        'Alright, tell me more about what you\'re thinking.',
+      ]),
+    ];
   }
 }

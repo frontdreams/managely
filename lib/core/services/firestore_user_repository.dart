@@ -42,6 +42,7 @@ class FirestoreUserRepository {
 
   Map<String, dynamic> _profileToJson(UserProfile p) => {
         'name': p.name,
+        'photoUrl': p.photoUrl,
         'level': p.level.name,
         'focusSkills': p.focusSkills.map((s) => s.name).toList(),
         'skillScores': p.skillScores.map((k, v) => MapEntry(k.name, v)),
@@ -57,6 +58,7 @@ class FirestoreUserRepository {
     const defaults = UserProfile();
     return UserProfile(
       name: json['name'] as String? ?? defaults.name,
+      photoUrl: json['photoUrl'] as String?,
       level: ManagerLevel.values.firstWhere(
         (l) => l.name == json['level'],
         orElse: () => defaults.level,

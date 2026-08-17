@@ -1,5 +1,23 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_theme.dart';
+
+/// App icon shown at the top of every auth screen so the brand stays
+/// recognisable across login, sign up and password reset.
+class AuthLogo extends StatelessWidget {
+  final double size;
+  const AuthLogo({super.key, this.size = 64});
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      'assets/icon.png',
+      width: size,
+      height: size,
+      color: Colors.white,
+    );
+  }
+}
 
 /// "Continue with Google" button styled after Google's own button
 /// guidelines (white surface, dark text) so it reads correctly regardless
@@ -18,18 +36,14 @@ class GoogleSignInButton extends StatelessWidget {
           backgroundColor: Colors.white,
           foregroundColor: AppColors.textPrimaryLight,
           side: const BorderSide(color: AppColors.borderLight),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppTheme.radiusPill),
+          ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              'G',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w800,
-                color: AppColors.primary,
-              ),
-            ),
+            Image.asset('assets/google.png', width: 20, height: 20),
             const SizedBox(width: 10),
             Text(
               'Continue with Google',

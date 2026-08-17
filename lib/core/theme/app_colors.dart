@@ -48,4 +48,12 @@ class AppColors {
     Color(0xFF2F3276),
     Color(0xFF686AAF),
   ];
+
+  /// Warm gold gradient used for the home screen's hero card — pairs with
+  /// [primary] for text/icons on top of it, mirroring the navy-on-gold
+  /// pairing already used for primary buttons ([accent] bg, [primary] fg).
+  static const List<Color> goldGradient = [
+    Color(0xFFFFEDB8),
+    Color(0xFFF6C445),
+  ];
 }

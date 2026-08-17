@@ -23,11 +23,16 @@ class PracticeScreen extends ConsumerWidget {
         slivers: [
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
-              child: Text(
-                'Choose a skill',
-                style: theme.textTheme.titleLarge?.copyWith(color: AppColors.textOnBrand),
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
+              child: _CustomScenarioCta(
+                onTap: () => context.push('/custom-scenario'),
               ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+              child: Text('Choose a skill', style: theme.textTheme.titleLarge),
             ),
           ),
           SliverToBoxAdapter(
@@ -61,7 +66,7 @@ class PracticeScreen extends ConsumerWidget {
           ),
           const SliverToBoxAdapter(child: SizedBox(height: 20)),
           if (scenarios.isEmpty)
-            const SliverToBoxAdapter(
+            SliverToBoxAdapter(
               child: EmptyState(
                 icon: Icons.search_off_rounded,
                 title: 'No scenarios here yet',
@@ -70,10 +75,10 @@ class PracticeScreen extends ConsumerWidget {
             )
           else
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 110),
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
               sliver: SliverList.separated(
                 itemCount: scenarios.length,
-                separatorBuilder: (context, index) => const SizedBox(height: 14),
+                separatorBuilder: (_, __) => const SizedBox(height: 14),
                 itemBuilder: (context, i) {
                   final scenario = scenarios[i];
                   return TweenAnimationBuilder<double>(
@@ -96,6 +101,56 @@ class PracticeScreen extends ConsumerWidget {
               ),
             ),
         ],
+      ),
+    );
+  }
+}
+
+class _CustomScenarioCta extends StatelessWidget {
+  final VoidCallback onTap;
+  const _CustomScenarioCta({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return InkWell(
+      borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: AppColors.primaryLight,
+          borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: const BoxDecoration(
+                color: AppColors.primary,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.edit_note_rounded, color: Colors.white),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Practice Your Own Scenario', style: theme.textTheme.titleMedium),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Describe a real situation and we\'ll build it for you.',
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_rounded, color: AppColors.primary),
+          ],
+        ),
       ),
     );
   }

@@ -6,6 +6,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/services/service_providers.dart';
 import '../../../models/user_profile.dart';
+import '../../../shared/widgets/profile_avatar.dart';
 import '../providers/profile_providers.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -46,39 +47,17 @@ class ProfileScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 4, 20, 110),
         children: [
-          Center(
-            child: Column(
-              children: [
-                CircleAvatar(
-                  radius: 40,
-                  backgroundColor: AppColors.primaryLight,
-                  child: Text(
-                    profile.name.isNotEmpty ? profile.name[0].toUpperCase() : 'Y',
-                    style: const TextStyle(
-                        fontSize: 28, color: AppColors.primary, fontWeight: FontWeight.w700),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  profile.name,
-                  style: theme.textTheme.headlineSmall?.copyWith(color: AppColors.textOnBrand),
-                ),
-                const SizedBox(height: 4),
-                Chip(label: Text(profile.level.label)),
-              ],
-            ),
+          _ProfileHeaderCard(
+            name: profile.name,
+            photoUrl: profile.photoUrl,
+            levelLabel: profile.level.label,
+            onEdit: () => context.push('/profile/edit'),
           ),
-          const SizedBox(height: 24),
-          Row(
-            children: [
-              Expanded(
-                  child: _StatBlock(
-                      value: '${profile.totalConversations}', label: 'Conversations')),
-              Expanded(
-                  child: _StatBlock(value: '${profile.averageScore}', label: 'Avg Score')),
-              Expanded(
-                  child: _StatBlock(value: '$skillsImproving', label: 'Skills Improving')),
-            ],
+          const SizedBox(height: 20),
+          _StatsCard(
+            conversations: profile.totalConversations,
+            avgScore: profile.averageScore,
+            skillsImproving: skillsImproving,
           ),
           const SizedBox(height: 28),
           Text(
@@ -89,6 +68,12 @@ class ProfileScreen extends ConsumerWidget {
           Card(
             child: Column(
               children: [
+                _SettingsTile(
+                  icon: Icons.edit_outlined,
+                  title: 'Edit Profile',
+                  onTap: () => context.push('/profile/edit'),
+                ),
+                const Divider(height: 1),
                 SwitchListTile(
                   title: const Text('Notifications'),
                   secondary: const Icon(Icons.notifications_outlined),
@@ -97,17 +82,15 @@ class ProfileScreen extends ConsumerWidget {
                       ref.read(userProfileProvider.notifier).toggleNotifications(v),
                 ),
                 const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.privacy_tip_outlined),
-                  title: const Text('Privacy'),
-                  trailing: const Icon(Icons.chevron_right_rounded),
+                _SettingsTile(
+                  icon: Icons.privacy_tip_outlined,
+                  title: 'Privacy',
                   onTap: () => context.push('/profile/privacy'),
                 ),
                 const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.smart_toy_outlined),
-                  title: const Text('AI Preferences'),
-                  trailing: const Icon(Icons.chevron_right_rounded),
+                _SettingsTile(
+                  icon: Icons.smart_toy_outlined,
+                  title: 'AI Preferences',
                   onTap: () => ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('AI preferences coming soon.')),
                   ),
@@ -120,10 +103,9 @@ class ProfileScreen extends ConsumerWidget {
                   onChanged: (v) => ref.read(userProfileProvider.notifier).toggleTheme(v),
                 ),
                 const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.info_outline_rounded),
-                  title: const Text('About Managely'),
-                  trailing: const Icon(Icons.chevron_right_rounded),
+                _SettingsTile(
+                  icon: Icons.info_outline_rounded,
+                  title: 'About Managely',
                   onTap: () => showAboutDialog(
                     context: context,
                     applicationName: AppConstants.appName,
@@ -134,13 +116,15 @@ class ProfileScreen extends ConsumerWidget {
                     ],
                   ),
                 ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.logout_rounded, color: AppColors.danger),
-                  title: const Text('Log Out', style: TextStyle(color: AppColors.danger)),
-                  onTap: () => _confirmSignOut(context, ref),
-                ),
               ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.logout_rounded, color: AppColors.danger),
+              title: const Text('Log Out', style: TextStyle(color: AppColors.danger)),
+              onTap: () => _confirmSignOut(context, ref),
             ),
           ),
           const SizedBox(height: 24),
@@ -171,27 +155,199 @@ class ProfileScreen extends ConsumerWidget {
   }
 }
 
+/// Hero card at the top of the profile screen — avatar, name, manager
+/// level and a shortcut into the edit screen, on the brand gradient so it
+/// reads as the "identity" of the page.
+class _ProfileHeaderCard extends StatelessWidget {
+  final String name;
+  final String? photoUrl;
+  final String levelLabel;
+  final VoidCallback onEdit;
+
+  const _ProfileHeaderCard({
+    required this.name,
+    required this.photoUrl,
+    required this.levelLabel,
+    required this.onEdit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(24, 28, 20, 28),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: AppColors.heroGradient,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.18),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(3),
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white24,
+            ),
+            child: ProfileAvatar(photoUrl: photoUrl, name: name, radius: 36),
+          ),
+          const SizedBox(width: 18),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: theme.textTheme.headlineSmall?.copyWith(color: Colors.white),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: AppColors.accent,
+                    borderRadius: BorderRadius.circular(AppTheme.radiusPill),
+                  ),
+                  child: Text(
+                    levelLabel,
+                    style: theme.textTheme.labelSmall?.copyWith(color: AppColors.primary),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Material(
+            color: Colors.white.withOpacity(0.16),
+            shape: const CircleBorder(),
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: onEdit,
+              child: const Padding(
+                padding: EdgeInsets.all(10),
+                child: Icon(Icons.edit_outlined, color: Colors.white, size: 20),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatsCard extends StatelessWidget {
+  final int conversations;
+  final int avgScore;
+  final int skillsImproving;
+
+  const _StatsCard({
+    required this.conversations,
+    required this.avgScore,
+    required this.skillsImproving,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        child: Row(
+          children: [
+            Expanded(
+              child: _StatBlock(
+                icon: Icons.forum_outlined,
+                value: '$conversations',
+                label: 'Conversations',
+              ),
+            ),
+            const _StatDivider(),
+            Expanded(
+              child: _StatBlock(
+                icon: Icons.trending_up_rounded,
+                value: '$avgScore',
+                label: 'Avg Score',
+              ),
+            ),
+            const _StatDivider(),
+            Expanded(
+              child: _StatBlock(
+                icon: Icons.emoji_events_outlined,
+                value: '$skillsImproving',
+                label: 'Improving',
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _StatDivider extends StatelessWidget {
+  const _StatDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 1,
+      height: 44,
+      color: AppColors.borderLight,
+    );
+  }
+}
+
 class _StatBlock extends StatelessWidget {
+  final IconData icon;
   final String value;
   final String label;
-  const _StatBlock({required this.value, required this.label});
+  const _StatBlock({required this.icon, required this.value, required this.label});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Column(
       children: [
+        Icon(icon, color: AppColors.primary, size: 20),
+        const SizedBox(height: 6),
         Text(
           value,
-          style: theme.textTheme.headlineSmall?.copyWith(color: AppColors.textOnBrand),
+          style: theme.textTheme.headlineSmall?.copyWith(color: AppColors.textPrimaryLight),
         ),
         const SizedBox(height: 2),
         Text(
           label,
-          style: theme.textTheme.labelMedium?.copyWith(color: AppColors.textOnBrandMuted),
+          style: theme.textTheme.labelMedium,
           textAlign: TextAlign.center,
         ),
       ],
+    );
+  }
+}
+
+class _SettingsTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final VoidCallback onTap;
+  const _SettingsTile({required this.icon, required this.title, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(title),
+      trailing: const Icon(Icons.chevron_right_rounded),
+      onTap: onTap,
     );
   }
 }

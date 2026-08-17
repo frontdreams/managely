@@ -17,6 +17,12 @@ extension ManagerLevelX on ManagerLevel {
 
 class UserProfile {
   final String name;
+
+  /// Either an `http(s)` URL (copied from a Google account's photo) or a
+  /// raw base64-encoded JPEG (picked and uploaded by the user). Null means
+  /// no photo has been set, and the UI falls back to the user's initial.
+  final String? photoUrl;
+
   final ManagerLevel level;
   final List<ManagerSkill> focusSkills;
   final Map<ManagerSkill, int> skillScores;
@@ -34,6 +40,7 @@ class UserProfile {
 
   const UserProfile({
     this.name = 'You',
+    this.photoUrl,
     this.level = ManagerLevel.newManager,
     this.focusSkills = const [],
     this.skillScores = const {
@@ -67,6 +74,8 @@ class UserProfile {
 
   UserProfile copyWith({
     String? name,
+    String? photoUrl,
+    bool clearPhoto = false,
     ManagerLevel? level,
     List<ManagerSkill>? focusSkills,
     Map<ManagerSkill, int>? skillScores,
@@ -80,6 +89,7 @@ class UserProfile {
   }) {
     return UserProfile(
       name: name ?? this.name,
+      photoUrl: clearPhoto ? null : (photoUrl ?? this.photoUrl),
       level: level ?? this.level,
       focusSkills: focusSkills ?? this.focusSkills,
       skillScores: skillScores ?? this.skillScores,

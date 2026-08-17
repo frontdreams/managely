@@ -28,6 +28,13 @@ class ManagelyApp extends ConsumerWidget {
       darkTheme: AppTheme.dark,
       themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
       routerConfig: router,
+      // Dismiss the on-screen keyboard when tapping anywhere outside the
+      // focused field, on every screen, without each screen wiring it up.
+      builder: (context, child) => GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: child,
+      ),
     );
   }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/services/onboarding_prefs.dart';
+import '../../../core/services/service_providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/skill_color.dart';
@@ -51,10 +53,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   Future<void> _finish() async {
     final selected = ref.read(onboardingSelectedSkillsProvider);
-    await ref
-        .read(userProfileProvider.notifier)
-        .completeOnboarding(selected.toList());
-    if (mounted) context.go('/home');
+    final isSignedIn = ref.read(authStateChangesProvider).valueOrNull != null;
+    if (isSignedIn) {
+      await ref
+          .read(userProfileProvider.notifier)
+          .completeOnboarding(selected.toList());
+    }
+    await markOnboardingComplete(ref);
+    if (mounted) context.go(isSignedIn ? '/home' : '/register');
   }
 
   @override
@@ -83,6 +89,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _page < _intro.length ? _next : _finish,
+                  style: AppTheme.accentPillButtonStyle,
                   child: Text(_page < _intro.length ? 'Continue' : 'Get Started'),
                 ),
               ),

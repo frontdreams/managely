@@ -45,4 +45,15 @@ abstract class AIConversationService {
     required List<Message> conversation,
     int? previousScore,
   });
+
+  /// Turns a free-text description of a real situation the user is facing
+  /// into a playable [Scenario].
+  ///
+  /// Managely never attempts to detect, flag, or ask the user to remove
+  /// real names from [prompt] — that kind of scrubbing is unreliable and
+  /// gives a false sense of safety. Instead, the UI shows a fixed privacy
+  /// disclaimer before this is ever called (see [PracticeSafelySheet] /
+  /// the custom scenario screen), and the generated scenario's employee is
+  /// always a fictional stand-in regardless of what the user typed.
+  Future<Scenario> generateCustomScenario({required String prompt});
 }

@@ -10,6 +10,18 @@ class AppTheme {
   static const double radiusLg = 24;
   static const double radiusPill = 100;
 
+  /// Pill-shaped, accent-yellow button used for the primary action on the
+  /// onboarding, login, sign up and forgot password screens.
+  static ButtonStyle get accentPillButtonStyle => ElevatedButton.styleFrom(
+        backgroundColor: AppColors.accent,
+        foregroundColor: AppColors.primary,
+        elevation: 0,
+        minimumSize: const Size.fromHeight(54),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radiusPill),
+        ),
+      );
+
   static ThemeData get light {
     final colorScheme = const ColorScheme.light(
       primary: AppColors.primary,
