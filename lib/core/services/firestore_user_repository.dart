@@ -51,6 +51,7 @@ class FirestoreUserRepository {
         'completedScenarios': p.completedScenarios,
         'currentStreak': p.currentStreak,
         'onboardingComplete': p.onboardingComplete,
+        'skillsAssessmentComplete': p.skillsAssessmentComplete,
         'themeIsDark': p.themeIsDark,
         'notificationsEnabled': p.notificationsEnabled,
       };
@@ -84,6 +85,7 @@ class FirestoreUserRepository {
       completedScenarios: json['completedScenarios'] as int? ?? 0,
       currentStreak: json['currentStreak'] as int? ?? 0,
       onboardingComplete: json['onboardingComplete'] as bool? ?? false,
+      skillsAssessmentComplete: json['skillsAssessmentComplete'] as bool? ?? false,
       themeIsDark: json['themeIsDark'] as bool? ?? false,
       notificationsEnabled: json['notificationsEnabled'] as bool? ?? true,
       isHydrated: true,

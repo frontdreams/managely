@@ -5,6 +5,7 @@ import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/register_screen.dart';
 import '../../features/auth/presentation/forgot_password_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screen.dart';
+import '../../features/onboarding/presentation/skills_assessment_screen.dart';
 import '../../features/subscription/presentation/subscription_screen.dart';
 import '../../features/welcome/presentation/welcome_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
@@ -17,6 +18,7 @@ import '../../features/progress/presentation/progress_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/profile/presentation/edit_profile_screen.dart';
 import '../../features/profile/presentation/privacy_screen.dart';
+import '../../features/profile/presentation/about_screen.dart';
 import '../../features/profile/providers/profile_providers.dart';
 import '../../shared/widgets/app_shell.dart';
 import '../../shared/widgets/splash_screen.dart';
@@ -74,10 +76,19 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return (loc == '/subscription' || loc == '/onboarding') ? null : '/subscription';
       }
 
+      // Onboarding (priorities) is done, but the baseline Skills Assessment
+      // isn't — nobody should reach an AI roleplay or see skill scores on
+      // Home that were never actually measured. Hold them here until they
+      // finish it.
+      if (!profile.skillsAssessmentComplete) {
+        return loc == '/skills-assessment' ? null : '/skills-assessment';
+      }
+
       if (_authRoutes.contains(loc) ||
           loc == '/welcome' ||
           loc == '/subscription' ||
           loc == '/onboarding' ||
+          loc == '/skills-assessment' ||
           loc == '/splash') {
         return '/home';
       }
@@ -112,6 +123,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/onboarding',
         builder: (context, state) => const OnboardingScreen(),
       ),
+      GoRoute(
+        path: '/skills-assessment',
+        builder: (context, state) => const SkillsAssessmentScreen(),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return AppShell(
@@ -139,6 +154,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'privacy',
                 builder: (context, state) => const PrivacyScreen(),
+              ),
+              GoRoute(
+                path: 'about',
+                builder: (context, state) => const AboutScreen(),
               ),
             ]),
           ]),

@@ -27,12 +27,31 @@ class UserProfile {
 
   final ManagerLevel level;
   final SubscriptionTier subscriptionTier;
+
+  /// The user's six skills, ranked from most to least important to them —
+  /// index 0 is what they most want to improve. Set once during onboarding
+  /// (see `OnboardingScreen`'s drag-to-rank step) and editable later from
+  /// Settings. This drives which scenarios get recommended; it does NOT
+  /// hold scores — see [skillScores] for that.
   final List<ManagerSkill> focusSkills;
+
+  /// Each skill's current 0-100 score. Starts at the baseline the user's
+  /// Skills Assessment produced (see [skillsAssessmentComplete]) rather
+  /// than a guess, then drifts as they complete practice conversations.
   final Map<ManagerSkill, int> skillScores;
+
   final int totalConversations;
   final int completedScenarios;
   final int currentStreak;
   final bool onboardingComplete;
+
+  /// True once the user has completed the baseline Skills Assessment (the
+  /// situational-judgment quiz taken right after onboarding) and
+  /// [skillScores] reflects real answers rather than the neutral defaults
+  /// below. Routing keeps a user on the assessment until this is true —
+  /// nobody should reach an AI roleplay with only guessed starting scores.
+  final bool skillsAssessmentComplete;
+
   final bool themeIsDark;
   final bool notificationsEnabled;
 
@@ -59,6 +78,7 @@ class UserProfile {
     this.completedScenarios = 0,
     this.currentStreak = 0,
     this.onboardingComplete = false,
+    this.skillsAssessmentComplete = false,
     this.themeIsDark = false,
     this.notificationsEnabled = true,
     this.isHydrated = false,
@@ -88,6 +108,7 @@ class UserProfile {
     int? completedScenarios,
     int? currentStreak,
     bool? onboardingComplete,
+    bool? skillsAssessmentComplete,
     bool? themeIsDark,
     bool? notificationsEnabled,
     bool? isHydrated,
@@ -103,6 +124,8 @@ class UserProfile {
       completedScenarios: completedScenarios ?? this.completedScenarios,
       currentStreak: currentStreak ?? this.currentStreak,
       onboardingComplete: onboardingComplete ?? this.onboardingComplete,
+      skillsAssessmentComplete:
+          skillsAssessmentComplete ?? this.skillsAssessmentComplete,
       themeIsDark: themeIsDark ?? this.themeIsDark,
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       isHydrated: isHydrated ?? this.isHydrated,

@@ -1,23 +1,23 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../models/scenario.dart';
 
-/// Tracks which skills the user selects on the "What would you like to
-/// improve?" onboarding step before it's committed to their profile.
-final onboardingSelectedSkillsProvider =
-    StateNotifierProvider<OnboardingSkillsNotifier, Set<ManagerSkill>>((ref) {
-  return OnboardingSkillsNotifier();
+/// Holds the user's improvement-priority ranking of all six skills,
+/// highest-priority first (index 0 = "I most want to improve this").
+/// Starts in a neutral default order; the onboarding screen lets the user
+/// drag to reorder it into their own priority order before continuing.
+final onboardingSkillRankingProvider =
+    StateNotifierProvider<SkillRankingNotifier, List<ManagerSkill>>((ref) {
+  return SkillRankingNotifier();
 });
 
-class OnboardingSkillsNotifier extends StateNotifier<Set<ManagerSkill>> {
-  OnboardingSkillsNotifier() : super({});
+class SkillRankingNotifier extends StateNotifier<List<ManagerSkill>> {
+  SkillRankingNotifier() : super(List.of(ManagerSkill.values));
 
-  void toggle(ManagerSkill skill) {
-    final updated = Set<ManagerSkill>.from(state);
-    if (updated.contains(skill)) {
-      updated.remove(skill);
-    } else {
-      updated.add(skill);
-    }
+  void reorder(int oldIndex, int newIndex) {
+    final updated = List<ManagerSkill>.from(state);
+    if (newIndex > oldIndex) newIndex -= 1;
+    final item = updated.removeAt(oldIndex);
+    updated.insert(newIndex, item);
     state = updated;
   }
 }

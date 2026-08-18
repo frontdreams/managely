@@ -14,6 +14,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile> {
   final Ref _ref;
   final String? _uid;
 
+
   Future<void> _hydrate() async {
     final uid = _uid;
     if (uid == null) return;
@@ -70,6 +71,19 @@ class UserProfileNotifier extends StateNotifier<UserProfile> {
   /// either an actual subscription, or an explicit "Continue for Free".
   Future<void> setSubscriptionTier(SubscriptionTier tier) async {
     state = state.copyWith(subscriptionTier: tier);
+    await _persist();
+  }
+
+  /// Sets each skill's starting score from the baseline Skills Assessment
+  /// (the situational-judgment quiz taken right after onboarding) and marks
+  /// it complete. Unlike [recordSessionResult], this REPLACES the scores
+  /// outright rather than blending — there's no prior history yet worth
+  /// blending against, this call *is* the real starting point.
+  Future<void> setBaselineSkillScores(Map<ManagerSkill, int> scores) async {
+    state = state.copyWith(
+      skillScores: scores,
+      skillsAssessmentComplete: true,
+    );
     await _persist();
   }
 
