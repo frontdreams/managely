@@ -66,6 +66,13 @@ class UserProfileNotifier extends StateNotifier<UserProfile> {
     await _persist();
   }
 
+  /// Records the plan picked on the post-signup subscription screen —
+  /// either an actual subscription, or an explicit "Continue for Free".
+  Future<void> setSubscriptionTier(SubscriptionTier tier) async {
+    state = state.copyWith(subscriptionTier: tier);
+    await _persist();
+  }
+
   /// Updates the editable fields on the "Edit Profile" screen.
   Future<void> updateProfile({String? name, ManagerLevel? level}) async {
     state = state.copyWith(name: name, level: level);

@@ -44,6 +44,7 @@ class FirestoreUserRepository {
         'name': p.name,
         'photoUrl': p.photoUrl,
         'level': p.level.name,
+        'subscriptionTier': p.subscriptionTier.name,
         'focusSkills': p.focusSkills.map((s) => s.name).toList(),
         'skillScores': p.skillScores.map((k, v) => MapEntry(k.name, v)),
         'totalConversations': p.totalConversations,
@@ -62,6 +63,10 @@ class FirestoreUserRepository {
       level: ManagerLevel.values.firstWhere(
         (l) => l.name == json['level'],
         orElse: () => defaults.level,
+      ),
+      subscriptionTier: SubscriptionTier.values.firstWhere(
+        (t) => t.name == json['subscriptionTier'],
+        orElse: () => defaults.subscriptionTier,
       ),
       focusSkills: (json['focusSkills'] as List<dynamic>?)
               ?.map((s) =>

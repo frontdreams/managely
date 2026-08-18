@@ -2,6 +2,8 @@ import 'scenario.dart';
 
 enum ManagerLevel { newManager, developingManager, experiencedManager }
 
+enum SubscriptionTier { free, premium }
+
 extension ManagerLevelX on ManagerLevel {
   String get label {
     switch (this) {
@@ -24,6 +26,7 @@ class UserProfile {
   final String? photoUrl;
 
   final ManagerLevel level;
+  final SubscriptionTier subscriptionTier;
   final List<ManagerSkill> focusSkills;
   final Map<ManagerSkill, int> skillScores;
   final int totalConversations;
@@ -42,6 +45,7 @@ class UserProfile {
     this.name = 'You',
     this.photoUrl,
     this.level = ManagerLevel.newManager,
+    this.subscriptionTier = SubscriptionTier.free,
     this.focusSkills = const [],
     this.skillScores = const {
       ManagerSkill.empathy: 60,
@@ -77,6 +81,7 @@ class UserProfile {
     String? photoUrl,
     bool clearPhoto = false,
     ManagerLevel? level,
+    SubscriptionTier? subscriptionTier,
     List<ManagerSkill>? focusSkills,
     Map<ManagerSkill, int>? skillScores,
     int? totalConversations,
@@ -91,6 +96,7 @@ class UserProfile {
       name: name ?? this.name,
       photoUrl: clearPhoto ? null : (photoUrl ?? this.photoUrl),
       level: level ?? this.level,
+      subscriptionTier: subscriptionTier ?? this.subscriptionTier,
       focusSkills: focusSkills ?? this.focusSkills,
       skillScores: skillScores ?? this.skillScores,
       totalConversations: totalConversations ?? this.totalConversations,

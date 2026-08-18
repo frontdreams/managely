@@ -5,6 +5,8 @@ import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/register_screen.dart';
 import '../../features/auth/presentation/forgot_password_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screen.dart';
+import '../../features/subscription/presentation/subscription_screen.dart';
+import '../../features/welcome/presentation/welcome_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/practice/presentation/custom_scenario_screen.dart';
 import '../../features/practice/presentation/practice_screen.dart';
@@ -18,7 +20,7 @@ import '../../features/profile/presentation/privacy_screen.dart';
 import '../../features/profile/providers/profile_providers.dart';
 import '../../shared/widgets/app_shell.dart';
 import '../../shared/widgets/splash_screen.dart';
-import '../services/onboarding_prefs.dart';
+import '../services/welcome_prefs.dart';
 import '../services/service_providers.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -33,7 +35,7 @@ final _splashMinDurationProvider = FutureProvider<void>((ref) {
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final splashMinDuration = ref.watch(_splashMinDurationProvider);
-  final hasCompletedOnboarding = ref.watch(hasCompletedOnboardingProvider);
+  final hasSeenWelcome = ref.watch(hasSeenWelcomeProvider);
   final authState = ref.watch(authStateChangesProvider);
   final profile = ref.watch(userProfileProvider);
 
@@ -43,14 +45,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final loc = state.matchedLocation;
 
-      if (splashMinDuration.isLoading || hasCompletedOnboarding.isLoading) {
+      if (splashMinDuration.isLoading || hasSeenWelcome.isLoading) {
         return loc == '/splash' ? null : '/splash';
       }
 
-      // One-time-per-device gate: first-time users always see onboarding
-      // next, regardless of whether they end up signed in or not.
-      if (!(hasCompletedOnboarding.valueOrNull ?? false)) {
-        return loc == '/onboarding' ? null : '/onboarding';
+      // One-time-per-device gate: first-time users always see the welcome
+      // intro next, regardless of whether they end up signed in or not.
+      if (!(hasSeenWelcome.valueOrNull ?? false)) {
+        return loc == '/welcome' ? null : '/welcome';
       }
 
       if (authState.isLoading) {
@@ -66,7 +68,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return loc == '/splash' ? null : '/splash';
       }
 
-      if (_authRoutes.contains(loc) || loc == '/onboarding' || loc == '/splash') {
+      // Brand-new (or otherwise not-yet-onboarded) accounts pick a plan,
+      // then their focus skills, before reaching the rest of the app.
+      if (!profile.onboardingComplete) {
+        return (loc == '/subscription' || loc == '/onboarding') ? null : '/subscription';
+      }
+
+      if (_authRoutes.contains(loc) ||
+          loc == '/welcome' ||
+          loc == '/subscription' ||
+          loc == '/onboarding' ||
+          loc == '/splash') {
         return '/home';
       }
       return null;
@@ -87,6 +99,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/forgot-password',
         builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+      GoRoute(
+        path: '/welcome',
+        builder: (context, state) => const WelcomeScreen(),
+      ),
+      GoRoute(
+        path: '/subscription',
+        builder: (context, state) => const SubscriptionScreen(),
       ),
       GoRoute(
         path: '/onboarding',

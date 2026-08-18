@@ -14,12 +14,12 @@ class SplashScreen extends StatelessWidget {
           children: [
             Image.asset(
               'assets/icon.png',
-              width: 160,
-              height: 160,
+              width: 200,
+              height: 200,
               color: Colors.white,
             ),
-            const SizedBox(height: 32),
-            const CircularProgressIndicator(color: Colors.white),
+          //  const SizedBox(height: 32),
+          //  const CircularProgressIndicator(color: Colors.white),
           ],
         ),
       ),
