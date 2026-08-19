@@ -16,7 +16,6 @@ flutter run
 
 Requires Flutter 3.19+ (Dart 3.3+) with Material 3. No API keys or backend
 are required — the app ships fully wired to a local mock AI service.
-
 ## Project structure
 
 ```

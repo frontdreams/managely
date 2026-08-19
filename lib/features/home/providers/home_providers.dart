@@ -17,9 +17,15 @@ final recommendedScenarioProvider = Provider<Scenario>((ref) {
 });
 
 /// The most recent scenario the user practised, for "Continue Practising".
-/// Returns null if they haven't completed any sessions yet.
+/// Skips past sessions that were custom scenarios — those only ever existed
+/// for that one conversation, so there's nothing in the library to
+/// "continue" back into. Returns null if none of the sessions resolve to a
+/// library scenario (including having no sessions at all).
 final mostRecentScenarioProvider = Provider<Scenario?>((ref) {
   final sessions = ref.watch(sessionHistoryProvider);
-  if (sessions.isEmpty) return null;
-  return MockScenarios.byId(sessions.first.scenarioId);
+  for (final session in sessions) {
+    final scenario = MockScenarios.byIdOrNull(session.scenarioId);
+    if (scenario != null) return scenario;
+  }
+  return null;
 });

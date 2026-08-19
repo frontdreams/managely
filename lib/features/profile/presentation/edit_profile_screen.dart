@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../models/user_profile.dart';
+import '../../../shared/widgets/app_snackbar.dart';
 import '../../../shared/widgets/profile_avatar.dart';
 import '../providers/profile_providers.dart';
 
@@ -79,9 +80,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       });
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Couldn't open camera or photos: $e")),
-      );
+      AppSnackBar.show(context, "Couldn't open camera or photos: $e");
     }
   }
 

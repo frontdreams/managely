@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/conversation.dart';
+import '../../models/evaluation.dart';
 import '../../models/scenario.dart';
 import '../../models/user_profile.dart';
 
@@ -98,6 +99,13 @@ class FirestoreUserRepository {
         'score': s.score,
         'date': Timestamp.fromDate(s.date),
         'improvement': s.improvementFromLastAttempt,
+        if (s.skillScores != null)
+          'skillScores': s.skillScores!
+              .map((sc) => {'skill': sc.skill.name, 'score': sc.score})
+              .toList(),
+        if (s.whatYouDidWell != null) 'whatYouDidWell': s.whatYouDidWell,
+        if (s.opportunities != null) 'opportunities': s.opportunities,
+        if (s.tryNextTime != null) 'tryNextTime': s.tryNextTime,
       };
 
   PracticeSession _sessionFromJson(String id, Map<String, dynamic> json) =>
@@ -108,5 +116,16 @@ class FirestoreUserRepository {
         score: json['score'] as int,
         date: (json['date'] as Timestamp).toDate(),
         improvementFromLastAttempt: json['improvement'] as int?,
+        skillScores: (json['skillScores'] as List<dynamic>?)
+            ?.map((e) => SkillScore(
+                  skill: ManagerSkill.values
+                      .firstWhere((s) => s.name == (e as Map)['skill']),
+                  score: e['score'] as int,
+                ))
+            .toList(),
+        whatYouDidWell:
+            (json['whatYouDidWell'] as List<dynamic>?)?.cast<String>(),
+        opportunities: (json['opportunities'] as List<dynamic>?)?.cast<String>(),
+        tryNextTime: (json['tryNextTime'] as List<dynamic>?)?.cast<String>(),
       );
 }

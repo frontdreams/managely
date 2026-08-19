@@ -100,6 +100,7 @@ class MockScenarios {
         'Ask what\'s getting in the way before assigning a fix.',
         'Agree on a concrete check-in cadence going forward.',
       ],
+      isPremium: true,
     ),
     Scenario(
       id: 'saying-no-time-off',
@@ -244,6 +245,7 @@ class MockScenarios {
         'Acknowledge the process failure separately from the decision itself.',
         'Avoid asking someone to "calm down" — it usually escalates things.',
       ],
+      isPremium: true,
     ),
     Scenario(
       id: 'poor-quality-work',
@@ -341,6 +343,7 @@ class MockScenarios {
         'Propose a fair process (e.g. a joint conversation) rather than a private verdict.',
         'Avoid vague reassurances like "I\'ll handle it" without a concrete next step.',
       ],
+      isPremium: true,
     ),
     Scenario(
       id: 'special-treatment',
@@ -482,8 +485,19 @@ class MockScenarios {
         'Explain the reasoning with specifics, not just authority ("because I said so").',
         'It\'s okay to hold the decision while still validating the dissent.',
       ],
+      isPremium: true,
     ),
   ];
 
   static Scenario byId(String id) => all.firstWhere((s) => s.id == id);
+
+  /// Like [byId], but returns null instead of throwing when [id] isn't in
+  /// the library — e.g. a custom scenario's generated id, which only ever
+  /// existed for that one conversation and was never added here.
+  static Scenario? byIdOrNull(String id) {
+    for (final s in all) {
+      if (s.id == id) return s;
+    }
+    return null;
+  }
 }

@@ -147,6 +147,11 @@ class Scenario {
   final List<PossibleResponse> possibleResponses;
   final List<String> learningPoints;
 
+  /// True for scenarios gated behind the Premium tier — see
+  /// `UserProfile.isPremiumTier`. Defaults to false so every existing
+  /// Scenario(...) literal keeps compiling without listing this field.
+  final bool isPremium;
+
   const Scenario({
     required this.id,
     required this.title,
@@ -164,5 +169,6 @@ class Scenario {
     required this.openingMessage,
     required this.possibleResponses,
     required this.learningPoints,
+    this.isPremium = false,
   });
 }

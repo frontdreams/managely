@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/services/service_providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/skill_color.dart';
@@ -11,7 +13,7 @@ import '../../../models/scenario.dart';
 /// specifically so the methodology section has room to be honest and
 /// complete: which framework each skill is grounded in, and what the
 /// scoring is (and isn't).
-class AboutScreen extends StatelessWidget {
+class AboutScreen extends ConsumerWidget {
   const AboutScreen({super.key});
 
   static const _frameworkNotes = <ManagerSkill, _FrameworkNote>{
@@ -51,8 +53,9 @@ class AboutScreen extends StatelessWidget {
   };
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final packageInfo = ref.watch(packageInfoProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('About Managely')),
@@ -61,21 +64,24 @@ class AboutScreen extends StatelessWidget {
         children: [
           Column(
             children: [
-              Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(colors: AppColors.heroGradient),
-                  borderRadius: BorderRadius.circular(20),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Image.asset(
+                  'assets/icon.png',
+                  width: 64,
+                  height: 64,
+                  fit: BoxFit.cover,
                 ),
-                child: const Icon(Icons.forum_rounded, color: Colors.white, size: 30),
               ),
               const SizedBox(height: 14),
-              Text(AppConstants.appName, style: theme.textTheme.headlineSmall),
+              Text(
+                AppConstants.appName,
+                style: theme.textTheme.headlineSmall?.copyWith(color: AppColors.textOnBrand),
+              ),
               const SizedBox(height: 4),
               Text(
                 AppConstants.tagline,
-                style: theme.textTheme.bodyMedium,
+                style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.textOnBrandMuted),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -117,18 +123,34 @@ class AboutScreen extends StatelessWidget {
           ),
 
           const SizedBox(height: 28),
-          Text('The Six Skills We Measure', style: theme.textTheme.titleLarge),
+          Text(
+            'The Six Skills We Measure',
+            style: theme.textTheme.titleLarge?.copyWith(color: AppColors.textOnBrand),
+          ),
           const SizedBox(height: 4),
           Text(
             'Each is drawn from a different, well-established framework used in real leadership and coaching training.',
-            style: theme.textTheme.bodyMedium,
+            style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.textOnBrandMuted),
           ),
           const SizedBox(height: 16),
 
-          for (final skill in ManagerSkill.values) ...[
-            _SkillFrameworkCard(skill: skill, note: _frameworkNotes[skill]!),
-            if (skill != ManagerSkill.values.last) const SizedBox(height: 12),
-          ],
+          Card(
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              children: [
+                for (final skill in ManagerSkill.values) ...[
+                  _SkillFrameworkTile(skill: skill, note: _frameworkNotes[skill]!),
+                  if (skill != ManagerSkill.values.last)
+                    Divider(
+                      height: 1,
+                      indent: 16,
+                      endIndent: 16,
+                      color: theme.dividerColor.withValues(alpha: 0.5),
+                    ),
+                ],
+              ],
+            ),
+          ),
 
           const SizedBox(height: 28),
           Container(
@@ -156,10 +178,15 @@ class AboutScreen extends StatelessWidget {
           const SizedBox(height: 24),
           Center(
             child: Text(
-              'Managely · Version 1.0.0',
-              style: theme.textTheme.labelMedium,
+              packageInfo.when(
+                data: (info) => 'Managely · Version ${info.version} (${info.buildNumber})',
+                loading: () => 'Managely',
+                error: (_, __) => 'Managely',
+              ),
+              style: theme.textTheme.labelMedium?.copyWith(color: AppColors.textOnBrandMuted),
             ),
           ),
+          const SizedBox(height: 100),
         ],
       ),
     );
@@ -185,61 +212,65 @@ class _Section extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: theme.textTheme.titleLarge),
+          Text(
+            title,
+            style: theme.textTheme.titleLarge?.copyWith(color: AppColors.textOnBrand),
+          ),
           const SizedBox(height: 8),
-          Text(body, style: theme.textTheme.bodyMedium),
+          Text(
+            body,
+            style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.textOnBrandMuted),
+          ),
         ],
       ),
     );
   }
 }
 
-class _SkillFrameworkCard extends StatelessWidget {
+class _SkillFrameworkTile extends StatelessWidget {
   final ManagerSkill skill;
   final _FrameworkNote note;
-  const _SkillFrameworkCard({required this.skill, required this.note});
+  const _SkillFrameworkTile({required this.skill, required this.note});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final color = skillColor(skill);
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.12),
-                borderRadius: BorderRadius.circular(AppTheme.radiusSm),
-              ),
-              child: Icon(skill.icon, color: color, size: 20),
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(AppTheme.radiusSm),
             ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(skill.label, style: theme.textTheme.titleSmall),
-                  const SizedBox(height: 4),
-                  Text(note.description, style: theme.textTheme.bodyMedium),
-                  const SizedBox(height: 6),
-                  Text(
-                    note.framework,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      fontStyle: FontStyle.italic,
-                      color: color,
-                    ),
+            child: Icon(skill.icon, color: color, size: 20),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(skill.label, style: theme.textTheme.titleSmall),
+                const SizedBox(height: 4),
+                Text(note.description, style: theme.textTheme.bodyMedium),
+                const SizedBox(height: 6),
+                Text(
+                  note.framework,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontStyle: FontStyle.italic,
+                    color: color,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

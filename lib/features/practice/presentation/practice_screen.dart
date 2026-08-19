@@ -6,6 +6,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../models/scenario.dart';
 import '../../../shared/widgets/scenario_card.dart';
 import '../../../shared/widgets/empty_state.dart';
+import '../../profile/providers/profile_providers.dart';
 import '../providers/practice_providers.dart';
 
 class PracticeScreen extends ConsumerWidget {
@@ -16,6 +17,7 @@ class PracticeScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final selectedCategory = ref.watch(selectedCategoryProvider);
     final scenarios = ref.watch(filteredScenariosProvider);
+    final isPremiumUser = ref.watch(userProfileProvider).isPremiumTier;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Practice')),
@@ -32,7 +34,10 @@ class PracticeScreen extends ConsumerWidget {
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-              child: Text('Choose a skill', style: theme.textTheme.titleLarge),
+              child: Text(
+                'Choose a skill',
+                style: theme.textTheme.titleLarge?.copyWith(color: AppColors.textOnBrand),
+              ),
             ),
           ),
           SliverToBoxAdapter(
@@ -66,7 +71,7 @@ class PracticeScreen extends ConsumerWidget {
           ),
           const SliverToBoxAdapter(child: SizedBox(height: 20)),
           if (scenarios.isEmpty)
-            SliverToBoxAdapter(
+            const SliverToBoxAdapter(
               child: EmptyState(
                 icon: Icons.search_off_rounded,
                 title: 'No scenarios here yet',
@@ -92,9 +97,41 @@ class PracticeScreen extends ConsumerWidget {
                         child: child,
                       ),
                     ),
-                    child: ScenarioCard(
-                      scenario: scenario,
-                      onTap: () => context.push('/scenario/${scenario.id}'),
+                    child: Stack(
+                      children: [
+                        ScenarioCard(
+                          scenario: scenario,
+                          onTap: () => context.push('/scenario/${scenario.id}'),
+                        ),
+                        if (scenario.isPremium && !isPremiumUser)
+                          Positioned(
+                            top: 10,
+                            right: 10,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(colors: AppColors.goldGradient),
+                                borderRadius: BorderRadius.circular(AppTheme.radiusPill),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.lock_outline_rounded,
+                                      size: 11, color: AppColors.primary),
+                                  const SizedBox(width: 3),
+                                  Text(
+                                    'PRO',
+                                    style: theme.textTheme.labelSmall?.copyWith(
+                                      color: AppColors.primary,
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   );
                 },
@@ -156,6 +193,9 @@ class _CustomScenarioCta extends StatelessWidget {
   }
 }
 
+/// Frosted-glass pill when unselected (readable directly on the app's
+/// branded background, same treatment as [CustomScenarioScreen]'s idea
+/// chips) and a solid filled pill when selected.
 class _CategoryChip extends StatelessWidget {
   final String label;
   final IconData icon;
@@ -171,28 +211,33 @@ class _CategoryChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 14),
         decoration: BoxDecoration(
-          color: selected ? AppColors.primary : Theme.of(context).cardTheme.color,
+          color: selected ? AppColors.primary : Colors.white.withOpacity(0.1),
           borderRadius: BorderRadius.circular(AppTheme.radiusPill),
           border: Border.all(
-            color: selected ? AppColors.primary : AppColors.borderLight,
+            color: selected ? AppColors.primary : Colors.white38,
           ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 16, color: selected ? Colors.white : AppColors.textSecondaryLight),
+            Icon(
+              icon,
+              size: 16,
+              color: selected ? Colors.white : AppColors.textOnBrandMuted,
+            ),
             const SizedBox(width: 6),
             Text(
               label,
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: selected ? Colors.white : null,
-                  ),
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: selected ? Colors.white : AppColors.textOnBrandMuted,
+              ),
             ),
           ],
         ),

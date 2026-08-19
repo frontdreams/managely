@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/constants/app_constants.dart';
 import 'core/routing/app_router.dart';
+import 'core/services/purchases_service.dart';
 import 'core/theme/app_theme.dart';
 import 'features/profile/providers/profile_providers.dart';
 import 'firebase_options.dart';
@@ -10,6 +11,7 @@ import 'firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await initializeRevenueCat();
   runApp(const ProviderScope(child: ManagelyApp()));
 }
 

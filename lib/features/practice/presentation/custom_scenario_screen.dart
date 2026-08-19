@@ -4,11 +4,13 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/services/service_providers.dart';
-import '../../conversation/providers/conversation_providers.dart';
+import '../providers/practice_providers.dart';
 
 /// Lets a user describe a real situation they're facing in their own words.
-/// The AI turns it into a fictional, playable [Scenario] and drops straight
-/// into the same chat-style roleplay used for the built-in scenarios.
+/// The AI turns it into a fictional, playable Scenario — the user then
+/// reviews it on [CustomScenarioConfirmScreen] (situation / objective /
+/// employee style, same as the built-in scenario flow) before the roleplay
+/// actually starts.
 ///
 /// Managely never scans the text for real names and asks the user to
 /// remove them — that kind of detection is unreliable and gives a false
@@ -47,8 +49,15 @@ class _CustomScenarioScreenState extends ConsumerState<CustomScenarioScreen> {
       final scenario = await service.generateCustomScenario(prompt: prompt);
 
       if (!mounted) return;
-      ref.read(conversationProvider.notifier).startScenario(scenario);
-      context.pushReplacement('/conversation');
+      setState(() => _isGenerating = false);
+      // Stash the generated scenario in a provider rather than passing it
+      // via GoRoute's `extra` — extra only survives this one push call and
+      // gets lost (crashing the confirm screen) if the router ever rebuilds
+      // that route for any other reason, e.g. a redirect re-evaluation.
+      ref.read(customScenarioDraftProvider.notifier).state = scenario;
+      // Don't jump straight into the roleplay — let the user confirm what
+      // the AI understood first, same as the built-in scenario flow does.
+      context.push('/custom-scenario/confirm');
     } catch (e) {
       setState(() {
         _isGenerating = false;
@@ -80,8 +89,8 @@ class _CustomScenarioScreenState extends ConsumerState<CustomScenarioScreen> {
                     child: Container(
                       width: 60,
                       height: 60,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(colors: AppColors.heroGradient),
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(colors: AppColors.heroGradient),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 28),

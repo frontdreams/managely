@@ -2,16 +2,22 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../core/theme/app_colors.dart';
+import 'app_snackbar.dart';
 
 /// Wraps the four main tabs (Home, Practice, Progress, Profile) with a
 /// floating glass bottom bar, used inside a GoRouter [StatefulShellRoute].
 /// A gold center button, inline with the rest, opens the custom scenario
 /// screen so a user can describe their own situation from anywhere.
 ///
-/// On the Home tab (index 0) — the app's root screen, with nothing to pop
-/// back to — a back press doesn't exit immediately: it shows a "press back
-/// again to exit" prompt, and only actually exits if pressed again within
-/// [_exitPromptWindow].
+/// Switching tabs doesn't push a new route onto the navigator — it's all
+/// one [StatefulShellRoute] — so a plain system back press has nothing to
+/// pop and would otherwise exit the app straight from Practice/Progress/
+/// Profile. Instead we track which tabs were visited, in order, and a back
+/// press steps back through that history one tab at a time until it lands
+/// on Home (index 0) — the app's root screen, with nothing left to go back
+/// to. From there, a back press doesn't exit immediately: it shows a
+/// "press back again to exit" prompt, and only actually exits if pressed
+/// again within [_exitPromptWindow].
 class AppShell extends StatefulWidget {
   final Widget child;
   final int currentIndex;
@@ -43,6 +49,20 @@ class _AppShellState extends State<AppShell> {
 
   DateTime? _lastBackPressAt;
 
+  // Order of tabs visited, oldest first — always starts on Home. Never
+  // holds consecutive duplicates, so a back press always moves to a
+  // genuinely different tab.
+  final List<int> _tabHistory = [0];
+
+  @override
+  void didUpdateWidget(covariant AppShell oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.currentIndex != oldWidget.currentIndex) {
+      _tabHistory.remove(widget.currentIndex);
+      _tabHistory.add(widget.currentIndex);
+    }
+  }
+
   void _handleBackOnHome() {
     final now = DateTime.now();
     final last = _lastBackPressAt;
@@ -55,24 +75,29 @@ class _AppShellState extends State<AppShell> {
       }
     }
     _lastBackPressAt = now;
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        const SnackBar(
-          content: Text('Press back again to exit'),
-          duration: _exitPromptWindow,
-        ),
-      );
+    AppSnackBar.show(context, 'Press back again to exit', duration: _exitPromptWindow);
+  }
+
+  void _handleBack() {
+    if (widget.currentIndex == 0) {
+      _handleBackOnHome();
+      return;
+    }
+    // Drop the tab we're currently on, then step back to whichever tab was
+    // visited before it (falling back to Home if history is somehow empty).
+    if (_tabHistory.isNotEmpty && _tabHistory.last == widget.currentIndex) {
+      _tabHistory.removeLast();
+    }
+    widget.onTabSelected(_tabHistory.isNotEmpty ? _tabHistory.last : 0);
   }
 
   @override
   Widget build(BuildContext context) {
-    final onHomeTab = widget.currentIndex == 0;
     return PopScope(
-      canPop: !onHomeTab,
+      canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
-        _handleBackOnHome();
+        _handleBack();
       },
       child: Scaffold(
         extendBody: true,

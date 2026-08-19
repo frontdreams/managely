@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../core/constants/app_constants.dart';
 import '../../../core/services/service_providers.dart';
 import '../../../models/user_profile.dart';
+import '../../../shared/widgets/app_snackbar.dart';
 import '../../../shared/widgets/profile_avatar.dart';
 import '../providers/profile_providers.dart';
 
@@ -44,148 +44,149 @@ class ProfileScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Profile')),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 4, 20, 110),
-        children: [
-          _ProfileHeaderCard(
-            name: profile.name,
-            photoUrl: profile.photoUrl,
-            levelLabel: profile.level.label,
-            onEdit: () => context.push('/profile/edit'),
-          ),
-          const SizedBox(height: 20),
-          _StatsCard(
-            conversations: profile.totalConversations,
-            avgScore: profile.averageScore,
-            skillsImproving: skillsImproving,
-          ),
-          const SizedBox(height: 28),
-
-          Text(
-            'Settings',
-            style: theme.textTheme.titleLarge?.copyWith(color: AppColors.textOnBrand),
-          ),
-          const SizedBox(height: 14),
-
-          _SettingsGroupLabel(label: 'PREFERENCES'),
-          _SettingsGroup(
-            children: [
-              _SettingsRow(
-                icon: Icons.edit_outlined,
-                iconColor: AppColors.primary,
-                title: 'Edit Profile',
-                onTap: () => context.push('/profile/edit'),
-              ),
-              _SettingsSwitchRow(
-                icon: Icons.notifications_outlined,
-                iconColor: AppColors.warning,
-                title: 'Notifications',
-                value: profile.notificationsEnabled,
-                onChanged: (v) =>
-                    ref.read(userProfileProvider.notifier).toggleNotifications(v),
-              ),
-              _SettingsSwitchRow(
-                icon: Icons.dark_mode_outlined,
-                iconColor: AppColors.textSecondaryLight,
-                title: 'Dark Theme',
-                value: profile.themeIsDark,
-                onChanged: (v) => ref.read(userProfileProvider.notifier).toggleTheme(v),
-              ),
-              _SettingsRow(
-                icon: Icons.smart_toy_outlined,
-                iconColor: AppColors.accent,
-                title: 'AI Preferences',
-                onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('AI preferences coming soon.')),
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 20),
-          _SettingsGroupLabel(label: 'SKILLS'),
-          _SettingsGroup(
-            children: [
-              _SettingsRow(
-                icon: Icons.fact_check_outlined,
-                iconColor: AppColors.skillConflict,
-                title: 'Retake Skills Assessment',
-                subtitle: 'Re-measure your baseline scores',
-                onTap: () => context.push('/skills-assessment'),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 20),
-          _SettingsGroupLabel(label: 'PRIVACY & SUPPORT'),
-          _SettingsGroup(
-            children: [
-              _SettingsRow(
-                icon: Icons.privacy_tip_outlined,
-                iconColor: AppColors.primary,
-                title: 'Privacy',
-                onTap: () => context.push('/profile/privacy'),
-              ),
-              _SettingsRow(
-                icon: Icons.info_outline_rounded,
-                iconColor: AppColors.textSecondaryLight,
-                title: 'About Managely',
-                subtitle: 'How scoring works, and the app\'s mission',
-                onTap: () => context.push('/profile/about'),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 24),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.logout_rounded, color: AppColors.danger),
-              title: const Text('Log Out', style: TextStyle(color: AppColors.danger)),
-              onTap: () => _confirmSignOut(context, ref),
+      body: RefreshIndicator(
+        onRefresh: () => ref.read(userProfileProvider.notifier).refresh(),
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(20, 4, 20, 110),
+          children: [
+            _ProfileHeaderCard(
+              name: profile.name,
+              photoUrl: profile.photoUrl,
+              levelLabel: profile.level.label,
+              onEdit: () => context.push('/profile/edit'),
+              conversations: profile.totalConversations,
+              avgScore: profile.averageScore,
+              skillsImproving: skillsImproving,
             ),
-          ),
-          const SizedBox(height: 24),
-          Container(
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              color: AppColors.accentLight,
-              borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+            const SizedBox(height: 28),
+
+            Text(
+              'Settings',
+              style: theme.textTheme.titleLarge?.copyWith(color: AppColors.textOnBrand),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            const SizedBox(height: 14),
+
+            _SettingsGroupLabel(label: 'PLAN'),
+            _SettingsGroup(
               children: [
-                Row(
-                  children: [
-                    const Icon(Icons.verified_user_outlined, color: AppColors.primary),
-                    const SizedBox(width: 8),
-                    Text('Responsible AI', style: theme.textTheme.titleSmall),
-                  ],
+                _SettingsRow(
+                  icon: Icons.workspace_premium_outlined,
+                  iconColor: AppColors.warning,
+                  title: 'Manage Subscription',
+                  subtitle: profile.isPremiumTier ? 'Premium' : 'Free plan',
+                  onTap: () => context.push('/upgrade'),
                 ),
-                const SizedBox(height: 8),
-                Text(AppConstants.responsibleAiStatement, style: theme.textTheme.bodyMedium),
               ],
             ),
-          ),
-        ],
+
+            const SizedBox(height: 20),
+            _SettingsGroupLabel(label: 'PREFERENCES'),
+            _SettingsGroup(
+              children: [
+                _SettingsRow(
+                  icon: Icons.edit_outlined,
+                  iconColor: AppColors.primary,
+                  title: 'Edit Profile',
+                  onTap: () => context.push('/profile/edit'),
+                ),
+                _SettingsSwitchRow(
+                  icon: Icons.notifications_outlined,
+                  iconColor: AppColors.warning,
+                  title: 'Notifications',
+                  value: profile.notificationsEnabled,
+                  onChanged: (v) =>
+                      ref.read(userProfileProvider.notifier).toggleNotifications(v),
+                ),
+                _SettingsSwitchRow(
+                  icon: Icons.dark_mode_outlined,
+                  iconColor: AppColors.textSecondaryLight,
+                  title: 'Dark Theme',
+                  value: profile.themeIsDark,
+                  onChanged: (v) => ref.read(userProfileProvider.notifier).toggleTheme(v),
+                ),
+                _SettingsRow(
+                  icon: Icons.smart_toy_outlined,
+                  iconColor: AppColors.accent,
+                  title: 'AI Preferences',
+                  onTap: () => AppSnackBar.show(context, 'AI preferences coming soon.'),
+                ),
+              ],
+            ),
+
+          /*  const SizedBox(height: 20),
+            _SettingsGroupLabel(label: 'SKILLS'),
+            _SettingsGroup(
+              children: [
+                _SettingsRow(
+                  icon: Icons.fact_check_outlined,
+                  iconColor: AppColors.skillConflict,
+                  title: 'Retake Skills Assessment',
+                  subtitle: 'Re-measure your baseline scores',
+                  onTap: () => context.push('/skills-assessment'),
+                ),
+              ],
+            ), */
+
+            const SizedBox(height: 20),
+            _SettingsGroupLabel(label: 'PRIVACY & SUPPORT'),
+            _SettingsGroup(
+              children: [
+                _SettingsRow(
+                  icon: Icons.privacy_tip_outlined,
+                  iconColor: AppColors.primary,
+                  title: 'Privacy',
+                  onTap: () => context.push('/profile/privacy'),
+                ),
+                _SettingsRow(
+                  icon: Icons.info_outline_rounded,
+                  iconColor: AppColors.textSecondaryLight,
+                  title: 'About Managely',
+                  subtitle: 'How scoring works, and the app\'s mission',
+                  onTap: () => context.push('/profile/about'),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 24),
+            Center(
+              child: TextButton.icon(
+                onPressed: () => _confirmSignOut(context, ref),
+                icon: Icon(Icons.logout_rounded, color: AppColors.danger.withValues(alpha: 0.7), size: 18),
+                label: Text(
+                  'Log Out',
+                  style: TextStyle(color: AppColors.danger.withValues(alpha: 0.7)),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-/// Hero card at the top of the profile screen — avatar, name, manager
-/// level and a shortcut into the edit screen, on the brand gradient so it
-/// reads as the "identity" of the page.
+/// Hero card at the top of the profile screen — centered avatar (with an
+/// edit badge overlapping its corner), name, manager level, and the 3
+/// headline stats all in one card on the brand gradient, so it reads as
+/// one "identity" block rather than separate pieces.
 class _ProfileHeaderCard extends StatelessWidget {
   final String name;
   final String? photoUrl;
   final String levelLabel;
   final VoidCallback onEdit;
+  final int conversations;
+  final int avgScore;
+  final int skillsImproving;
 
   const _ProfileHeaderCard({
     required this.name,
     required this.photoUrl,
     required this.levelLabel,
     required this.onEdit,
+    required this.conversations,
+    required this.avgScore,
+    required this.skillsImproving,
   });
 
   @override
@@ -193,7 +194,7 @@ class _ProfileHeaderCard extends StatelessWidget {
     final theme = Theme.of(context);
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(24, 28, 20, 28),
+      padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: AppColors.heroGradient,
@@ -209,103 +210,83 @@ class _ProfileHeaderCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
+      child: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.all(3),
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white24,
-            ),
-            child: ProfileAvatar(photoUrl: photoUrl, name: name, radius: 36),
-          ),
-          const SizedBox(width: 18),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: theme.textTheme.headlineSmall?.copyWith(color: Colors.white),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(3),
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white24,
                 ),
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: AppColors.accent,
-                    borderRadius: BorderRadius.circular(AppTheme.radiusPill),
-                  ),
-                  child: Text(
-                    levelLabel,
-                    style: theme.textTheme.labelSmall?.copyWith(color: AppColors.primary),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Material(
-            color: Colors.white.withOpacity(0.16),
-            shape: const CircleBorder(),
-            child: InkWell(
-              customBorder: const CircleBorder(),
-              onTap: onEdit,
-              child: const Padding(
-                padding: EdgeInsets.all(10),
-                child: Icon(Icons.edit_outlined, color: Colors.white, size: 20),
+                child: ProfileAvatar(photoUrl: photoUrl, name: name, radius: 40),
               ),
+              Positioned(
+                bottom: -2,
+                right: -2,
+                child: Material(
+                  color: AppColors.accent,
+                  shape: const CircleBorder(),
+                  child: InkWell(
+                    customBorder: const CircleBorder(),
+                    onTap: onEdit,
+                    child: const Padding(
+                      padding: EdgeInsets.all(7),
+                      child: Icon(Icons.edit_outlined, color: AppColors.primary, size: 16),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Text(
+            name,
+            style: theme.textTheme.headlineSmall?.copyWith(color: Colors.white),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+            decoration: BoxDecoration(
+              color: AppColors.accent,
+              borderRadius: BorderRadius.circular(AppTheme.radiusPill),
             ),
+            child: Text(
+              levelLabel,
+              style: theme.textTheme.labelSmall?.copyWith(color: AppColors.primary),
+            ),
+          ),
+          const SizedBox(height: 24),
+          Row(
+            children: [
+              Expanded(
+                child: _StatBlock(
+                  value: '$conversations',
+                  label: 'Conversations',
+                ),
+              ),
+              const _StatDivider(),
+              Expanded(
+                child: _StatBlock(
+                  value: '$avgScore',
+                  label: 'Avg Score',
+                ),
+              ),
+              const _StatDivider(),
+              Expanded(
+                child: _StatBlock(
+                  value: '$skillsImproving',
+                  label: 'Improving',
+                ),
+              ),
+            ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _StatsCard extends StatelessWidget {
-  final int conversations;
-  final int avgScore;
-  final int skillsImproving;
-
-  const _StatsCard({
-    required this.conversations,
-    required this.avgScore,
-    required this.skillsImproving,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 20),
-        child: Row(
-          children: [
-            Expanded(
-              child: _StatBlock(
-                icon: Icons.forum_outlined,
-                value: '$conversations',
-                label: 'Conversations',
-              ),
-            ),
-            const _StatDivider(),
-            Expanded(
-              child: _StatBlock(
-                icon: Icons.trending_up_rounded,
-                value: '$avgScore',
-                label: 'Avg Score',
-              ),
-            ),
-            const _StatDivider(),
-            Expanded(
-              child: _StatBlock(
-                icon: Icons.emoji_events_outlined,
-                value: '$skillsImproving',
-                label: 'Improving',
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -319,32 +300,29 @@ class _StatDivider extends StatelessWidget {
     return Container(
       width: 1,
       height: 44,
-      color: AppColors.borderLight,
+      color: Colors.white24,
     );
   }
 }
 
 class _StatBlock extends StatelessWidget {
-  final IconData icon;
   final String value;
   final String label;
-  const _StatBlock({required this.icon, required this.value, required this.label});
+  const _StatBlock({required this.value, required this.label});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Column(
       children: [
-        Icon(icon, color: AppColors.primary, size: 20),
-        const SizedBox(height: 6),
         Text(
           value,
-          style: theme.textTheme.headlineSmall?.copyWith(color: AppColors.textPrimaryLight),
+          style: theme.textTheme.headlineSmall?.copyWith(color: Colors.white),
         ),
         const SizedBox(height: 2),
         Text(
           label,
-          style: theme.textTheme.labelMedium,
+          style: theme.textTheme.labelMedium?.copyWith(color: AppColors.textOnBrandMuted),
           textAlign: TextAlign.center,
         ),
       ],
@@ -353,7 +331,7 @@ class _StatBlock extends StatelessWidget {
 }
 
 /// Small uppercase, letter-spaced label sitting above a [_SettingsGroup] —
-/// the "PREFERENCES" / "SKILLS" / "PRIVACY & SUPPORT" headers.
+/// the "PLAN" / "PREFERENCES" / "SKILLS" / "PRIVACY & SUPPORT" headers.
 class _SettingsGroupLabel extends StatelessWidget {
   final String label;
   const _SettingsGroupLabel({required this.label});
@@ -366,7 +344,7 @@ class _SettingsGroupLabel extends StatelessWidget {
         label,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
               letterSpacing: 0.8,
-              color: AppColors.textSecondaryLight,
+              color: AppColors.textOnBrandMuted,
               fontWeight: FontWeight.w700,
             ),
       ),
@@ -390,7 +368,12 @@ class _SettingsGroup extends StatelessWidget {
           for (int i = 0; i < children.length; i++) ...[
             children[i],
             if (i != children.length - 1)
-              const Divider(height: 1, indent: 68, endIndent: 0),
+              Divider(
+                height: 1,
+                indent: 68,
+                endIndent: 0,
+                color: Theme.of(context).dividerColor.withValues(alpha: 0.5),
+              ),
           ],
         ],
       ),

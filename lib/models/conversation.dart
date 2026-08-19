@@ -41,6 +41,12 @@ class Conversation {
 
 /// A lightweight record used on the Progress screen and Home "Continue
 /// Practising" card — a completed session summary.
+///
+/// [skillScores], [whatYouDidWell], [opportunities] and [tryNextTime] mirror
+/// the full [ConversationEvaluation] the session was scored with, so tapping
+/// a past session in Progress can reopen the same completion screen shown
+/// right after that conversation. They're nullable because sessions
+/// recorded before this field existed won't have them.
 class PracticeSession {
   final String id;
   final String scenarioId;
@@ -48,6 +54,10 @@ class PracticeSession {
   final int score;
   final DateTime date;
   final int? improvementFromLastAttempt;
+  final List<SkillScore>? skillScores;
+  final List<String>? whatYouDidWell;
+  final List<String>? opportunities;
+  final List<String>? tryNextTime;
 
   const PracticeSession({
     required this.id,
@@ -56,5 +66,30 @@ class PracticeSession {
     required this.score,
     required this.date,
     this.improvementFromLastAttempt,
+    this.skillScores,
+    this.whatYouDidWell,
+    this.opportunities,
+    this.tryNextTime,
   });
+
+  /// Reconstructs the full evaluation this session was recorded with, or
+  /// null if it predates that data being stored.
+  ConversationEvaluation? toEvaluation() {
+    if (skillScores == null ||
+        whatYouDidWell == null ||
+        opportunities == null ||
+        tryNextTime == null) {
+      return null;
+    }
+    return ConversationEvaluation(
+      overallScore: score,
+      skillScores: skillScores!,
+      whatYouDidWell: whatYouDidWell!,
+      opportunities: opportunities!,
+      tryNextTime: tryNextTime!,
+      previousScore: improvementFromLastAttempt == null
+          ? null
+          : score - improvementFromLastAttempt!,
+    );
+  }
 }

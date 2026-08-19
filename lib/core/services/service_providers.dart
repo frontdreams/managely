@@ -2,11 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'ai_conversation_service.dart';
 import 'auth_service.dart';
 import 'firestore_user_repository.dart';
 import 'mock_ai_conversation_service.dart';
 import 'remote_ai_conversation_service.dart';
+import 'revenue_cat_service.dart';
 
 /// Single source of truth for the active [AIConversationService]
 /// implementation.
@@ -27,16 +30,13 @@ import 'remote_ai_conversation_service.dart';
 /// lets staging/production builds point at different backends without a
 /// code change:
 /// `flutter run --dart-define=MANAGELY_BACKEND_URL=https://... --dart-define=MANAGELY_APP_SECRET=...`
-const _remoteBackendUrl = String.fromEnvironment('MANAGELY_BACKEND_URL');
-
 final aiConversationServiceProvider = Provider<AIConversationService>((ref) {
-  if (_remoteBackendUrl.isEmpty) {
-    return MockAIConversationService();
-  }
-  return RemoteAIConversationService(
-    baseUrl: _remoteBackendUrl,
-    appSharedSecret: const String.fromEnvironment('MANAGELY_APP_SECRET'),
-  );
+  return MockAIConversationService();
+
+  // return RemoteAIConversationService(
+  //   baseUrl: const String.fromEnvironment('MANAGELY_BACKEND_URL'),
+  //   appSharedSecret: const String.fromEnvironment('MANAGELY_APP_SECRET'),
+  // );
 });
 
 final firebaseAuthProvider = Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);
@@ -60,4 +60,38 @@ final authServiceProvider = Provider<AuthService>((ref) {
 
 final firestoreUserRepositoryProvider = Provider<FirestoreUserRepository>((ref) {
   return FirestoreUserRepository(ref.watch(firestoreProvider));
+});
+
+/// App name/version/build number, read from the platform package at
+/// runtime — Flutter's Android/iOS build tooling derives these directly
+/// from `pubspec.yaml`'s `version:` field, so this always matches without
+/// needing to hardcode it anywhere in the UI.
+final packageInfoProvider = FutureProvider<PackageInfo>((ref) {
+  return PackageInfo.fromPlatform();
+});
+
+// ---------------------------------------------------------------------
+// RevenueCat (in-app purchases / subscriptions)
+// ---------------------------------------------------------------------
+
+/// Single instance of [RevenueCatService], shared everywhere. `configure()`
+/// is called once in main.dart before this is ever read.
+final revenueCatServiceProvider = Provider<RevenueCatService>((ref) {
+  return RevenueCatService();
+});
+
+/// The current Offering's packages (monthly/annual), fetched once per app
+/// session. Watched by the subscription screen to show real, localized
+/// store prices instead of hardcoded ones.
+final offeringsProvider = FutureProvider<List<Package>>((ref) async {
+  return ref.read(revenueCatServiceProvider).getAvailablePackages();
+});
+
+/// Live stream of entitlement status from RevenueCat — purchase, renewal,
+/// expiration, refund, or a restore on another device all come through
+/// here. `main.dart` listens to this and keeps `UserProfile.subscriptionTier`
+/// in sync automatically, so nothing else in the app needs to react to
+/// purchases directly.
+final customerInfoStreamProvider = StreamProvider<CustomerInfo>((ref) {
+  return ref.watch(revenueCatServiceProvider).customerInfoUpdates();
 });

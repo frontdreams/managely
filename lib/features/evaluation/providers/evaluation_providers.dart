@@ -32,6 +32,10 @@ class EvaluationRecorder {
             score: evaluation.overallScore,
             date: DateTime.now(),
             improvementFromLastAttempt: evaluation.improvement,
+            skillScores: evaluation.skillScores,
+            whatYouDidWell: evaluation.whatYouDidWell,
+            opportunities: evaluation.opportunities,
+            tryNextTime: evaluation.tryNextTime,
           ),
         );
   }

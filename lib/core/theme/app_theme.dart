@@ -22,8 +22,28 @@ class AppTheme {
         ),
       );
 
+  /// Unified snackbar look for the whole app — a compact, fully-rounded
+  /// pill in a slightly translucent primary color, rather than Material's
+  /// default full-width bar. Applies to every `SnackBar` automatically;
+  /// use [AppSnackBar.show] to also get centered text.
+  static SnackBarThemeData get _snackBarTheme => SnackBarThemeData(
+        backgroundColor: AppColors.primary.withValues(alpha: 0.92),
+        behavior: SnackBarBehavior.floating,
+        width: 320,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radiusPill),
+        ),
+        contentTextStyle: const TextStyle(
+          color: Colors.white,
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
+        actionTextColor: AppColors.accent,
+      );
+
   static ThemeData get light {
-    final colorScheme = const ColorScheme.light(
+    const colorScheme = ColorScheme.light(
       primary: AppColors.primary,
       onPrimary: Colors.white,
       secondary: AppColors.accent,
@@ -136,11 +156,12 @@ class AppTheme {
         color: AppColors.primary,
         linearTrackColor: AppColors.primaryLight,
       ),
+      snackBarTheme: _snackBarTheme,
     );
   }
 
   static ThemeData get dark {
-    final colorScheme = const ColorScheme.dark(
+    const colorScheme = ColorScheme.dark(
       primary: AppColors.primary,
       onPrimary: Colors.white,
       secondary: AppColors.accent,
@@ -251,6 +272,7 @@ class AppTheme {
         color: AppColors.accent,
         linearTrackColor: AppColors.surfaceDark,
       ),
+      snackBarTheme: _snackBarTheme,
     );
   }
 }

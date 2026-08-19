@@ -19,6 +19,9 @@ class SessionHistoryNotifier extends StateNotifier<List<PracticeSession>> {
     state = sessions;
   }
 
+  /// Re-fetches session history from Firestore — used by pull-to-refresh.
+  Future<void> refresh() => _hydrate();
+
   Future<void> addSession(PracticeSession session) async {
     final uid = _uid;
     state = [session, ...state];

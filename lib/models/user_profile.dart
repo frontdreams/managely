@@ -52,6 +52,17 @@ class UserProfile {
   /// nobody should reach an AI roleplay with only guessed starting scores.
   final bool skillsAssessmentComplete;
 
+  /// How many practice conversations a free-tier user has STARTED in the
+  /// current usage cycle (not completed — starting one counts even if
+  /// they abandon it, so the cap can't be gamed by retrying). Ignored for
+  /// premium users. Resets automatically once [usageCycleStart] is more
+  /// than 30 days old — see [UserProfileNotifier.recordConversationStarted].
+  final int freeConversationsUsedThisCycle;
+
+  /// When the current free-tier usage cycle started. Null until the first
+  /// conversation is started.
+  final DateTime? usageCycleStart;
+
   final bool themeIsDark;
   final bool notificationsEnabled;
 
@@ -79,10 +90,23 @@ class UserProfile {
     this.currentStreak = 0,
     this.onboardingComplete = false,
     this.skillsAssessmentComplete = false,
+    this.freeConversationsUsedThisCycle = 0,
+    this.usageCycleStart,
     this.themeIsDark = false,
     this.notificationsEnabled = true,
     this.isHydrated = false,
   });
+
+  /// How many practice conversations a free-tier user gets per ~30 days
+  /// before hitting the upgrade prompt. Premium users are unlimited.
+  static const int freeConversationLimitPerCycle = 3;
+
+  bool get isPremiumTier => subscriptionTier == SubscriptionTier.premium;
+
+  /// True once a free-tier user has used up their conversations for the
+  /// current cycle. Always false for premium — see [isPremiumTier].
+  bool get hasReachedFreeConversationLimit =>
+      !isPremiumTier && freeConversationsUsedThisCycle >= freeConversationLimitPerCycle;
 
   int get averageScore {
     if (skillScores.isEmpty) return 0;
@@ -109,6 +133,8 @@ class UserProfile {
     int? currentStreak,
     bool? onboardingComplete,
     bool? skillsAssessmentComplete,
+    int? freeConversationsUsedThisCycle,
+    DateTime? usageCycleStart,
     bool? themeIsDark,
     bool? notificationsEnabled,
     bool? isHydrated,
@@ -126,6 +152,9 @@ class UserProfile {
       onboardingComplete: onboardingComplete ?? this.onboardingComplete,
       skillsAssessmentComplete:
           skillsAssessmentComplete ?? this.skillsAssessmentComplete,
+      freeConversationsUsedThisCycle:
+          freeConversationsUsedThisCycle ?? this.freeConversationsUsedThisCycle,
+      usageCycleStart: usageCycleStart ?? this.usageCycleStart,
       themeIsDark: themeIsDark ?? this.themeIsDark,
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       isHydrated: isHydrated ?? this.isHydrated,

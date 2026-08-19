@@ -41,6 +41,10 @@
 	<string>Managely uses the camera so you can take a new profile photo.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Managely uses your photo library so you can choose a profile photo.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Managely uses the microphone so you can speak your response instead of typing it.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Managely converts your spoken response to text so you can review it before sending.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

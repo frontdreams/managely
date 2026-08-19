@@ -4,14 +4,22 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/skill_color.dart';
+import '../../../models/conversation.dart';
+import '../../../models/evaluation.dart';
 import '../../../models/scenario.dart';
 import '../../../shared/widgets/skill_progress_bar.dart';
 import '../../../shared/widgets/animated_score_counter.dart';
 import '../../conversation/providers/conversation_providers.dart';
+import '../../profile/providers/profile_providers.dart';
 import '../providers/evaluation_providers.dart';
 
+/// Shows the result of a just-finished conversation by default. When
+/// [historicalSession] is passed (tapping a past entry on the Progress
+/// screen), it instead replays that session's stored evaluation read-only —
+/// no recording, no "Try Again" (there's no live scenario to retry).
 class EvaluationScreen extends ConsumerStatefulWidget {
-  const EvaluationScreen({super.key});
+  final PracticeSession? historicalSession;
+  const EvaluationScreen({super.key, this.historicalSession});
 
   @override
   ConsumerState<EvaluationScreen> createState() => _EvaluationScreenState();
@@ -23,6 +31,7 @@ class _EvaluationScreenState extends ConsumerState<EvaluationScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    if (widget.historicalSession != null) return;
     if (!_recorded) {
       final state = ref.read(conversationProvider);
       if (state.evaluation != null && state.scenario != null) {
@@ -41,6 +50,42 @@ class _EvaluationScreenState extends ConsumerState<EvaluationScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isHistorical = widget.historicalSession != null;
+
+    // Detailed "what you did well / opportunity / try next time" is a
+    // Premium feature — gated the same way whether this is a live result
+    // or a replayed historical one, so free users can't get around it by
+    // revisiting an old session.
+    final isPremiumUser = ref.watch(userProfileProvider).isPremiumTier;
+
+    if (isHistorical) {
+      final evaluation = widget.historicalSession!.toEvaluation();
+      if (evaluation == null) {
+        // Predates full evaluation data being stored per session.
+        return Scaffold(
+          appBar: AppBar(title: const Text('Session Details')),
+          body: const Center(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: Text(
+                'Full details aren\'t available for this older session.',
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        );
+      }
+      return _EvaluationBody(
+        theme: theme,
+        title: widget.historicalSession!.scenarioTitle,
+        evaluation: evaluation,
+        showLeading: true,
+        isPremiumUser: isPremiumUser,
+        onTryAgain: null,
+        onDone: () => context.pop(),
+      );
+    }
+
     final state = ref.watch(conversationProvider);
 
     if (state.status == ConversationStatus.evaluating || state.evaluation == null) {
@@ -65,6 +110,47 @@ class _EvaluationScreenState extends ConsumerState<EvaluationScreen> {
 
     final evaluation = state.evaluation!;
     final scenario = state.scenario!;
+
+    return _EvaluationBody(
+      theme: theme,
+      title: scenario.title,
+      evaluation: evaluation,
+      showLeading: false,
+      isPremiumUser: isPremiumUser,
+      onTryAgain: () {
+        ref.read(conversationProvider.notifier).retrySameScenario();
+        _recorded = false;
+        context.pushReplacement('/conversation');
+      },
+      onDone: () {
+        ref.read(conversationProvider.notifier).reset();
+        context.go('/home');
+      },
+    );
+  }
+}
+
+class _EvaluationBody extends StatelessWidget {
+  final ThemeData theme;
+  final String title;
+  final ConversationEvaluation evaluation;
+  final bool showLeading;
+  final bool isPremiumUser;
+  final VoidCallback? onTryAgain;
+  final VoidCallback onDone;
+
+  const _EvaluationBody({
+    required this.theme,
+    required this.title,
+    required this.evaluation,
+    required this.showLeading,
+    required this.isPremiumUser,
+    required this.onTryAgain,
+    required this.onDone,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     final scoreColor = evaluation.overallScore >= 75
         ? AppColors.success
         : evaluation.overallScore >= 55
@@ -73,8 +159,8 @@ class _EvaluationScreenState extends ConsumerState<EvaluationScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Conversation Complete'),
-        automaticallyImplyLeading: false,
+        title: Text(showLeading ? 'Session Details' : 'Conversation Complete'),
+        automaticallyImplyLeading: showLeading,
       ),
       body: SafeArea(
         child: ListView(
@@ -86,7 +172,7 @@ class _EvaluationScreenState extends ConsumerState<EvaluationScreen> {
                   AnimatedScoreCounter(score: evaluation.overallScore, color: scoreColor),
                   const SizedBox(height: 10),
                   Text(
-                    scenario.title,
+                    title,
                     style: theme.textTheme.titleMedium?.copyWith(color: AppColors.textOnBrand),
                   ),
                   if (evaluation.improvement != null) ...[
@@ -120,50 +206,101 @@ class _EvaluationScreenState extends ConsumerState<EvaluationScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            _FeedbackSection(
-              title: 'What you did well',
-              icon: Icons.thumb_up_alt_outlined,
-              color: AppColors.success,
-              points: evaluation.whatYouDidWell,
-            ),
-            const SizedBox(height: 16),
-            _FeedbackSection(
-              title: 'Your opportunity',
-              icon: Icons.visibility_outlined,
-              color: AppColors.warning,
-              points: evaluation.opportunities,
-            ),
-            const SizedBox(height: 16),
-            _FeedbackSection(
-              title: 'Try this next time',
-              icon: Icons.lightbulb_outline_rounded,
-              color: AppColors.primary,
-              points: evaluation.tryNextTime,
-            ),
+            if (isPremiumUser) ...[
+              _FeedbackSection(
+                title: 'What you did well',
+                icon: Icons.thumb_up_alt_outlined,
+                color: AppColors.success,
+                points: evaluation.whatYouDidWell,
+              ),
+              const SizedBox(height: 16),
+              _FeedbackSection(
+                title: 'Your opportunity',
+                icon: Icons.visibility_outlined,
+                color: AppColors.warning,
+                points: evaluation.opportunities,
+              ),
+              const SizedBox(height: 16),
+              _FeedbackSection(
+                title: 'Try this next time',
+                icon: Icons.lightbulb_outline_rounded,
+                color: AppColors.primary,
+                points: evaluation.tryNextTime,
+              ),
+            ] else
+              _PremiumFeedbackUpsell(
+                onUpgrade: () => context.push('/upgrade'),
+              ),
             const SizedBox(height: 32),
-            ElevatedButton.icon(
-              onPressed: () {
-                ref.read(conversationProvider.notifier).retrySameScenario();
-                _recorded = false;
-                context.pushReplacement('/conversation');
-              },
-              icon: const Icon(Icons.replay_rounded),
-              label: const Text('Try Again'),
-            ),
-            const SizedBox(height: 12),
+            if (onTryAgain != null) ...[
+              ElevatedButton.icon(
+                onPressed: onTryAgain,
+                icon: const Icon(Icons.replay_rounded),
+                label: const Text('Try Again'),
+              ),
+              const SizedBox(height: 12),
+            ],
             OutlinedButton(
-              onPressed: () {
-                ref.read(conversationProvider.notifier).reset();
-                context.go('/home');
-              },
+              onPressed: onDone,
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.textOnBrand,
                 side: const BorderSide(color: Colors.white54),
               ),
-              child: const Text('Back to Home'),
+              child: Text(showLeading ? 'Close' : 'Back to Home'),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Shown instead of the three detailed feedback sections for free-tier
+/// users — overall score and skill bars above this are still visible to
+/// everyone, only the narrative breakdown is gated.
+class _PremiumFeedbackUpsell extends StatelessWidget {
+  final VoidCallback onUpgrade;
+  const _PremiumFeedbackUpsell({required this.onUpgrade});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(colors: AppColors.goldGradient),
+        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.workspace_premium_rounded, color: AppColors.primary),
+              const SizedBox(width: 8),
+              Text(
+                'Unlock Deeper Feedback',
+                style: theme.textTheme.titleMedium?.copyWith(color: AppColors.primary),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'See exactly what you did well, where the gap was, and what to '
+            'try next time — Premium members get the full skill-by-skill '
+            'breakdown after every conversation.',
+            style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.primary),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: onUpgrade,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Upgrade to Premium'),
+          ),
+        ],
       ),
     );
   }

@@ -11,6 +11,7 @@ import '../../../shared/widgets/section_header.dart';
 import '../../../shared/widgets/skill_progress_bar.dart';
 import '../../../shared/widgets/scenario_card.dart';
 import '../../profile/providers/profile_providers.dart';
+import '../../progress/providers/progress_providers.dart';
 import '../providers/home_providers.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -60,81 +61,88 @@ class HomeScreen extends ConsumerWidget {
       ),
       body: SafeArea(
         bottom: false,
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-                child: _HomeHeroCard(
-                  profile: profile,
-                  skillsImproving: skillsImproving,
-                  onStartPractice: () => context.go('/practice'),
-                ),
-              ),
-            ),
-            if (recent != null)
+        child: RefreshIndicator(
+          onRefresh: () => Future.wait<void>([
+            ref.read(userProfileProvider.notifier).refresh(),
+            ref.read(sessionHistoryProvider.notifier).refresh(),
+          ]),
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
-                  child: _ContinuePractisingCard(
-                    scenario: recent,
-                    onTap: () => context.push('/scenario/${recent.id}'),
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                  child: _HomeHeroCard(
+                    profile: profile,
+                    skillsImproving: skillsImproving,
+                    onStartPractice: () => context.go('/practice'),
                   ),
                 ),
               ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 28, 20, 12),
-                child: SectionHeader(
-                  title: 'Your Skills',
-                  actionLabel: 'View all',
-                  onAction: () => context.go('/progress'),
+              if (recent != null)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+                    child: _ContinuePractisingCard(
+                      scenario: recent,
+                      onTap: () => context.push('/scenario/${recent.id}'),
+                    ),
+                  ),
+                ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 28, 20, 12),
+                  child: SectionHeader(
+                    title: 'Your Skills',
+                    actionLabel: 'View all',
+                    onAction: () => context.go('/progress'),
+                  ),
                 ),
               ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(14),
-                    child: Column(
-                      children: [
-                        for (final entry in profile.skillScores.entries) ...[
-                          SkillProgressBar(
-                            label: entry.key.label,
-                            value: entry.value,
-                            color: AppColors.primary,
-                            icon: entry.key.icon,
-                            barHeight: 5,
-                            compact: true,
-                          ),
-                          if (entry.key != profile.skillScores.keys.last)
-                            const SizedBox(height: 12),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(14),
+                      child: Column(
+                        children: [
+                          for (final entry in profile.skillScores.entries) ...[
+                            SkillProgressBar(
+                              label: entry.key.label,
+                              value: entry.value,
+                              color: AppColors.primary,
+                              icon: entry.key.icon,
+                              barHeight: 5,
+                              compact: true,
+                            ),
+                            if (entry.key != profile.skillScores.keys.last)
+                              const SizedBox(height: 12),
+                          ],
                         ],
-                      ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            const SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(20, 28, 20, 12),
-                child: SectionHeader(title: 'Recommended for You'),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 110),
-                child: _RecommendedCard(
-                  scenario: recommended,
-                  weakestSkill: profile.weakestSkill,
-                  onTap: () => context.push('/scenario/${recommended.id}'),
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(20, 28, 20, 12),
+                  child: SectionHeader(title: 'Recommended for You'),
                 ),
               ),
-            ),
-          ],
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 110),
+                  child: _RecommendedCard(
+                    scenario: recommended,
+                    weakestSkill: profile.weakestSkill,
+                    onTap: () => context.push('/scenario/${recommended.id}'),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

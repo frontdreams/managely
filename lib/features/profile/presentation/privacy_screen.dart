@@ -50,6 +50,7 @@ class PrivacyScreen extends StatelessWidget {
               style: theme.textTheme.bodyMedium,
             ),
           ),
+          const SizedBox(height: 100),
         ],
       ),
     );

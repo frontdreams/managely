@@ -6,30 +6,28 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/skill_color.dart';
 import '../../../models/scenario.dart';
-import '../../../models/user_profile.dart';
 import '../../../shared/widgets/difficulty_stars.dart';
 import '../../../shared/widgets/practice_safely_sheet.dart';
 import '../../conversation/providers/conversation_providers.dart';
 import '../../profile/providers/profile_providers.dart';
-import '../providers/practice_providers.dart';
+import '../../../models/user_profile.dart';
 
 const _kSeenPrivacyKey = 'seen_practice_safely';
 
-class ScenarioDetailsScreen extends ConsumerWidget {
-  final String scenarioId;
-  const ScenarioDetailsScreen({super.key, required this.scenarioId});
+/// Shows what the AI understood from a user's free-text custom scenario
+/// before the roleplay starts — the same situation / objective / employee
+/// style confirmation the built-in scenario flow already gives, so a
+/// user isn't dropped straight into a chat with an employee they never
+/// got to review. Reached only from [CustomScenarioScreen], with the
+/// generated [Scenario] passed in directly (it isn't part of the static
+/// scenario library, so it can't be looked up by ID the way
+/// [ScenarioDetailsScreen] looks up built-in scenarios).
+class CustomScenarioConfirmScreen extends ConsumerWidget {
+  final Scenario scenario;
+  const CustomScenarioConfirmScreen({super.key, required this.scenario});
 
-  Future<void> _start(BuildContext context, WidgetRef ref, Scenario scenario) async {
+  Future<void> _start(BuildContext context, WidgetRef ref) async {
     final profile = ref.read(userProfileProvider);
-
-    // Premium-only scenario, free-tier user — send them to upgrade instead
-    // of starting. Checked before the usage-cap check since it's a
-    // different reason for being blocked.
-    if (scenario.isPremium && !profile.isPremiumTier) {
-      context.push('/upgrade');
-      return;
-    }
-
     if (profile.hasReachedFreeConversationLimit) {
       context.push('/upgrade');
       return;
@@ -53,20 +51,36 @@ class ScenarioDetailsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final scenario = ref.watch(scenarioByIdProvider(scenarioId));
-    final profile = ref.watch(userProfileProvider);
     final color = skillColor(scenario.primarySkill);
-
-    final isLockedByTier = scenario.isPremium && !profile.isPremiumTier;
-    final isLockedByUsage = !isLockedByTier && profile.hasReachedFreeConversationLimit;
-    final isLocked = isLockedByTier || isLockedByUsage;
+    final profile = ref.watch(userProfileProvider);
+    final isLocked = profile.hasReachedFreeConversationLimit;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Scenario')),
+      appBar: AppBar(title: const Text('Review Your Scenario')),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
           children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.primaryLight,
+                borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.auto_awesome_rounded, color: AppColors.primary, size: 18),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Here\'s what I understood — check it looks right before you start.',
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -82,27 +96,6 @@ class ScenarioDetailsScreen extends ConsumerWidget {
                       const SizedBox(width: 8),
                       Text(scenario.category.label,
                           style: theme.textTheme.labelMedium?.copyWith(color: color)),
-                      if (scenario.isPremium) ...[
-                        const Spacer(),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(colors: AppColors.goldGradient),
-                            borderRadius: BorderRadius.circular(AppTheme.radiusPill),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.workspace_premium_rounded,
-                                  size: 12, color: AppColors.primary),
-                              const SizedBox(width: 4),
-                              Text('PREMIUM',
-                                  style: theme.textTheme.labelSmall
-                                      ?.copyWith(color: AppColors.primary, fontSize: 10)),
-                            ],
-                          ),
-                        ),
-                      ],
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -154,29 +147,16 @@ class ScenarioDetailsScreen extends ConsumerWidget {
               body: '${scenario.employeeName} · ${scenario.employeeRole}\n${scenario.employeePersonality}',
               icon: Icons.person_outline_rounded,
             ),
-            const SizedBox(height: 28),
-            if (isLockedByTier)
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(colors: AppColors.goldGradient),
-                  borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(Icons.lock_outline_rounded, color: AppColors.primary, size: 20),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        'This is a Premium scenario. Upgrade to unlock it and every advanced scenario.',
-                        style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.primary),
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            else if (isLockedByUsage)
+            const SizedBox(height: 20),
+            Center(
+              child: TextButton.icon(
+                onPressed: () => context.pop(),
+                icon: const Icon(Icons.edit_outlined, size: 16),
+                label: const Text('Not quite right? Describe it differently'),
+              ),
+            ),
+            const SizedBox(height: 12),
+            if (isLocked)
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -211,7 +191,7 @@ class ScenarioDetailsScreen extends ConsumerWidget {
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'Before you start: use fictional or anonymized information. Avoid entering sensitive personal information about real employees.',
+                        '${scenario.employeeName} is fictional, even if a real name was mentioned in your description.',
                         style: theme.textTheme.bodyMedium,
                       ),
                     ),
@@ -224,56 +204,10 @@ class ScenarioDetailsScreen extends ConsumerWidget {
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
-          child: isLocked
-              ? _GradientButton(
-                  onPressed: () => _start(context, ref, scenario),
-                  icon: Icons.workspace_premium_rounded,
-                  label: 'Upgrade to Start',
-                )
-              : ElevatedButton(
-                  onPressed: () => _start(context, ref, scenario),
-                  style: AppTheme.accentPillButtonStyle,
-                  child: const Text('Start Conversation'),
-                ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Fully-rounded accent-gold gradient button — used for "Upgrade to Start"
-/// in place of [AppTheme.accentPillButtonStyle]'s flat accent color, since
-/// `ButtonStyle` can't paint a gradient background directly.
-class _GradientButton extends StatelessWidget {
-  final VoidCallback onPressed;
-  final IconData icon;
-  final String label;
-
-  const _GradientButton({required this.onPressed, required this.icon, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 54,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: AppColors.goldGradient),
-        borderRadius: BorderRadius.circular(AppTheme.radiusPill),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(AppTheme.radiusPill),
-          onTap: onPressed,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: AppColors.primary, size: 20),
-              const SizedBox(width: 8),
-              Text(
-                label,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AppColors.primary),
-              ),
-            ],
+          child: ElevatedButton.icon(
+            onPressed: () => _start(context, ref),
+            icon: isLocked ? const Icon(Icons.workspace_premium_rounded) : const SizedBox.shrink(),
+            label: Text(isLocked ? 'Upgrade to Start' : 'Start Conversation'),
           ),
         ),
       ),

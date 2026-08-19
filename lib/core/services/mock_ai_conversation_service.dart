@@ -356,23 +356,23 @@ class MockAIConversationService implements AIConversationService {
 
   List<PossibleResponse> _genericPossibleResponses(String employeeName) {
     return [
-      PossibleResponse(triggerTone: 'empathetic', replies: [
+      const PossibleResponse(triggerTone: 'empathetic', replies: [
         'I appreciate you saying that. It helps to know you actually see where I\'m coming from.',
         'Thanks for putting it that way — I\'m more open to hearing the rest now.',
       ]),
-      PossibleResponse(triggerTone: 'aggressive', replies: [
+      const PossibleResponse(triggerTone: 'aggressive', replies: [
         'I don\'t think that tone is necessary. I\'m trying to hear you out here.',
         'Okay, that feels a bit harsh — can we take a step back?',
       ]),
-      PossibleResponse(triggerTone: 'vague', replies: [
+      const PossibleResponse(triggerTone: 'vague', replies: [
         'I\'m still not totally clear on what you\'re asking me to do differently.',
         'Okay... but what would that actually look like in practice?',
       ]),
-      PossibleResponse(triggerTone: 'clear', replies: [
+      const PossibleResponse(triggerTone: 'clear', replies: [
         'Okay, that\'s clear — I can work with that.',
         'Got it, thanks for being direct. That actually makes this easier.',
       ]),
-      PossibleResponse(triggerTone: 'default', replies: [
+      const PossibleResponse(triggerTone: 'default', replies: [
         'Okay, I\'m listening — go on.',
         'Alright, tell me more about what you\'re thinking.',
       ]),

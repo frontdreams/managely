@@ -25,133 +25,145 @@ class ProgressScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Your Progress')),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 4, 20, 110),
-        children: [
-          GridView.count(
-            crossAxisCount: 2,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
-            childAspectRatio: 1.7,
-            children: [
-              _StatCard(
-                label: 'Total Conversations',
-                value: '${profile.totalConversations}',
-                icon: Icons.forum_outlined,
-                color: AppColors.primary,
-              ),
-              _StatCard(
-                label: 'Completed Scenarios',
-                value: '${profile.completedScenarios}',
-                icon: Icons.check_circle_outline_rounded,
-                color: AppColors.accent,
-              ),
-              _StatCard(
-                label: 'Average Score',
-                value: '${profile.averageScore}',
-                icon: Icons.trending_up_rounded,
-                color: AppColors.warning,
-              ),
-              _StatCard(
-                label: 'Current Streak',
-                value: '${profile.currentStreak} 🔥',
-                icon: Icons.local_fire_department_outlined,
-                color: AppColors.danger,
-              ),
-            ],
-          ),
-          const SizedBox(height: 28),
-          const SectionHeader(title: 'Skill Development'),
-          const SizedBox(height: 12),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(14),
-              child: Column(
-                children: [
-                  for (final entry in profile.skillScores.entries) ...[
-                    SkillProgressBar(
-                      label: entry.key.label,
-                      value: entry.value,
-                      color: AppColors.primary,
-                      icon: entry.key.icon,
-                      barHeight: 5,
-                      compact: true,
-                    ),
-                    if (entry.key != profile.skillScores.keys.last)
-                      const SizedBox(height: 12),
-                  ],
-                ],
-              ),
+      body: RefreshIndicator(
+        onRefresh: () => Future.wait<void>([
+          ref.read(userProfileProvider.notifier).refresh(),
+          ref.read(sessionHistoryProvider.notifier).refresh(),
+        ]),
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(20, 4, 20, 110),
+          children: [
+            GridView.count(
+              crossAxisCount: 2,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              mainAxisSpacing: 12,
+              crossAxisSpacing: 12,
+              childAspectRatio: 1.7,
+              children: [
+                _StatCard(
+                  label: 'Total Conversations',
+                  value: '${profile.totalConversations}',
+                  icon: Icons.forum_outlined,
+                  color: AppColors.primary,
+                ),
+                _StatCard(
+                  label: 'Completed Scenarios',
+                  value: '${profile.completedScenarios}',
+                  icon: Icons.check_circle_outline_rounded,
+                  color: AppColors.accent,
+                ),
+                _StatCard(
+                  label: 'Average Score',
+                  value: '${profile.averageScore}',
+                  icon: Icons.trending_up_rounded,
+                  color: AppColors.warning,
+                ),
+                _StatCard(
+                  label: 'Current Streak',
+                  value: '${profile.currentStreak} 🔥',
+                  icon: Icons.local_fire_department_outlined,
+                  color: AppColors.danger,
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 28),
-          const SectionHeader(title: 'Recent Practice'),
-          const SizedBox(height: 12),
-          if (sessions.isEmpty)
-            EmptyState(
-              icon: Icons.history_rounded,
-              title: 'No sessions yet',
-              message: 'Complete a scenario to see your history here.',
-              actionLabel: 'Start Practising',
-              onAction: () => context.go('/practice'),
-            )
-          else
+            const SizedBox(height: 16),
+            const SectionHeader(title: 'Skill Development'),
+            const SizedBox(height: 12),
             Card(
-              child: Column(
-                children: [
-                  for (int i = 0; i < sessions.length; i++) ...[
-                    _SessionTile(session: sessions[i]),
-                    if (i != sessions.length - 1) const Divider(height: 1),
+              child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: Column(
+                  children: [
+                    for (final entry in profile.skillScores.entries) ...[
+                      SkillProgressBar(
+                        label: entry.key.label,
+                        value: entry.value,
+                        color: AppColors.primary,
+                        icon: entry.key.icon,
+                        barHeight: 5,
+                        compact: true,
+                      ),
+                      if (entry.key != profile.skillScores.keys.last)
+                        const SizedBox(height: 12),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
-          const SizedBox(height: 28),
-          const SectionHeader(title: 'Your Growth Area'),
-          const SizedBox(height: 12),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(18),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: skillColor(weakest).withOpacity(0.12),
-                      borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-                    ),
-                    child: Icon(weakest.icon, color: skillColor(weakest)),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(weakest.label, style: theme.textTheme.titleMedium),
-                        const SizedBox(height: 2),
-                        Text(
-                          'Focus here for the biggest overall improvement.',
-                          style: theme.textTheme.bodyMedium,
+            const SizedBox(height: 28),
+            const SectionHeader(title: 'Recent Practice'),
+            const SizedBox(height: 12),
+            if (sessions.isEmpty)
+              EmptyState(
+                icon: Icons.history_rounded,
+                title: 'No sessions yet',
+                message: 'Complete a scenario to see your history here.',
+                actionLabel: 'Start Practising',
+                onAction: () => context.go('/practice'),
+              )
+            else
+              Card(
+                clipBehavior: Clip.antiAlias,
+                child: Column(
+                  children: [
+                    for (int i = 0; i < sessions.length; i++) ...[
+                      _SessionTile(session: sessions[i]),
+                      if (i != sessions.length - 1)
+                        Divider(
+                          height: 1,
+                          color: theme.dividerColor.withValues(alpha: 0.5),
                         ),
-                      ],
+                    ],
+                  ],
+                ),
+              ),
+            const SizedBox(height: 28),
+            const SectionHeader(title: 'Your Growth Area'),
+            const SizedBox(height: 12),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(18),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: skillColor(weakest).withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                      ),
+                      child: Icon(weakest.icon, color: skillColor(weakest)),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(weakest.label, style: theme.textTheme.titleMedium),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Focus here for the biggest overall improvement.',
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 12),
-          OutlinedButton(
-            onPressed: () => context.go('/practice'),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.textOnBrand,
-              side: const BorderSide(color: Colors.white54),
+            const SizedBox(height: 12),
+            OutlinedButton(
+              onPressed: () => context.go('/practice'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.textOnBrand,
+                side: const BorderSide(color: Colors.white54),
+              ),
+              child: Text('Practise ${weakest.label}'),
             ),
-            child: Text('Practise ${weakest.label}'),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -205,6 +217,7 @@ class _SessionTile extends StatelessWidget {
             : AppColors.danger;
 
     return ListTile(
+      onTap: () => context.push('/evaluation', extra: session),
       title: Text(session.scenarioTitle, style: theme.textTheme.titleSmall),
       subtitle: Text(DateFormat.yMMMd().format(session.date), style: theme.textTheme.bodySmall),
       trailing: Column(
