@@ -34,8 +34,22 @@ class EmailVerificationApiService {
     );
 
     if (response.statusCode != 200) {
-      throw Exception(
-          'send-verification-code failed: ${response.statusCode} ${response.body}');
+      throw Exception('Couldn\'t send the code (${_serverErrorMessage(response.body)}).');
     }
+  }
+
+  /// Pulls the backend's `{ "error": "..." }` message out of a failed
+  /// response body so the real cause (a 401, a misconfigured email
+  /// provider, etc.) surfaces instead of a generic network message.
+  String _serverErrorMessage(String body) {
+    try {
+      final decoded = jsonDecode(body);
+      if (decoded is Map && decoded['error'] is String) {
+        return decoded['error'] as String;
+      }
+    } catch (_) {
+      // Not JSON — fall through to the raw body below.
+    }
+    return body.isEmpty ? 'unknown error' : body;
   }
 }

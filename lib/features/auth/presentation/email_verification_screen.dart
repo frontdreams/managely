@@ -61,7 +61,8 @@ class _EmailVerificationScreenState extends ConsumerState<EmailVerificationScree
     if (ok) {
       _startCooldown();
     } else {
-      setState(() => _error = 'Couldn\'t send the code. Check your connection and try again.');
+      final error = ref.read(emailVerificationControllerProvider).error;
+      setState(() => _error = error?.toString() ?? 'Couldn\'t send the code. Try again.');
     }
   }
 
@@ -209,7 +210,7 @@ class _OtpBoxesState extends State<_OtpBoxes> {
       children: List.generate(_length, (i) {
         return SizedBox(
           width: 46,
-          height: 68,
+          height: 64,
           child: Focus(
             // Wraps (rather than replaces) the TextField's own focus node
             // as an ancestor in the focus tree — key events are dispatched
@@ -234,6 +235,10 @@ class _OtpBoxesState extends State<_OtpBoxes> {
               textAlign: TextAlign.center,
               keyboardType: TextInputType.number,
               maxLength: 1,
+              expands: true,
+              maxLines: null,
+              minLines: null,
+              textAlignVertical: TextAlignVertical.center,
               style: Theme.of(context).textTheme.headlineSmall,
               decoration: InputDecoration(
                 counterText: '',
