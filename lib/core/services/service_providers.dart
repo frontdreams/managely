@@ -6,10 +6,10 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'ai_conversation_service.dart';
 import 'auth_service.dart';
-import 'email_verification_api_service.dart';
 import 'firestore_user_repository.dart';
 import 'mock_ai_conversation_service.dart';
 import 'remote_ai_conversation_service.dart';
+import 'resend_email_service.dart';
 import 'revenue_cat_service.dart';
 
 /// Single source of truth for the active [AIConversationService]
@@ -41,12 +41,24 @@ final aiConversationServiceProvider = Provider<AIConversationService>((ref) {
   );
 });
 
-/// Sends email-verification codes via the deployed backend — shares the
-/// same base URL and shared secret as [aiConversationServiceProvider].
-final emailVerificationApiServiceProvider = Provider<EmailVerificationApiService>((ref) {
-  return EmailVerificationApiService(
-    baseUrl: _remoteBackendUrl,
-    appSharedSecret: _remoteAppSecret,
+/// Resend key/from-address used to email verification codes directly from
+/// the app (bypassing `managely-backend` entirely, so it still works if
+/// that's down). [_resendApiKey] MUST be a sending-only key scoped to
+/// [_resendFromAddress]'s domain, never the account's full-access key —
+/// see [ResendEmailService]'s doc comment for why.
+const _resendApiKey = String.fromEnvironment(
+  'RESEND_API_KEY',
+  defaultValue: 're_bVBrUGNh_3FF1phjTWNKdvJ5zTfaz92op',
+);
+const _resendFromAddress = String.fromEnvironment(
+  'RESEND_FROM_EMAIL',
+  defaultValue: 'Managely <hello@managely.frontdreams.com>',
+);
+
+final resendEmailServiceProvider = Provider<ResendEmailService>((ref) {
+  return ResendEmailService(
+    apiKey: _resendApiKey,
+    fromAddress: _resendFromAddress,
   );
 });
 
