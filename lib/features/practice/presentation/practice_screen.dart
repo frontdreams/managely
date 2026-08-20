@@ -51,8 +51,7 @@ class PracticeScreen extends ConsumerWidget {
                     label: 'All',
                     icon: Icons.apps_rounded,
                     selected: selectedCategory == null,
-                    onTap: () =>
-                        ref.read(selectedCategoryProvider.notifier).state = null,
+                    onTap: () => ref.read(selectedCategoryProvider.notifier).state = null,
                   ),
                   const SizedBox(width: 8),
                   ...SkillCategory.values.map((c) => Padding(
@@ -61,8 +60,7 @@ class PracticeScreen extends ConsumerWidget {
                           label: c.label,
                           icon: c.icon,
                           selected: selectedCategory == c,
-                          onTap: () =>
-                              ref.read(selectedCategoryProvider.notifier).state = c,
+                          onTap: () => ref.read(selectedCategoryProvider.notifier).state = c,
                         ),
                       )),
                 ],
@@ -218,10 +216,10 @@ class _CategoryChip extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 14),
         decoration: BoxDecoration(
-          color: selected ? AppColors.primary : Colors.white.withOpacity(0.1),
+          color: selected ? AppColors.primary : AppColors.surfaceLight,
           borderRadius: BorderRadius.circular(AppTheme.radiusPill),
           border: Border.all(
-            color: selected ? AppColors.primary : Colors.white38,
+            color: selected ? AppColors.primary : AppColors.borderLight,
           ),
         ),
         child: Row(

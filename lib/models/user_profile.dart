@@ -71,6 +71,14 @@ class UserProfile {
   /// routing to avoid flashing onboarding before the real profile arrives.
   final bool isHydrated;
 
+  /// True once the account's email has been confirmed via the 6-digit code
+  /// sent at sign-up. Defaults to true so Google sign-ins (already
+  /// verified by Google) and accounts created before this field existed
+  /// aren't retroactively locked out — only freshly-registered
+  /// email/password accounts are seeded with this false. See
+  /// [UserProfileNotifier] for where that seeding happens.
+  final bool emailVerified;
+
   const UserProfile({
     this.name = 'You',
     this.photoUrl,
@@ -95,6 +103,7 @@ class UserProfile {
     this.themeIsDark = false,
     this.notificationsEnabled = true,
     this.isHydrated = false,
+    this.emailVerified = true,
   });
 
   /// How many practice conversations a free-tier user gets per ~30 days
@@ -138,6 +147,7 @@ class UserProfile {
     bool? themeIsDark,
     bool? notificationsEnabled,
     bool? isHydrated,
+    bool? emailVerified,
   }) {
     return UserProfile(
       name: name ?? this.name,
@@ -158,6 +168,7 @@ class UserProfile {
       themeIsDark: themeIsDark ?? this.themeIsDark,
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       isHydrated: isHydrated ?? this.isHydrated,
+      emailVerified: emailVerified ?? this.emailVerified,
     );
   }
 }

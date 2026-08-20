@@ -134,18 +134,21 @@ class CustomScenarioConfirmScreen extends ConsumerWidget {
               title: 'Situation',
               body: scenario.situation,
               icon: Icons.info_outline_rounded,
+              color: AppColors.iconBlue,
             ),
             const SizedBox(height: 16),
             _InfoBlock(
               title: 'Manager Objective',
               body: scenario.objective,
               icon: Icons.flag_outlined,
+              color: AppColors.iconAmber,
             ),
             const SizedBox(height: 16),
             _InfoBlock(
               title: 'Employee Style',
               body: '${scenario.employeeName} · ${scenario.employeeRole}\n${scenario.employeePersonality}',
               icon: Icons.person_outline_rounded,
+              color: AppColors.iconPurple,
             ),
             const SizedBox(height: 20),
             Center(
@@ -219,7 +222,13 @@ class _InfoBlock extends StatelessWidget {
   final String title;
   final String body;
   final IconData icon;
-  const _InfoBlock({required this.title, required this.body, required this.icon});
+  final Color color;
+  const _InfoBlock({
+    required this.title,
+    required this.body,
+    required this.icon,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -232,8 +241,17 @@ class _InfoBlock extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(icon, size: 18, color: AppColors.primary),
-                const SizedBox(width: 8),
+                Container(
+                  width: 32,
+                  height: 32,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+                  ),
+                  child: Icon(icon, size: 18, color: color),
+                ),
+                const SizedBox(width: 10),
                 Text(title, style: theme.textTheme.titleSmall),
               ],
             ),

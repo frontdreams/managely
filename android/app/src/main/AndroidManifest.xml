@@ -50,5 +50,11 @@
         <intent>
             <action android:name="android.speech.RecognitionService" />
         </intent>
+        <!-- Required on Android 11+ so flutter_tts can find the device's
+             text-to-speech engine, per package docs:
+             https://pub.dev/packages/flutter_tts -->
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
     </queries>
 </manifest>

@@ -263,10 +263,10 @@ class _Composer extends StatelessWidget {
                           height: 18,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color: AppColors.primary,
+                            color: Colors.white,
                           ),
                         )
-                      : const Icon(Icons.arrow_upward_rounded, color: AppColors.primary),
+                      : const Icon(Icons.arrow_upward_rounded, color: Colors.white),
                 ),
               ),
             ),
@@ -293,8 +293,8 @@ class _IdeaChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.1),
-          border: Border.all(color: Colors.white38),
+          color: AppColors.surfaceLight,
+          border: Border.all(color: AppColors.borderLight),
           borderRadius: BorderRadius.circular(AppTheme.radiusPill),
         ),
         child: Text(

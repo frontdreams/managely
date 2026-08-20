@@ -79,8 +79,8 @@ class OnboardingScreen extends ConsumerWidget {
                     margin: const EdgeInsets.only(bottom: 10),
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
-                      border: Border.all(color: Colors.white24),
+                      color: AppColors.surfaceLight,
+                      border: Border.all(color: AppColors.borderLight),
                       borderRadius: BorderRadius.circular(AppTheme.radiusMd),
                     ),
                     child: Row(
@@ -107,7 +107,7 @@ class OnboardingScreen extends ConsumerWidget {
                             style: theme.textTheme.titleSmall?.copyWith(color: AppColors.textOnBrand),
                           ),
                         ),
-                        const Icon(Icons.drag_handle_rounded, color: Colors.white54),
+                        const Icon(Icons.drag_handle_rounded, color: AppColors.textSecondaryLight),
                       ],
                     ),
                   );

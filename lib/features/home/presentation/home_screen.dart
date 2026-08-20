@@ -1,12 +1,13 @@
-import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/utils/skill_color.dart';
 import '../../../models/scenario.dart';
 import '../../../models/user_profile.dart';
 import '../../../shared/widgets/profile_avatar.dart';
+import '../../../shared/widgets/recent_practice_list.dart';
 import '../../../shared/widgets/section_header.dart';
 import '../../../shared/widgets/skill_progress_bar.dart';
 import '../../../shared/widgets/scenario_card.dart';
@@ -28,14 +29,15 @@ class HomeScreen extends ConsumerWidget {
     final profile = ref.watch(userProfileProvider);
     final recommended = ref.watch(recommendedScenarioProvider);
     final recent = ref.watch(mostRecentScenarioProvider);
-    final skillsImproving =
-        profile.skillScores.values.where((v) => v >= 60).length;
+    final sessions = ref.watch(sessionHistoryProvider);
+    final recentSessionsPreview = sessions.take(5).toList();
+    final weakest = profile.weakestSkill;
 
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
-            Image.asset('assets/icon.png', width: 36, height: 36, color: Colors.white),
+            Image.asset('assets/icon.png', width: 36, height: 36, color: AppColors.textOnBrand),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
@@ -74,7 +76,6 @@ class HomeScreen extends ConsumerWidget {
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
                   child: _HomeHeroCard(
                     profile: profile,
-                    skillsImproving: skillsImproving,
                     onStartPractice: () => context.go('/practice'),
                   ),
                 ),
@@ -104,14 +105,14 @@ class HomeScreen extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Card(
                     child: Padding(
-                      padding: const EdgeInsets.all(14),
+                      padding: const EdgeInsets.all(20),
                       child: Column(
                         children: [
                           for (final entry in profile.skillScores.entries) ...[
                             SkillProgressBar(
                               label: entry.key.label,
                               value: entry.value,
-                              color: AppColors.primary,
+                              color: skillColor(entry.key),
                               icon: entry.key.icon,
                               barHeight: 5,
                               compact: true,
@@ -122,6 +123,105 @@ class HomeScreen extends ConsumerWidget {
                         ],
                       ),
                     ),
+                  ),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 28, 20, 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Recent Practice',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge
+                            ?.copyWith(color: AppColors.textOnBrand),
+                      ),
+                      TextButton(
+                        onPressed: () => context.go('/progress'),
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppColors.textOnBrand,
+                          padding: EdgeInsets.zero,
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        child: Text(
+                          'View all',
+                          style: Theme.of(context).textTheme.labelSmall,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: RecentPracticeList(
+                    sessions: recentSessionsPreview,
+                    onStartPractice: () => context.go('/practice'),
+                  ),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 28, 20, 12),
+                  child: SectionHeader(title: 'Your Growth Area'),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: [
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(18),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: skillColor(weakest).withOpacity(0.12),
+                                  borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                                ),
+                                child: Icon(weakest.icon, color: skillColor(weakest)),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(weakest.label,
+                                        style: Theme.of(context).textTheme.titleMedium),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      'Focus here for the biggest overall improvement.',
+                                      style: Theme.of(context).textTheme.bodyMedium,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      ElevatedButton(
+                        onPressed: () => context.go('/practice'),
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 54),
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(AppTheme.radiusPill),
+                          ),
+                        ),
+                        child: Text('Practise ${weakest.label}'),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -150,17 +250,13 @@ class HomeScreen extends ConsumerWidget {
 }
 
 /// The top-of-home gradient card — the "Ready to practise?" call to
-/// action, and the same at-a-glance stats (conversations, average score,
-/// skills improving) shown on the profile screen, so a user can see their
-/// progress without leaving Home.
+/// action, with the user's average score shown as a ring beside the title.
 class _HomeHeroCard extends StatelessWidget {
   final UserProfile profile;
-  final int skillsImproving;
   final VoidCallback onStartPractice;
 
   const _HomeHeroCard({
     required this.profile,
-    required this.skillsImproving,
     required this.onStartPractice,
   });
 
@@ -172,7 +268,7 @@ class _HomeHeroCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: AppColors.goldGradient,
+          colors: AppColors.heroGradient,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -188,83 +284,50 @@ class _HomeHeroCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
-              child: InkWell(
-                onTap: onStartPractice,
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: AppColors.accent.withOpacity(0.35),
-                    borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-                    border: Border.all(color: Colors.white.withOpacity(0.5)),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Ready to practise?',
-                              style: theme.textTheme.titleLarge
-                                  ?.copyWith(color: AppColors.primary),
-                            ),
-                            const SizedBox(height: 3),
-                            Text(
-                              'Pick a scenario and roleplay with an AI employee.',
-                              style: theme.textTheme.bodySmall
-                                  ?.copyWith(color: AppColors.textPrimaryLight),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: const BoxDecoration(
-                          color: AppColors.primary,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.arrow_forward_rounded,
-                            color: Colors.white, size: 20),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 18),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                child: _HeroStat(
-                  icon: Icons.forum_outlined,
-                  value: '${profile.totalConversations}',
-                  label: 'Conversations',
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _ScoreRing(score: profile.averageScore),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Ready to practise?',
+                      style: theme.textTheme.titleLarge?.copyWith(color: Colors.white),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      'Pick a scenario and roleplay with an AI employee.',
+                      style: theme.textTheme.bodySmall?.copyWith(color: Colors.white70),
+                    ),
+                  ],
                 ),
               ),
-              const _HeroStatDivider(),
-              Expanded(
-                child: _HeroStat(
-                  icon: Icons.trending_up_rounded,
-                  value: '${profile.averageScore}',
-                  label: 'Avg Score',
-                ),
-              ),
-              const _HeroStatDivider(),
-              Expanded(
-                child: _HeroStat(
-                  icon: Icons.emoji_events_outlined,
-                  value: '$skillsImproving',
-                  label: 'Improving',
-                ),
+              const SizedBox(width: 12),
+              Image.asset(
+                'assets/illustrations/paperplane.png',
+                width: 100,
+                height: 100,
+                fit: BoxFit.contain,
               ),
             ],
+          ),
+          const SizedBox(height: 14),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: onStartPractice,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: AppColors.primary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppTheme.radiusPill),
+                ),
+              ),
+              child: const Text('Start Practising'),
+            ),
           ),
         ],
       ),
@@ -272,43 +335,40 @@ class _HomeHeroCard extends StatelessWidget {
   }
 }
 
-class _HeroStat extends StatelessWidget {
-  final IconData icon;
-  final String value;
-  final String label;
-  const _HeroStat({required this.icon, required this.value, required this.label});
+/// Circular average-score indicator shown at the top-left of the hero
+/// card, above the "Ready to practise?" title.
+class _ScoreRing extends StatelessWidget {
+  final int score;
+  const _ScoreRing({required this.score});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Column(
-      children: [
-        Icon(icon, color: AppColors.primary.withOpacity(0.75), size: 18),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: theme.textTheme.headlineSmall?.copyWith(color: AppColors.primary),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          label,
-          style: theme.textTheme.labelSmall?.copyWith(color: AppColors.primary.withOpacity(0.65)),
-          textAlign: TextAlign.center,
-        ),
-      ],
-    );
-  }
-}
-
-class _HeroStatDivider extends StatelessWidget {
-  const _HeroStatDivider();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 1,
-      height: 40,
-      color: AppColors.primary.withOpacity(0.15),
+    return SizedBox(
+      width: 52,
+      height: 52,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          SizedBox(
+            width: 52,
+            height: 52,
+            child: CircularProgressIndicator(
+              value: score / 100,
+              strokeWidth: 4,
+              backgroundColor: Colors.white24,
+              valueColor: const AlwaysStoppedAnimation(Colors.white),
+            ),
+          ),
+          Text(
+            '$score',
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -333,10 +393,10 @@ class _ContinuePractisingCard extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: AppColors.accentLight,
+                  color: AppColors.iconBlue.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(AppTheme.radiusSm),
                 ),
-                child: const Icon(Icons.replay_rounded, color: AppColors.primary),
+                child: const Icon(Icons.replay_rounded, color: AppColors.iconBlue),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -387,3 +447,4 @@ class _RecommendedCard extends StatelessWidget {
     );
   }
 }
+

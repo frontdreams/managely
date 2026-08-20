@@ -88,13 +88,13 @@ class AboutScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 28),
 
-          _Section(
+          const _Section(
             title: 'What Managely Does',
             body:
                 'Managely is a practice space for the conversations new managers dread most — difficult feedback, saying no, setting boundaries, handling conflict. You roleplay with an AI "employee" that responds the way a real person would, then get a clear read on how you communicated. Nothing here evaluates or makes decisions about real employees — only your side of the conversation.',
           ),
 
-          _Section(
+          const _Section(
             title: 'How Scoring Works',
             body:
                 'Your starting scores come from a short situational-judgment assessment — realistic workplace scenarios with answer choices that vary in quality, not a self-rating you fill in yourself (self-ratings are notoriously unreliable; people tend to overrate themselves). From there, every practice conversation nudges your scores based on the same signals: specificity, tone, whether you listened before responding, and how you handled pushback.',

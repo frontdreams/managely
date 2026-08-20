@@ -279,7 +279,7 @@ class _OfferingsErrorState extends StatelessWidget {
             onPressed: onRetry,
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.textOnBrand,
-              side: const BorderSide(color: Colors.white54),
+              side: const BorderSide(color: AppColors.borderLight),
             ),
             child: const Text('Try Again'),
           ),
@@ -335,7 +335,7 @@ class _PlanCard extends StatelessWidget {
                 ),
                 child: Text(
                   isAnnual ? 'SAVE MORE' : 'BEST VALUE',
-                  style: theme.textTheme.labelSmall?.copyWith(color: AppColors.primary),
+                  style: theme.textTheme.labelSmall?.copyWith(color: Colors.white),
                 ),
               ),
             ],
@@ -360,7 +360,7 @@ class _PlanCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.check_circle_rounded, color: AppColors.accent, size: 18),
+                const Icon(Icons.check_circle_rounded, color: Colors.white, size: 18),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(benefit, style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white)),
@@ -388,9 +388,9 @@ class _BillingToggle extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
+        color: AppColors.surfaceLight,
         borderRadius: BorderRadius.circular(AppTheme.radiusPill),
-        border: Border.all(color: Colors.white24),
+        border: Border.all(color: AppColors.borderLight),
       ),
       child: Row(
         children: [
@@ -437,7 +437,7 @@ class _BillingOption extends StatelessWidget {
           label,
           textAlign: TextAlign.center,
           style: theme.textTheme.labelLarge?.copyWith(
-            color: selected ? AppColors.primary : AppColors.textOnBrandMuted,
+            color: selected ? Colors.white : AppColors.textOnBrandMuted,
           ),
         ),
       ),

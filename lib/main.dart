@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/constants/app_constants.dart';
 import 'core/routing/app_router.dart';
@@ -23,19 +24,29 @@ class ManagelyApp extends ConsumerWidget {
     final router = ref.watch(appRouterProvider);
     final isDark = ref.watch(userProfileProvider.select((p) => p.themeIsDark));
 
-    return MaterialApp.router(
-      title: AppConstants.appName,
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
-      themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
-      routerConfig: router,
-      // Dismiss the on-screen keyboard when tapping anywhere outside the
-      // focused field, on every screen, without each screen wiring it up.
-      builder: (context, child) => GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: child,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      // The phone's own status bar (battery/signal/clock) and gesture nav
+      // bar icons aren't part of the app's theme — Flutter doesn't pick
+      // their color up automatically on screens with no AppBar (Welcome,
+      // Onboarding, Home, etc.), so without this they default to light
+      // icons and disappear against this theme's white background. Swaps
+      // to light icons automatically when Dark Theme is on, since the
+      // background is black then instead.
+      value: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
+      child: MaterialApp.router(
+        title: AppConstants.appName,
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
+        themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+        routerConfig: router,
+        // Dismiss the on-screen keyboard when tapping anywhere outside the
+        // focused field, on every screen, without each screen wiring it up.
+        builder: (context, child) => GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+          child: child,
+        ),
       ),
     );
   }

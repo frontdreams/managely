@@ -28,8 +28,8 @@ class EmptyState extends StatelessWidget {
           Container(
             width: 72,
             height: 72,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.14),
+            decoration: const BoxDecoration(
+              color: AppColors.surfaceLight,
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: AppColors.textOnBrand, size: 32),
@@ -50,7 +50,7 @@ class EmptyState extends StatelessWidget {
               onPressed: onAction,
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.textOnBrand,
-                side: const BorderSide(color: Colors.white54),
+                side: const BorderSide(color: AppColors.borderLight),
               ),
               child: Text(actionLabel!),
             ),

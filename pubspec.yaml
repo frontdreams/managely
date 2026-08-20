@@ -39,6 +39,7 @@ dependencies:
   purchases_flutter: ^10.9.0
   purchases_ui_flutter: ^10.9.0
   speech_to_text: ^7.4.0
+  flutter_tts: ^4.2.5
 
 dev_dependencies:
   flutter_test:
@@ -50,3 +51,5 @@ flutter:
   assets:
     - assets/icon.png
     - assets/google.png
+    - assets/illustrations/paperplane.png
+    - assets/illustrations/dumbell.png

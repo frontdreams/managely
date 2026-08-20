@@ -10,6 +10,7 @@ import '../../../models/scenario.dart';
 import '../../../shared/widgets/app_snackbar.dart';
 import '../../../shared/widgets/difficulty_stars.dart';
 import '../providers/conversation_providers.dart';
+import 'voice_mode_view.dart';
 
 class ConversationScreen extends ConsumerStatefulWidget {
   const ConversationScreen({super.key});
@@ -25,6 +26,7 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
   final SpeechToText _speech = SpeechToText();
   bool _isListening = false;
   double _soundLevel = 0;
+  bool _voiceMode = false;
 
   static const _composerMaxLines = 4;
 
@@ -196,6 +198,17 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
     }
   }
 
+  Future<void> _enterVoiceMode() async {
+    // Only one speech session can run at a time — release the composer's
+    // before VoiceModeView starts its own.
+    if (_isListening) await _speech.stop();
+    if (mounted) setState(() => _voiceMode = true);
+  }
+
+  void _exitVoiceMode() {
+    setState(() => _voiceMode = false);
+  }
+
   @override
   void dispose() {
     if (_isListening) _speech.stop();
@@ -211,7 +224,17 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
     final scenario = state.scenario;
 
     if (scenario == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator(color: Colors.white)));
+      return const Scaffold(body: Center(child: CircularProgressIndicator(color: AppColors.primary)));
+    }
+
+    if (_voiceMode) {
+      return VoiceModeView(
+        onExit: _exitVoiceMode,
+        onEndConversation: () {
+          _exitVoiceMode();
+          _endConversation();
+        },
+      );
     }
 
     final color = skillColor(scenario.primarySkill);
@@ -225,10 +248,18 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
+        backgroundColor: AppColors.bgLight,
         leading: IconButton(
           icon: const Icon(Icons.close_rounded),
           onPressed: _confirmExit,
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.graphic_eq_rounded),
+            tooltip: 'Voice Mode',
+            onPressed: _enterVoiceMode,
+          ),
+        ],
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -260,7 +291,10 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            color: AppColors.primary,
+            decoration: const BoxDecoration(
+              color: AppColors.bgLight,
+              border: Border(bottom: BorderSide(color: AppColors.borderLight)),
+            ),
             child: Row(
               children: [
                 _EmployeeAvatar(name: scenario.employeeName, color: color, radius: 18),
@@ -273,7 +307,7 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
                       style: Theme.of(context)
                           .textTheme
                           .titleSmall
-                          ?.copyWith(color: Colors.white),
+                          ?.copyWith(color: AppColors.textOnBrand),
                     ),
                     Text(
                       'Employee',
@@ -395,7 +429,7 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
                         icon: const Icon(Icons.arrow_upward_rounded),
                         style: IconButton.styleFrom(
                           backgroundColor: AppColors.accent,
-                          foregroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
                           minimumSize: const Size(48, 48),
                         ),
                       ),
@@ -482,9 +516,8 @@ class _EmployeeAvatar extends StatelessWidget {
 }
 
 /// Very faint, WhatsApp-style tiled doodle pattern behind the chat
-/// messages — decorative only, never intercepts touches. Light-colored
-/// since it sits on the screen's dark navy/indigo background, not a white
-/// surface.
+/// messages — decorative only, never intercepts touches. Dark-colored
+/// since it sits on the screen's white background.
 class _ChatDoodleBackground extends StatelessWidget {
   const _ChatDoodleBackground();
 
@@ -493,7 +526,7 @@ class _ChatDoodleBackground extends StatelessWidget {
     return const Positioned.fill(
       child: IgnorePointer(
         child: CustomPaint(
-          painter: _DoodlePainter(color: Colors.white),
+          painter: _DoodlePainter(color: AppColors.primary),
         ),
       ),
     );

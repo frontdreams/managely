@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/theme/app_colors.dart';
 
 /// Shown briefly while the auth state and (if signed in) the user's
 /// Firestore profile are still loading, before routing decides where to go.
@@ -16,7 +17,7 @@ class SplashScreen extends StatelessWidget {
               'assets/icon.png',
               width: 200,
               height: 200,
-              color: Colors.white,
+              color: AppColors.textOnBrand,
             ),
           //  const SizedBox(height: 32),
           //  const CircularProgressIndicator(color: Colors.white),

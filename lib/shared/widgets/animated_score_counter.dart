@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/theme/app_colors.dart';
 
 class AnimatedScoreCounter extends StatelessWidget {
   final int score;
@@ -32,7 +33,7 @@ class AnimatedScoreCounter extends StatelessWidget {
                 child: CircularProgressIndicator(
                   value: progress * (score / 100),
                   strokeWidth: 10,
-                  backgroundColor: Colors.white.withOpacity(0.18),
+                  backgroundColor: AppColors.borderLight,
                   valueColor: AlwaysStoppedAnimation(color),
                   strokeCap: StrokeCap.round,
                 ),
@@ -49,7 +50,10 @@ class AnimatedScoreCounter extends StatelessWidget {
                   ),
                   Text(
                     '/ 100',
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white70),
+                    style: Theme.of(context)
+                        .textTheme
+                        .labelMedium
+                        ?.copyWith(color: AppColors.textOnBrandMuted),
                   ),
                 ],
               ),

@@ -24,6 +24,42 @@ class FirestoreUserRepository {
     return _userDoc(uid).set(_profileToJson(profile), SetOptions(merge: true));
   }
 
+  /// Stores a freshly-generated email-verification code and its expiry —
+  /// called right before (or when resending) the code email goes out.
+  Future<void> setVerificationCode(
+    String uid, {
+    required String code,
+    required DateTime expiresAt,
+  }) {
+    return _userDoc(uid).set({
+      'verificationCode': code,
+      'verificationCodeExpiresAt': Timestamp.fromDate(expiresAt),
+    }, SetOptions(merge: true));
+  }
+
+  /// Checks [code] against the one stored for [uid]. On a match that
+  /// hasn't expired, marks the account verified and clears the stored
+  /// code so it can't be reused, then returns true. Returns false (without
+  /// changing anything) on a wrong or expired code, so the user can retry.
+  Future<bool> verifyCode(String uid, String code) async {
+    final snapshot = await _userDoc(uid).get();
+    final data = snapshot.data();
+    if (data == null) return false;
+
+    final storedCode = data['verificationCode'] as String?;
+    final expiresAt = (data['verificationCodeExpiresAt'] as Timestamp?)?.toDate();
+    if (storedCode == null || expiresAt == null) return false;
+    if (storedCode != code) return false;
+    if (DateTime.now().isAfter(expiresAt)) return false;
+
+    await _userDoc(uid).set({
+      'emailVerified': true,
+      'verificationCode': FieldValue.delete(),
+      'verificationCodeExpiresAt': FieldValue.delete(),
+    }, SetOptions(merge: true));
+    return true;
+  }
+
   Future<List<PracticeSession>> loadSessions(String uid) async {
     final snapshot = await _userDoc(uid)
         .collection('sessions')
@@ -55,6 +91,7 @@ class FirestoreUserRepository {
         'skillsAssessmentComplete': p.skillsAssessmentComplete,
         'themeIsDark': p.themeIsDark,
         'notificationsEnabled': p.notificationsEnabled,
+        'emailVerified': p.emailVerified,
       };
 
   UserProfile _profileFromJson(Map<String, dynamic> json) {
@@ -90,6 +127,7 @@ class FirestoreUserRepository {
       themeIsDark: json['themeIsDark'] as bool? ?? false,
       notificationsEnabled: json['notificationsEnabled'] as bool? ?? true,
       isHydrated: true,
+      emailVerified: json['emailVerified'] as bool? ?? defaults.emailVerified,
     );
   }
 

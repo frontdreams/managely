@@ -169,7 +169,7 @@ class _PageDots extends StatelessWidget {
           width: active ? 22 : 8,
           height: 8,
           decoration: BoxDecoration(
-            color: active ? Colors.white : Colors.white.withOpacity(0.3),
+            color: active ? AppColors.primary : AppColors.borderLight,
             borderRadius: BorderRadius.circular(AppTheme.radiusPill),
           ),
         );

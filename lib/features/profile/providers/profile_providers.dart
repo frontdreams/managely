@@ -48,11 +48,15 @@ class UserProfileNotifier extends StateNotifier<UserProfile> {
 
     // Brand-new account: seed a fresh profile (using the auth display name
     // and, for Google sign-ins, their Google profile photo) and persist it
-    // immediately so the doc exists going forward.
+    // immediately so the doc exists going forward. Only email/password
+    // sign-ups start unverified — Google already confirmed the address.
+    final isPasswordAccount =
+        authUser?.providerData.any((p) => p.providerId == 'password') ?? false;
     final seeded = UserProfile(
       name: (authName != null && authName.isNotEmpty) ? authName : 'You',
       photoUrl: (authPhoto != null && authPhoto.isNotEmpty) ? authPhoto : null,
       isHydrated: true,
+      emailVerified: !isPasswordAccount,
     );
     state = seeded;
     await repo.saveProfile(uid, seeded);
@@ -66,6 +70,13 @@ class UserProfileNotifier extends StateNotifier<UserProfile> {
 
   /// Re-fetches the profile from Firestore — used by pull-to-refresh.
   Future<void> refresh() => _hydrate();
+
+  /// Called once [EmailVerificationScreen] confirms the entered code
+  /// matches — lets the router move the user on to onboarding.
+  Future<void> markEmailVerified() async {
+    state = state.copyWith(emailVerified: true);
+    await _persist();
+  }
 
   Future<void> completeOnboarding(List<ManagerSkill> focusSkills) async {
     state = state.copyWith(

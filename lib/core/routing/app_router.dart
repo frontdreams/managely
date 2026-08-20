@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/register_screen.dart';
 import '../../features/auth/presentation/forgot_password_screen.dart';
+import '../../features/auth/presentation/email_verification_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screen.dart';
 import '../../features/onboarding/presentation/skills_assessment_screen.dart';
 import '../../features/subscription/presentation/subscription_screen.dart';
@@ -89,6 +90,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return loc == '/splash' ? null : '/splash';
       }
 
+      // Email/password sign-ups must confirm the 6-digit code sent to
+      // their inbox before reaching onboarding. Google sign-ins skip this
+      // — their email is already verified — see UserProfileNotifier.
+      if (!profile.emailVerified) {
+        return loc == '/verify-email' ? null : '/verify-email';
+      }
+
       // Brand-new (or otherwise not-yet-onboarded) accounts pick a plan,
       // then their focus skills, before reaching the rest of the app.
       if (!profile.onboardingComplete) {
@@ -105,6 +113,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
       if (_authRoutes.contains(loc) ||
           loc == '/welcome' ||
+          loc == '/verify-email' ||
           loc == '/subscription' ||
           loc == '/onboarding' ||
           loc == '/skills-assessment' ||
@@ -141,6 +150,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/welcome',
         builder: (context, state) => const WelcomeScreen(),
+      ),
+      GoRoute(
+        path: '/verify-email',
+        builder: (context, state) => const EmailVerificationScreen(),
       ),
       GoRoute(
         path: '/subscription',

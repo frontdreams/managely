@@ -95,7 +95,7 @@ class _EvaluationScreenState extends ConsumerState<EvaluationScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const CircularProgressIndicator(color: Colors.white),
+                const CircularProgressIndicator(color: AppColors.primary),
                 const SizedBox(height: 20),
                 Text(
                   'Evaluating your conversation…',
@@ -224,7 +224,7 @@ class _EvaluationBody extends StatelessWidget {
               _FeedbackSection(
                 title: 'Try this next time',
                 icon: Icons.lightbulb_outline_rounded,
-                color: AppColors.primary,
+                color: AppColors.iconBlue,
                 points: evaluation.tryNextTime,
               ),
             ] else
@@ -244,7 +244,7 @@ class _EvaluationBody extends StatelessWidget {
               onPressed: onDone,
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.textOnBrand,
-                side: const BorderSide(color: Colors.white54),
+                side: const BorderSide(color: AppColors.borderLight),
               ),
               child: Text(showLeading ? 'Close' : 'Back to Home'),
             ),
@@ -367,8 +367,17 @@ class _FeedbackSection extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(icon, color: color, size: 20),
-                const SizedBox(width: 8),
+                Container(
+                  width: 32,
+                  height: 32,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+                  ),
+                  child: Icon(icon, color: color, size: 18),
+                ),
+                const SizedBox(width: 10),
                 Text(title, style: theme.textTheme.titleSmall),
               ],
             ),

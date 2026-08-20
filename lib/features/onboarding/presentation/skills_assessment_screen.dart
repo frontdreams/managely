@@ -102,7 +102,8 @@ class _QuestionView extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Question ${currentIndex + 1} of ${questions.length}',
-                          style: theme.textTheme.labelMedium?.copyWith(color: Colors.white70)),
+                          style: theme.textTheme.labelMedium
+                              ?.copyWith(color: AppColors.textOnBrandMuted)),
                       Row(
                         children: [
                           Icon(question.skill.icon, size: 14, color: color),
@@ -191,7 +192,7 @@ class _ResultsView extends ConsumerWidget {
           children: [
             Text(
               'Here\'s where you\'re starting from.',
-              style: theme.textTheme.headlineSmall?.copyWith(color: Colors.white),
+              style: theme.textTheme.headlineSmall?.copyWith(color: AppColors.textOnBrand),
             ),
             const SizedBox(height: 8),
             Text(

@@ -36,10 +36,9 @@ class AppShell extends StatefulWidget {
   State<AppShell> createState() => _AppShellState();
 }
 
+const double _barHeight = 64;
+
 class _AppShellState extends State<AppShell> {
-  static const double _barHeight = 64;
-  static const double _bottomMargin = 16;
-  static const double _sideMargin = 20;
   static const Duration _exitPromptWindow = Duration(seconds: 2);
 
   // Some devices dispatch a single physical back press to Flutter more than
@@ -100,21 +99,11 @@ class _AppShellState extends State<AppShell> {
         _handleBack();
       },
       child: Scaffold(
-        extendBody: true,
         body: widget.child,
-        bottomNavigationBar: SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(_sideMargin, 0, _sideMargin, _bottomMargin),
-            child: SizedBox(
-              height: _barHeight,
-              child: _GlassBar(
-                currentIndex: widget.currentIndex,
-                onTabSelected: widget.onTabSelected,
-                onCreatePressed: widget.onCreatePressed,
-              ),
-            ),
-          ),
+        bottomNavigationBar: _SolidBar(
+          currentIndex: widget.currentIndex,
+          onTabSelected: widget.onTabSelected,
+          onCreatePressed: widget.onCreatePressed,
         ),
       ),
     );
@@ -123,6 +112,76 @@ class _AppShellState extends State<AppShell> {
 
 typedef _NavItemData = ({IconData icon, IconData selectedIcon, String label});
 
+const _navItems = <_NavItemData>[
+  (icon: Icons.home_outlined, selectedIcon: Icons.home_rounded, label: 'Home'),
+  (
+    icon: Icons.fitness_center_outlined,
+    selectedIcon: Icons.fitness_center_rounded,
+    label: 'Practice'
+  ),
+  (icon: Icons.insights_outlined, selectedIcon: Icons.insights_rounded, label: 'Progress'),
+  (icon: Icons.person_outline_rounded, selectedIcon: Icons.person_rounded, label: 'Profile'),
+];
+
+/// The bottom nav bar actually in use — full-width, opaque white, flush
+/// with the bottom of the screen (no floating margin or blur).
+class _SolidBar extends StatelessWidget {
+  final int currentIndex;
+  final ValueChanged<int> onTabSelected;
+  final VoidCallback onCreatePressed;
+  const _SolidBar({
+    required this.currentIndex,
+    required this.onTabSelected,
+    required this.onCreatePressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(top: BorderSide(color: AppColors.borderLight)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: _barHeight,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _NavIcon(
+                item: _navItems[0],
+                selected: currentIndex == 0,
+                onTap: () => onTabSelected(0),
+              ),
+              _NavIcon(
+                item: _navItems[1],
+                selected: currentIndex == 1,
+                onTap: () => onTabSelected(1),
+              ),
+              _CenterActionButton(onPressed: onCreatePressed),
+              _NavIcon(
+                item: _navItems[2],
+                selected: currentIndex == 2,
+                onTap: () => onTabSelected(2),
+              ),
+              _NavIcon(
+                item: _navItems[3],
+                selected: currentIndex == 3,
+                onTap: () => onTabSelected(3),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Backup design, kept for reference but not currently used — the floating
+/// glass/blurred pill bar this screen used before switching to
+/// [_SolidBar]. Swap it back into [AppShell.build] if that look is wanted
+/// again.
 class _GlassBar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTabSelected;
@@ -133,17 +192,6 @@ class _GlassBar extends StatelessWidget {
     required this.onCreatePressed,
   });
 
-  static const _items = <_NavItemData>[
-    (icon: Icons.home_outlined, selectedIcon: Icons.home_rounded, label: 'Home'),
-    (
-      icon: Icons.fitness_center_outlined,
-      selectedIcon: Icons.fitness_center_rounded,
-      label: 'Practice'
-    ),
-    (icon: Icons.insights_outlined, selectedIcon: Icons.insights_rounded, label: 'Progress'),
-    (icon: Icons.person_outline_rounded, selectedIcon: Icons.person_rounded, label: 'Profile'),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
@@ -152,12 +200,12 @@ class _GlassBar extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.14),
+            color: Colors.white.withOpacity(0.75),
             borderRadius: BorderRadius.circular(32),
-            border: Border.all(color: Colors.white.withOpacity(0.24)),
+            border: Border.all(color: AppColors.borderLight),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.18),
+                color: Colors.black.withOpacity(0.1),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
               ),
@@ -167,23 +215,23 @@ class _GlassBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               _NavIcon(
-                item: _items[0],
+                item: _navItems[0],
                 selected: currentIndex == 0,
                 onTap: () => onTabSelected(0),
               ),
               _NavIcon(
-                item: _items[1],
+                item: _navItems[1],
                 selected: currentIndex == 1,
                 onTap: () => onTabSelected(1),
               ),
               _CenterActionButton(onPressed: onCreatePressed),
               _NavIcon(
-                item: _items[2],
+                item: _navItems[2],
                 selected: currentIndex == 2,
                 onTap: () => onTabSelected(2),
               ),
               _NavIcon(
-                item: _items[3],
+                item: _navItems[3],
                 selected: currentIndex == 3,
                 onTap: () => onTabSelected(3),
               ),
@@ -215,12 +263,12 @@ class _NavIcon extends StatelessWidget {
           width: 44,
           height: 44,
           decoration: BoxDecoration(
-            color: selected ? Colors.white.withOpacity(0.22) : Colors.transparent,
+            color: selected ? AppColors.primaryLight : Colors.transparent,
             borderRadius: BorderRadius.circular(14),
           ),
           child: Icon(
             selected ? item.selectedIcon : item.icon,
-            color: selected ? Colors.white : Colors.white70,
+            color: selected ? AppColors.primary : AppColors.textSecondaryLight,
             size: 22,
           ),
         ),
@@ -235,26 +283,20 @@ class _CenterActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
+    return Semantics(
+      label: 'Create',
+      button: true,
       child: InkWell(
         onTap: onPressed,
-        customBorder: const CircleBorder(),
-        child: Container(
+        borderRadius: BorderRadius.circular(14),
+        child: SizedBox(
           width: 44,
           height: 44,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: AppColors.accent,
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.accent.withOpacity(0.45),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              ),
-            ],
+          child: Icon(
+            Icons.add_rounded,
+            color: AppColors.textSecondaryLight,
+            size: 22,
           ),
-          child: const Icon(Icons.add_rounded, color: AppColors.primary, size: 26),
         ),
       ),
     );

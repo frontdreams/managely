@@ -14,7 +14,7 @@ class AuthLogo extends StatelessWidget {
       'assets/icon.png',
       width: size,
       height: size,
-      color: Colors.white,
+      color: AppColors.textOnBrand,
     );
   }
 }
@@ -103,7 +103,7 @@ class AuthOrDivider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Expanded(child: Divider(color: Colors.white30)),
+        const Expanded(child: Divider(color: AppColors.borderLight)),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Text(
@@ -114,7 +114,7 @@ class AuthOrDivider extends StatelessWidget {
                 ?.copyWith(color: AppColors.textOnBrandMuted),
           ),
         ),
-        const Expanded(child: Divider(color: Colors.white30)),
+        const Expanded(child: Divider(color: AppColors.borderLight)),
       ],
     );
   }

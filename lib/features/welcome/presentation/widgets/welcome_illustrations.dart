@@ -24,13 +24,13 @@ class ConfidenceIllustration extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                _Bar(height: 46, color: Colors.white.withOpacity(0.28)),
+                _Bar(height: 46, color: AppColors.textOnBrand.withOpacity(0.28)),
                 const SizedBox(width: 10),
-                _Bar(height: 74, color: Colors.white.withOpacity(0.5)),
+                _Bar(height: 74, color: AppColors.textOnBrand.withOpacity(0.5)),
                 const SizedBox(width: 10),
-                _Bar(height: 60, color: Colors.white.withOpacity(0.38)),
+                _Bar(height: 60, color: AppColors.textOnBrand.withOpacity(0.38)),
                 const SizedBox(width: 10),
-                Stack(
+                const Stack(
                   clipBehavior: Clip.none,
                   alignment: Alignment.topCenter,
                   children: [
@@ -40,7 +40,7 @@ class ConfidenceIllustration extends StatelessWidget {
                       child: _Badge(
                         icon: Icons.trending_up_rounded,
                         background: AppColors.accent,
-                        iconColor: AppColors.primary,
+                        iconColor: Colors.white,
                       ),
                     ),
                   ],
@@ -71,7 +71,7 @@ class ConversationIllustration extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           _Backdrop(),
-          Positioned(
+          const Positioned(
             left: 18,
             top: 14,
             child: _Bubble(
@@ -83,13 +83,13 @@ class ConversationIllustration extends StatelessWidget {
               alignEnd: false,
             ),
           ),
-          Positioned(
+          const Positioned(
             right: 14,
             bottom: 24,
             child: _Bubble(
               icon: Icons.smart_toy_rounded,
               background: AppColors.accent,
-              iconColor: AppColors.primary,
+              iconColor: Colors.white,
               width: 130,
               height: 64,
               alignEnd: true,
@@ -106,7 +106,7 @@ class ConversationIllustration extends StatelessWidget {
                   width: 6,
                   height: 6,
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.6),
+                    color: AppColors.textOnBrand.withOpacity(0.6),
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -135,9 +135,9 @@ class FeedbackIllustration extends StatelessWidget {
             width: 168,
             padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 18),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.14),
+              color: AppColors.textOnBrand.withOpacity(0.05),
               borderRadius: BorderRadius.circular(22),
-              border: Border.all(color: Colors.white.withOpacity(0.4)),
+              border: Border.all(color: AppColors.textOnBrand.withOpacity(0.15)),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -153,11 +153,11 @@ class FeedbackIllustration extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 14),
-                _SkillLine(width: 120),
+                const _SkillLine(width: 120),
                 const SizedBox(height: 8),
-                _SkillLine(width: 90),
+                const _SkillLine(width: 90),
                 const SizedBox(height: 8),
-                _SkillLine(width: 104),
+                const _SkillLine(width: 104),
               ],
             ),
           ),
@@ -167,11 +167,11 @@ class FeedbackIllustration extends StatelessWidget {
             child: _Badge(
               icon: Icons.check_rounded,
               background: AppColors.accent,
-              iconColor: AppColors.primary,
+              iconColor: Colors.white,
               size: 40,
             ),
           ),
-          Positioned(
+          const Positioned(
             bottom: 2,
             left: 44,
             child: _Badge(
@@ -195,7 +195,7 @@ class _Backdrop extends StatelessWidget {
       height: 200,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.white.withOpacity(0.08),
+        color: AppColors.textOnBrand.withOpacity(0.04),
       ),
     );
   }
@@ -336,7 +336,7 @@ class _SkillLine extends StatelessWidget {
       width: width,
       height: 8,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.4),
+        color: AppColors.textOnBrand.withOpacity(0.15),
         borderRadius: BorderRadius.circular(4),
       ),
     );

@@ -67,12 +67,12 @@ class ProfileScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 14),
 
-            _SettingsGroupLabel(label: 'PLAN'),
+            const _SettingsGroupLabel(label: 'PLAN'),
             _SettingsGroup(
               children: [
                 _SettingsRow(
                   icon: Icons.workspace_premium_outlined,
-                  iconColor: AppColors.warning,
+                  iconColor: AppColors.iconAmber,
                   title: 'Manage Subscription',
                   subtitle: profile.isPremiumTier ? 'Premium' : 'Free plan',
                   onTap: () => context.push('/upgrade'),
@@ -81,18 +81,18 @@ class ProfileScreen extends ConsumerWidget {
             ),
 
             const SizedBox(height: 20),
-            _SettingsGroupLabel(label: 'PREFERENCES'),
+            const _SettingsGroupLabel(label: 'PREFERENCES'),
             _SettingsGroup(
               children: [
                 _SettingsRow(
                   icon: Icons.edit_outlined,
-                  iconColor: AppColors.primary,
+                  iconColor: AppColors.iconBlue,
                   title: 'Edit Profile',
                   onTap: () => context.push('/profile/edit'),
                 ),
                 _SettingsSwitchRow(
                   icon: Icons.notifications_outlined,
-                  iconColor: AppColors.warning,
+                  iconColor: AppColors.iconPink,
                   title: 'Notifications',
                   value: profile.notificationsEnabled,
                   onChanged: (v) =>
@@ -100,14 +100,14 @@ class ProfileScreen extends ConsumerWidget {
                 ),
                 _SettingsSwitchRow(
                   icon: Icons.dark_mode_outlined,
-                  iconColor: AppColors.textSecondaryLight,
+                  iconColor: AppColors.iconPurple,
                   title: 'Dark Theme',
                   value: profile.themeIsDark,
                   onChanged: (v) => ref.read(userProfileProvider.notifier).toggleTheme(v),
                 ),
                 _SettingsRow(
                   icon: Icons.smart_toy_outlined,
-                  iconColor: AppColors.accent,
+                  iconColor: AppColors.iconTeal,
                   title: 'AI Preferences',
                   onTap: () => AppSnackBar.show(context, 'AI preferences coming soon.'),
                 ),
@@ -129,18 +129,18 @@ class ProfileScreen extends ConsumerWidget {
             ), */
 
             const SizedBox(height: 20),
-            _SettingsGroupLabel(label: 'PRIVACY & SUPPORT'),
+            const _SettingsGroupLabel(label: 'PRIVACY & SUPPORT'),
             _SettingsGroup(
               children: [
                 _SettingsRow(
                   icon: Icons.privacy_tip_outlined,
-                  iconColor: AppColors.primary,
+                  iconColor: AppColors.iconBlue,
                   title: 'Privacy',
                   onTap: () => context.push('/profile/privacy'),
                 ),
                 _SettingsRow(
                   icon: Icons.info_outline_rounded,
-                  iconColor: AppColors.textSecondaryLight,
+                  iconColor: AppColors.iconGreen,
                   title: 'About Managely',
                   subtitle: 'How scoring works, and the app\'s mission',
                   onTap: () => context.push('/profile/about'),
@@ -234,7 +234,7 @@ class _ProfileHeaderCard extends StatelessWidget {
                     onTap: onEdit,
                     child: const Padding(
                       padding: EdgeInsets.all(7),
-                      child: Icon(Icons.edit_outlined, color: AppColors.primary, size: 16),
+                      child: Icon(Icons.edit_outlined, color: Colors.white, size: 16),
                     ),
                   ),
                 ),
@@ -258,7 +258,7 @@ class _ProfileHeaderCard extends StatelessWidget {
             ),
             child: Text(
               levelLabel,
-              style: theme.textTheme.labelSmall?.copyWith(color: AppColors.primary),
+              style: theme.textTheme.labelSmall?.copyWith(color: Colors.white),
             ),
           ),
           const SizedBox(height: 24),
@@ -267,7 +267,7 @@ class _ProfileHeaderCard extends StatelessWidget {
               Expanded(
                 child: _StatBlock(
                   value: '$conversations',
-                  label: 'Conversations',
+                  label: 'Sessions',
                 ),
               ),
               const _StatDivider(),
@@ -352,31 +352,26 @@ class _SettingsGroupLabel extends StatelessWidget {
   }
 }
 
-/// A rounded card containing a set of [_SettingsRow]/[_SettingsSwitchRow]
-/// children, with a divider automatically inserted between them — the
-/// shared container for one logical group of settings.
+/// A plain vertical list of [_SettingsRow]/[_SettingsSwitchRow] children,
+/// spaced out directly on the page background — no card, no boundary,
+/// just the icon chips carrying the visual weight.
 class _SettingsGroup extends StatelessWidget {
   final List<Widget> children;
   const _SettingsGroup({required this.children});
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        children: [
-          for (int i = 0; i < children.length; i++) ...[
-            children[i],
-            if (i != children.length - 1)
-              Divider(
-                height: 1,
-                indent: 68,
-                endIndent: 0,
-                color: Theme.of(context).dividerColor.withValues(alpha: 0.5),
-              ),
-          ],
+    return Column(
+      children: [
+        for (int i = 0; i < children.length; i++) ...[
+          children[i],
+          if (i != children.length - 1)
+            Divider(
+              height: 1,
+              color: Theme.of(context).dividerColor.withValues(alpha: 0.5),
+            ),
         ],
-      ),
+      ],
     );
   }
 }
@@ -403,8 +398,9 @@ class _SettingsRow extends StatelessWidget {
     final theme = Theme.of(context);
     return InkWell(
       onTap: onTap,
+      borderRadius: BorderRadius.circular(AppTheme.radiusMd),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         child: Row(
           children: [
             _SettingsIconChip(icon: icon, color: iconColor),
@@ -451,7 +447,7 @@ class _SettingsSwitchRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         children: [
           _SettingsIconChip(icon: icon, color: iconColor),

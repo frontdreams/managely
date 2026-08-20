@@ -134,7 +134,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         ),
                         child: const Icon(
                           Icons.camera_alt_rounded,
-                          color: AppColors.primary,
+                          color: Colors.white,
                           size: 18,
                         ),
                       ),
@@ -184,9 +184,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     decoration: BoxDecoration(
                       color: selected
                           ? Color.alphaBlend(AppColors.accent.withOpacity(0.22), Colors.white)
-                          : Colors.white.withOpacity(0.1),
+                          : AppColors.surfaceLight,
                       border: Border.all(
-                        color: selected ? AppColors.accent : Colors.white54,
+                        color: selected ? AppColors.accent : AppColors.borderLight,
                         width: selected ? 1.5 : 1,
                       ),
                       borderRadius: BorderRadius.circular(AppTheme.radiusPill),
@@ -211,7 +211,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       height: 22,
                       child: CircularProgressIndicator(
                         strokeWidth: 2.5,
-                        color: AppColors.primary,
+                        color: Colors.white,
                       ),
                     )
                   : const Text('Save Changes'),

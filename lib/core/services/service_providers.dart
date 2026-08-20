@@ -6,6 +6,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'ai_conversation_service.dart';
 import 'auth_service.dart';
+import 'email_verification_api_service.dart';
 import 'firestore_user_repository.dart';
 import 'mock_ai_conversation_service.dart';
 import 'remote_ai_conversation_service.dart';
@@ -14,29 +15,39 @@ import 'revenue_cat_service.dart';
 /// Single source of truth for the active [AIConversationService]
 /// implementation.
 ///
-/// Today this returns [MockAIConversationService] (no setup required, runs
-/// fully offline). To go live against the real Managely backend, deploy
-/// `/managely-backend` (see its README), then swap the return value below
-/// for [RemoteAIConversationService]:
-///
-/// ```dart
-/// return RemoteAIConversationService(
-///   baseUrl: const String.fromEnvironment('MANAGELY_BACKEND_URL'),
-///   appSharedSecret: const String.fromEnvironment('MANAGELY_APP_SECRET'),
-/// );
-/// ```
-///
-/// Reading these from `--dart-define` flags (rather than hardcoding them)
-/// lets staging/production builds point at different backends without a
-/// code change:
-/// `flutter run --dart-define=MANAGELY_BACKEND_URL=https://... --dart-define=MANAGELY_APP_SECRET=...`
-final aiConversationServiceProvider = Provider<AIConversationService>((ref) {
-  return MockAIConversationService();
+/// Defaults to the deployed Managely backend (same values as `env.json` at
+/// the project root). `--dart-define=MANAGELY_BACKEND_URL=...` /
+/// `MANAGELY_APP_SECRET=...` (or `--dart-define-from-file=env.json`) still
+/// override these at build time, e.g. to point a staging build elsewhere or
+/// to fall back to [MockAIConversationService] by passing an empty URL —
+/// but a plain `flutter run` talks to the real backend without any extra
+/// flags.
+const _remoteBackendUrl = String.fromEnvironment(
+  'MANAGELY_BACKEND_URL',
+  defaultValue: 'https://managely-backend.onrender.com',
+);
+const _remoteAppSecret = String.fromEnvironment(
+  'MANAGELY_APP_SECRET',
+  defaultValue: '43a7d7aed10e26ee6346d84e23253204',
+);
 
-  // return RemoteAIConversationService(
-  //   baseUrl: const String.fromEnvironment('MANAGELY_BACKEND_URL'),
-  //   appSharedSecret: const String.fromEnvironment('MANAGELY_APP_SECRET'),
-  // );
+final aiConversationServiceProvider = Provider<AIConversationService>((ref) {
+  if (_remoteBackendUrl.isEmpty) {
+    return MockAIConversationService();
+  }
+  return RemoteAIConversationService(
+    baseUrl: _remoteBackendUrl,
+    appSharedSecret: _remoteAppSecret,
+  );
+});
+
+/// Sends email-verification codes via the deployed backend — shares the
+/// same base URL and shared secret as [aiConversationServiceProvider].
+final emailVerificationApiServiceProvider = Provider<EmailVerificationApiService>((ref) {
+  return EmailVerificationApiService(
+    baseUrl: _remoteBackendUrl,
+    appSharedSecret: _remoteAppSecret,
+  );
 });
 
 final firebaseAuthProvider = Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);
