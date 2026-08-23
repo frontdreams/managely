@@ -16,10 +16,10 @@ class EmailVerificationController extends StateNotifier<AsyncValue<void>> {
   static const _codeLength = 6;
   static const _codeValidity = Duration(minutes: 10);
 
-  /// Generates a fresh code, stores it (with expiry) in Firestore, and
-  /// emails it directly via Resend — no backend involved, so this still
-  /// works if `managely-backend` is down. Called on first entering the
-  /// screen and again for "Resend code".
+  /// Generates a fresh code, stores it (with expiry) in Firestore, and has
+  /// `managely-backend` email it via Resend — the backend holds the real
+  /// Resend API key, never the app. Called on first entering the screen
+  /// and again for "Resend code".
   Future<bool> sendCode() => _run(() async {
         final user = _ref.read(firebaseAuthProvider).currentUser;
         final email = user?.email;
@@ -34,7 +34,7 @@ class EmailVerificationController extends StateNotifier<AsyncValue<void>> {
             .read(firestoreUserRepositoryProvider)
             .setVerificationCode(user.uid, code: code, expiresAt: expiresAt);
 
-        await _ref.read(resendEmailServiceProvider).sendVerificationCode(
+        await _ref.read(verificationEmailServiceProvider).sendVerificationCode(
               email: email,
               name: _ref.read(userProfileProvider).name,
               code: code,

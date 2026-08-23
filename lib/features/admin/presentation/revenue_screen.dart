@@ -215,7 +215,7 @@ class _RevenueBarChart extends StatelessWidget {
           show: true,
           drawVerticalLine: false,
           getDrawingHorizontalLine: (value) =>
-              FlLine(color: AppColors.borderLight, strokeWidth: 1),
+              const FlLine(color: AppColors.borderLight, strokeWidth: 1),
         ),
         borderData: FlBorderData(show: false),
         barGroups: [
