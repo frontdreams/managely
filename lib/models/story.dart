@@ -33,6 +33,22 @@ extension StoryCategoryX on StoryCategory {
     }
   }
 
+  /// Custom flat-line icon asset used on the Home screen's stories tray,
+  /// tinted with [color] — [icon] (a Material glyph) is still used
+  /// elsewhere (admin category chips, the story viewer's header badge).
+  String get imagePath {
+    switch (this) {
+      case StoryCategory.announcements:
+        return 'assets/icons/news.png';
+      case StoryCategory.trends:
+        return 'assets/icons/trends.png';
+      case StoryCategory.insights:
+        return 'assets/icons/insights.png';
+      case StoryCategory.offers:
+        return 'assets/icons/offers.png';
+    }
+  }
+
   Color get color {
     switch (this) {
       case StoryCategory.announcements:
@@ -54,6 +70,46 @@ extension StoryCategoryX on StoryCategory {
   }
 }
 
+/// Solid background a text-only story (no image/video) is shown on —
+/// picked by the admin when posting. Irrelevant for stories that do carry
+/// an image or video, since those show the media itself instead.
+enum StoryBackground { grey, black, white }
+
+extension StoryBackgroundX on StoryBackground {
+  String get label {
+    switch (this) {
+      case StoryBackground.grey:
+        return 'Grey';
+      case StoryBackground.black:
+        return 'Black';
+      case StoryBackground.white:
+        return 'White';
+    }
+  }
+
+  Color get color {
+    switch (this) {
+      case StoryBackground.grey:
+        return const Color(0xFF3A3A3C);
+      case StoryBackground.black:
+        return Colors.black;
+      case StoryBackground.white:
+        return Colors.white;
+    }
+  }
+
+  /// Contrasting color for text/icons/chrome shown on top of [color] —
+  /// black on the white background, white on grey/black.
+  Color get textColor => this == StoryBackground.white ? Colors.black : Colors.white;
+
+  static StoryBackground fromName(String? name) {
+    return StoryBackground.values.firstWhere(
+      (b) => b.name == name,
+      orElse: () => StoryBackground.black,
+    );
+  }
+}
+
 /// One admin-posted story. [imageUrl]/[videoUrl] are Firebase Storage
 /// download URLs (uploaded via [StoryMediaUploader], not typed in as a
 /// link) — a story carries at most one of them. [expiresAt] is optional;
@@ -67,6 +123,7 @@ class Story {
   final String? body;
   final String? imageUrl;
   final String? videoUrl;
+  final StoryBackground background;
   final DateTime createdAt;
   final DateTime? expiresAt;
   final String postedByUid;
@@ -79,6 +136,7 @@ class Story {
     this.body,
     this.imageUrl,
     this.videoUrl,
+    this.background = StoryBackground.black,
     required this.createdAt,
     this.expiresAt,
     required this.postedByUid,
@@ -95,6 +153,7 @@ class Story {
       body: data['body'] as String?,
       imageUrl: data['imageUrl'] as String?,
       videoUrl: data['videoUrl'] as String?,
+      background: StoryBackgroundX.fromName(data['background'] as String?),
       createdAt: (data['createdAt'] as dynamic)?.toDate() ?? DateTime.now(),
       expiresAt: (data['expiresAt'] as dynamic)?.toDate(),
       postedByUid: data['postedByUid'] as String? ?? '',
@@ -109,6 +168,7 @@ class Story {
       'body': body,
       'imageUrl': imageUrl,
       'videoUrl': videoUrl,
+      'background': background.name,
       'postedByUid': postedByUid,
       'postedByName': postedByName,
       // createdAt/expiresAt are set by the repository using

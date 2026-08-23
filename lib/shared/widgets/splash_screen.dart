@@ -10,17 +10,23 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+        child: Stack(
+          alignment: Alignment.center,
           children: [
+            const SizedBox(
+              width: 220,
+              height: 220,
+              child: CircularProgressIndicator(
+                strokeWidth: 3,
+                color: AppColors.textOnBrand,
+              ),
+            ),
             Image.asset(
               'assets/icon.png',
-              width: 200,
-              height: 200,
+              width: 150,
+              height: 150,
               color: AppColors.textOnBrand,
             ),
-          //  const SizedBox(height: 32),
-          //  const CircularProgressIndicator(color: Colors.white),
           ],
         ),
       ),

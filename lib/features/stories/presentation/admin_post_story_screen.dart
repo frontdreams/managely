@@ -23,6 +23,7 @@ class AdminPostStoryScreen extends ConsumerStatefulWidget {
 
 class _AdminPostStoryScreenState extends ConsumerState<AdminPostStoryScreen> {
   StoryCategory _category = StoryCategory.announcements;
+  StoryBackground _background = StoryBackground.black;
   final _titleController = TextEditingController();
   final _bodyController = TextEditingController();
   DateTime? _expiresAt;
@@ -131,6 +132,7 @@ class _AdminPostStoryScreenState extends ConsumerState<AdminPostStoryScreen> {
             body: body.isEmpty ? null : body,
             imageUrl: imageUrl,
             videoUrl: videoUrl,
+            background: _background,
             expiresAt: _expiresAt,
             postedByUid: uid,
             postedByName: profile.name,
@@ -236,6 +238,15 @@ class _AdminPostStoryScreenState extends ConsumerState<AdminPostStoryScreen> {
               onPickVideo: _pickVideo,
               onClear: _clearMedia,
             ),
+            if (_pickedImage == null && _pickedVideo == null) ...[
+              const SizedBox(height: 20),
+              Text('Background', style: theme.textTheme.titleSmall),
+              const SizedBox(height: 10),
+              _BackgroundPicker(
+                selected: _background,
+                onSelected: (b) => setState(() => _background = b),
+              ),
+            ],
             const SizedBox(height: 16),
             _SettingsTileButton(
               icon: Icons.schedule_outlined,
@@ -278,6 +289,51 @@ class _AdminPostStoryScreenState extends ConsumerState<AdminPostStoryScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Lets the admin choose the solid background a text-only story is shown
+/// on. Only relevant when no photo/video is attached.
+class _BackgroundPicker extends StatelessWidget {
+  final StoryBackground selected;
+  final ValueChanged<StoryBackground> onSelected;
+
+  const _BackgroundPicker({required this.selected, required this.onSelected});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: StoryBackground.values.map((b) {
+        final isSelected = b == selected;
+        return Padding(
+          padding: const EdgeInsets.only(right: 14),
+          child: GestureDetector(
+            onTap: () => onSelected(b),
+            child: Column(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: b.color,
+                    border: Border.all(
+                      color: isSelected ? AppColors.primary : AppColors.borderLight,
+                      width: isSelected ? 2.5 : 1,
+                    ),
+                  ),
+                  child: isSelected
+                      ? Icon(Icons.check_rounded, color: b.textColor, size: 20)
+                      : null,
+                ),
+                const SizedBox(height: 4),
+                Text(b.label, style: Theme.of(context).textTheme.labelSmall),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 }

@@ -126,14 +126,19 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen>
 
     final story = stories[_index.clamp(0, stories.length - 1)];
     final theme = Theme.of(context);
+    final hasMedia = story.videoUrl != null || story.imageUrl != null;
+    // Text-only stories show as a solid color card — chrome (progress bar,
+    // header, close button) switches to dark-on-light so it stays visible
+    // against a white background, matching the story's own text color.
+    final chromeColor = hasMedia ? Colors.white : story.background.textColor;
 
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
         child: Stack(
           children: [
-            // Background: video, then image, otherwise a category-tinted
-            // gradient so text-only stories still feel designed.
+            // Background: video, then image, then a solid-color card with
+            // big centered text, otherwise a category-tinted gradient.
             Positioned.fill(
               child: story.videoUrl != null
                   ? (_videoController != null && _videoController!.value.isInitialized
@@ -153,25 +158,28 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen>
                           errorBuilder: (context, error, stack) =>
                               _FallbackBackground(category: widget.category),
                         )
-                      : _FallbackBackground(category: widget.category),
+                      : _TextStoryBackground(story: story),
             ),
-            // Readability scrim over the bottom half.
-            Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.black.withOpacity(0.35),
-                      Colors.transparent,
-                      Colors.black.withOpacity(0.75),
-                    ],
-                    stops: const [0.0, 0.4, 1.0],
+            // Readability scrim over the bottom half — only needed when
+            // text sits on top of media; a solid-color text story doesn't
+            // have anything under its text to dim.
+            if (hasMedia)
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black.withOpacity(0.35),
+                        Colors.transparent,
+                        Colors.black.withOpacity(0.75),
+                      ],
+                      stops: const [0.0, 0.4, 1.0],
+                    ),
                   ),
                 ),
               ),
-            ),
 
             // Tap zones: left third = previous, right two-thirds = next.
             Positioned.fill(
@@ -208,6 +216,7 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen>
                             isActive: i == _index,
                             isComplete: i < _index,
                             controller: i == _index ? _controller : null,
+                            color: chromeColor,
                           ),
                         ),
                         if (i != stories.length - 1) const SizedBox(width: 4),
@@ -237,45 +246,49 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen>
                             Text(
                               widget.category.label,
                               style: theme.textTheme.titleSmall
-                                  ?.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
+                                  ?.copyWith(color: chromeColor, fontWeight: FontWeight.w700),
                             ),
                             Text(
                               DateFormat.MMMd().add_jm().format(story.createdAt),
                               style: theme.textTheme.labelSmall
-                                  ?.copyWith(color: Colors.white70),
+                                  ?.copyWith(color: chromeColor.withOpacity(0.7)),
                             ),
                           ],
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.close_rounded, color: Colors.white),
+                        icon: Icon(Icons.close_rounded, color: chromeColor),
                         onPressed: () => Navigator.of(context).pop(),
                       ),
                     ],
                   ),
                 ),
                 const Spacer(),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (story.title != null && story.title!.isNotEmpty)
-                        Text(
-                          story.title!,
-                          style: theme.textTheme.headlineSmall?.copyWith(color: Colors.white),
-                        ),
-                      if (story.body != null && story.body!.isNotEmpty) ...[
+                // Text-only stories show their title/body as the big
+                // centered content in [_TextStoryBackground] instead —
+                // this bottom-anchored overlay is only for media stories.
+                if (hasMedia)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         if (story.title != null && story.title!.isNotEmpty)
-                          const SizedBox(height: 8),
-                        Text(
-                          story.body!,
-                          style: theme.textTheme.bodyLarge?.copyWith(color: Colors.white),
-                        ),
+                          Text(
+                            story.title!,
+                            style: theme.textTheme.headlineSmall?.copyWith(color: Colors.white),
+                          ),
+                        if (story.body != null && story.body!.isNotEmpty) ...[
+                          if (story.title != null && story.title!.isNotEmpty)
+                            const SizedBox(height: 8),
+                          Text(
+                            story.body!,
+                            style: theme.textTheme.bodyLarge?.copyWith(color: Colors.white),
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
-                ),
               ],
             ),
           ],
@@ -289,11 +302,13 @@ class _ProgressSegment extends StatelessWidget {
   final bool isActive;
   final bool isComplete;
   final AnimationController? controller;
+  final Color color;
 
   const _ProgressSegment({
     required this.isActive,
     required this.isComplete,
     this.controller,
+    this.color = Colors.white,
   });
 
   @override
@@ -316,8 +331,52 @@ class _ProgressSegment extends StatelessWidget {
       child: LinearProgressIndicator(
         value: value,
         minHeight: 3,
-        backgroundColor: Colors.white24,
-        valueColor: const AlwaysStoppedAnimation(Colors.white),
+        backgroundColor: color.withOpacity(0.24),
+        valueColor: AlwaysStoppedAnimation(color),
+      ),
+    );
+  }
+}
+
+/// Big, centered title/body on a solid color — how a text-only story (no
+/// image or video) is shown, like a WhatsApp text status.
+class _TextStoryBackground extends StatelessWidget {
+  final Story story;
+  const _TextStoryBackground({required this.story});
+
+  @override
+  Widget build(BuildContext context) {
+    final textColor = story.background.textColor;
+    final hasTitle = story.title != null && story.title!.isNotEmpty;
+    final hasBody = story.body != null && story.body!.isNotEmpty;
+
+    return Container(
+      color: story.background.color,
+      alignment: Alignment.center,
+      padding: const EdgeInsets.symmetric(horizontal: 32),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (hasTitle)
+            Text(
+              story.title!,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: textColor,
+                fontSize: 34,
+                fontWeight: FontWeight.w800,
+                height: 1.25,
+              ),
+            ),
+          if (hasBody) ...[
+            if (hasTitle) const SizedBox(height: 16),
+            Text(
+              story.body!,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: textColor, fontSize: 20, height: 1.4),
+            ),
+          ],
+        ],
       ),
     );
   }

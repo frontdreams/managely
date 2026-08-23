@@ -76,7 +76,24 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
         child: Column(
           children: [
             const SizedBox(height: 12),
-            _PageDots(count: _pages.length, current: _page),
+            SizedBox(
+              height: 44,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  _PageDots(count: _pages.length, current: _page),
+                  if (!_isLastPage)
+                    Positioned(
+                      right: 12,
+                      child: TextButton(
+                        onPressed: _finish,
+                        style: TextButton.styleFrom(foregroundColor: AppColors.textOnBrandMuted),
+                        child: const Text('Skip'),
+                      ),
+                    ),
+                ],
+              ),
+            ),
             Expanded(
               child: PageView(
                 controller: _controller,
@@ -86,25 +103,13 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-              child: Column(
-                children: [
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _next,
-                      style: AppTheme.accentPillButtonStyle,
-                      child: Text(_isLastPage ? 'Get Started' : 'Continue'),
-                    ),
-                  ),
-                  if (!_isLastPage) ...[
-                    const SizedBox(height: 8),
-                    TextButton(
-                      onPressed: _finish,
-                      style: TextButton.styleFrom(foregroundColor: AppColors.textOnBrandMuted),
-                      child: const Text('Skip'),
-                    ),
-                  ],
-                ],
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _next,
+                  style: AppTheme.accentPillButtonStyle,
+                  child: Text(_isLastPage ? 'Get Started' : 'Continue'),
+                ),
               ),
             ),
           ],

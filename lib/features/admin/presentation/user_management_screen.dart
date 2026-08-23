@@ -125,19 +125,20 @@ class _UserCard extends StatelessWidget {
     final theme = Theme.of(context);
     final isPremium = user.subscriptionTier == 'premium';
     final isAdmin = user.role == 'admin';
-    final dateFormat = DateFormat.yMMMd();
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+      child: InkWell(
         borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-        border: Border.all(color: AppColors.borderLight),
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+        onTap: () => _showUserDetailSheet(context, user),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+            border: Border.all(color: AppColors.borderLight),
+          ),
+          padding: const EdgeInsets.all(16),
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ProfileAvatar(photoUrl: user.photoUrl, name: user.name ?? '', radius: 22),
@@ -175,36 +176,133 @@ class _UserCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               _TierBadge(isPremium: isPremium),
+              const SizedBox(width: 4),
+              const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondaryLight),
             ],
           ),
-          if (user.lastEventType != null) ...[
-            const Divider(height: 24),
-            _InfoRow(icon: Icons.bolt_rounded, label: 'Last event', value: user.lastEventType!),
-            if (user.lastAmount != null)
-              _InfoRow(
-                icon: Icons.payments_outlined,
-                label: 'Amount',
-                value: '${user.lastAmount!.toStringAsFixed(2)} ${user.lastCurrency ?? ''}'.trim(),
+        ),
+      ),
+    );
+  }
+}
+
+/// Pull-up sheet with a user's full details and purchase history — opened
+/// by tapping their card instead of showing it inline on every row.
+void _showUserDetailSheet(BuildContext context, AdminUserSummary user) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.white,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(AppTheme.radiusLg)),
+    ),
+    builder: (context) => _UserDetailSheet(user: user),
+  );
+}
+
+class _UserDetailSheet extends StatelessWidget {
+  final AdminUserSummary user;
+  const _UserDetailSheet({required this.user});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isPremium = user.subscriptionTier == 'premium';
+    final isAdmin = user.role == 'admin';
+    final dateFormat = DateFormat.yMMMd();
+
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 18),
+                decoration: BoxDecoration(
+                  color: AppColors.borderLight,
+                  borderRadius: BorderRadius.circular(AppTheme.radiusPill),
+                ),
               ),
-            if (user.lastPurchasedAt != null)
-              _InfoRow(
-                icon: Icons.calendar_today_outlined,
-                label: 'Purchased',
-                value: dateFormat.format(user.lastPurchasedAt!),
-              ),
-            if (user.lastExpirationAt != null)
-              _InfoRow(
-                icon: Icons.event_repeat_rounded,
-                label: 'Renews / expires',
-                value: dateFormat.format(user.lastExpirationAt!),
-              ),
-            if (user.lastStore != null)
-              _InfoRow(icon: Icons.storefront_outlined, label: 'Store', value: user.lastStore!),
-          ] else ...[
-            const Divider(height: 24),
-            Text('No purchase history.', style: theme.textTheme.bodySmall),
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ProfileAvatar(photoUrl: user.photoUrl, name: user.name ?? '', radius: 26),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              (user.name?.isNotEmpty ?? false) ? user.name! : 'Unnamed user',
+                              style: theme.textTheme.titleMedium,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (isAdmin) ...[
+                            const SizedBox(width: 6),
+                            const Icon(Icons.shield_rounded, size: 16, color: AppColors.primary),
+                          ],
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        user.email ?? 'No email on file',
+                        style: theme.textTheme.bodySmall
+                            ?.copyWith(color: AppColors.textSecondaryLight),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                _TierBadge(isPremium: isPremium),
+              ],
+            ),
+            const Divider(height: 32),
+            Text('Purchase History', style: theme.textTheme.titleSmall),
+            const SizedBox(height: 12),
+            if (user.lastEventType != null) ...[
+              _InfoRow(icon: Icons.bolt_rounded, label: 'Last event', value: user.lastEventType!),
+              if (user.lastProductId != null)
+                _InfoRow(
+                  icon: Icons.sell_outlined,
+                  label: 'Product',
+                  value: user.lastProductId!,
+                ),
+              if (user.lastAmount != null)
+                _InfoRow(
+                  icon: Icons.payments_outlined,
+                  label: 'Amount',
+                  value:
+                      '${user.lastAmount!.toStringAsFixed(2)} ${user.lastCurrency ?? ''}'.trim(),
+                ),
+              if (user.lastPurchasedAt != null)
+                _InfoRow(
+                  icon: Icons.calendar_today_outlined,
+                  label: 'Purchased',
+                  value: dateFormat.format(user.lastPurchasedAt!),
+                ),
+              if (user.lastExpirationAt != null)
+                _InfoRow(
+                  icon: Icons.event_repeat_rounded,
+                  label: 'Renews / expires',
+                  value: dateFormat.format(user.lastExpirationAt!),
+                ),
+              if (user.lastStore != null)
+                _InfoRow(icon: Icons.storefront_outlined, label: 'Store', value: user.lastStore!),
+            ] else
+              Text('No purchase history.', style: theme.textTheme.bodySmall),
           ],
-        ],
+        ),
       ),
     );
   }

@@ -57,3 +57,7 @@ flutter:
     - assets/illustrations/paperplane.png
     - assets/illustrations/dumbell.png
     - assets/icons/premium.png
+    - assets/icons/news.png
+    - assets/icons/trends.png
+    - assets/icons/insights.png
+    - assets/icons/offers.png

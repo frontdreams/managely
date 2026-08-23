@@ -74,7 +74,12 @@ class _StoryCategoryCircle extends ConsumerWidget {
                     shape: BoxShape.circle,
                     color: category.color.withOpacity(0.12),
                   ),
-                  child: Icon(category.icon, color: category.color, size: 24),
+                  child: Center(
+                    child: ColorFiltered(
+                      colorFilter: ColorFilter.mode(category.color, BlendMode.srcIn),
+                      child: Image.asset(category.imagePath, width: 30, height: 30),
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 6),

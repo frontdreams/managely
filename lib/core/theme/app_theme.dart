@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'app_colors.dart';
 import 'app_typography.dart';
 
@@ -84,6 +85,13 @@ class AppTheme {
         centerTitle: false,
         iconTheme: const IconThemeData(color: AppColors.textOnBrand),
         titleTextStyle: textTheme.titleLarge?.copyWith(color: AppColors.textOnBrand),
+        // Without this, AppBar estimates the status bar icon color from
+        // `backgroundColor` — and a transparent background reads as RGB
+        // black (alpha is ignored), so it silently defaults to white
+        // icons that disappear against this screen's actual white
+        // background. Same class of bug the AnnotatedRegion in main.dart
+        // patches for screens with no AppBar at all.
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
       cardTheme: CardThemeData(
         color: Colors.white,
@@ -202,6 +210,7 @@ class AppTheme {
         centerTitle: false,
         iconTheme: const IconThemeData(color: AppColors.textPrimaryDark),
         titleTextStyle: textTheme.titleLarge,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
       cardTheme: CardThemeData(
         color: AppColors.surfaceDark,

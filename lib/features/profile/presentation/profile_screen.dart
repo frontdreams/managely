@@ -54,6 +54,7 @@ class ProfileScreen extends ConsumerWidget {
               name: profile.name,
               photoUrl: profile.photoUrl,
               levelLabel: profile.level.label,
+              isPremium: profile.isPremiumTier,
               onEdit: () => context.push('/profile/edit'),
               conversations: profile.totalConversations,
               avgScore: profile.averageScore,
@@ -89,7 +90,7 @@ class ProfileScreen extends ConsumerWidget {
                     icon: Icons.auto_stories_outlined,
                     iconColor: AppColors.iconTeal,
                     title: 'Post Story',
-                    subtitle: 'News, Announcements, Trends, Insights, Offers',
+                    subtitle: 'News, Trends, Insights, Offers',
                     onTap: () => context.push('/admin/post-story'),
                   ),
                 ],
@@ -204,6 +205,7 @@ class _ProfileHeaderCard extends StatelessWidget {
   final String name;
   final String? photoUrl;
   final String levelLabel;
+  final bool isPremium;
   final VoidCallback onEdit;
   final int conversations;
   final int avgScore;
@@ -213,6 +215,7 @@ class _ProfileHeaderCard extends StatelessWidget {
     required this.name,
     required this.photoUrl,
     required this.levelLabel,
+    required this.isPremium,
     required this.onEdit,
     required this.conversations,
     required this.avgScore,
@@ -272,23 +275,34 @@ class _ProfileHeaderCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 14),
-          Text(
-            name,
-            style: theme.textTheme.headlineSmall?.copyWith(color: Colors.white),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Flexible(
+                child: Text(
+                  name,
+                  style: theme.textTheme.headlineSmall?.copyWith(color: Colors.white),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              if (isPremium) ...[
+                const SizedBox(width: 6),
+                const _PremiumBadge(),
+              ],
+            ],
           ),
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
             decoration: BoxDecoration(
-              color: AppColors.accent,
+              color: Colors.white,
               borderRadius: BorderRadius.circular(AppTheme.radiusPill),
             ),
             child: Text(
               levelLabel,
-              style: theme.textTheme.labelSmall?.copyWith(color: Colors.white),
+              style: theme.textTheme.labelSmall?.copyWith(color: AppColors.textOnBrand),
             ),
           ),
           const SizedBox(height: 24),
@@ -318,6 +332,25 @@ class _ProfileHeaderCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Small gold checkmark badge shown beside the name for users with an
+/// active paid subscription.
+class _PremiumBadge extends StatelessWidget {
+  const _PremiumBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 20,
+      height: 20,
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        color: AppColors.iconAmber,
+      ),
+      child: const Icon(Icons.check_rounded, color: Colors.white, size: 13),
     );
   }
 }
