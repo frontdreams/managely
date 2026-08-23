@@ -40,11 +40,19 @@ class PurchaseFailedException implements Exception {
 class RevenueCatService {
   static const String _premiumEntitlementId = 'premium';
 
-  /// Replace with your actual RevenueCat public API keys (Project settings
-  /// > API keys in the dashboard — use the public "apple"/"google" keys,
-  /// never a secret key, since this ships inside the client app).
+  /// Your actual RevenueCat public API keys (Project settings > API keys
+  /// in the dashboard — use the public "apple"/"google" keys, never a
+  /// secret key, since this ships inside the client app). Only used in
+  /// release/profile builds — see [_testStoreApiKey] for debug builds.
   static const String _iosApiKey = 'appl_YOUR_IOS_PUBLIC_API_KEY';
   static const String _androidApiKey = 'goog_IMaWAtegSjswFhdMpBnaGqtziuy';
+
+  /// RevenueCat's "Test Store" — a virtual store with its own products
+  /// (e.g. Monthly $9.99, Yearly $79.99) that never touches the App Store
+  /// or Play Store. Used automatically in debug builds so the purchase
+  /// flow and pricing can be tested end-to-end without needing App Store
+  /// Connect/Play Console products set up and published yet.
+  static const String _testStoreApiKey = 'test_HahHTxirPYYCoSNRHnDTmTTCvbJ';
 
   bool _configured = false;
 
@@ -57,7 +65,15 @@ class RevenueCatService {
       await Purchases.setLogLevel(LogLevel.debug);
     }
 
-    final apiKey = Platform.isIOS || Platform.isMacOS ? _iosApiKey : _androidApiKey;
+    final String apiKey;
+    if (kDebugMode) {
+      apiKey = _testStoreApiKey;
+    } else if (Platform.isIOS || Platform.isMacOS) {
+      apiKey = _iosApiKey;
+    } else {
+      apiKey = _androidApiKey;
+    }
+
     await Purchases.configure(PurchasesConfiguration(apiKey));
     _configured = true;
   }

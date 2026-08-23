@@ -289,7 +289,7 @@ class _CenterActionButton extends StatelessWidget {
       child: InkWell(
         onTap: onPressed,
         borderRadius: BorderRadius.circular(14),
-        child: SizedBox(
+        child: const SizedBox(
           width: 44,
           height: 44,
           child: Icon(

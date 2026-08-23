@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'managely_icon_base64.dart';
 
 /// Sends the 6-digit email-verification code by calling Resend's REST API
 /// directly from the app — no backend involved, so it works even when
@@ -52,14 +53,7 @@ class ResendEmailService {
               'subject': '$code is your Managely verification code',
               'text':
                   'Hi $greetName, your Managely verification code is $code. It expires in 10 minutes. If you didn\'t request this, you can ignore this email.',
-              'html': '''
-                <div style="font-family: -apple-system, Helvetica, Arial, sans-serif; max-width: 480px; margin: 0 auto; color: #0a0a0a;">
-                  <h2 style="margin-bottom: 4px;">Verify your email</h2>
-                  <p>Hi $greetName, use this code to verify your Managely account:</p>
-                  <div style="font-size: 32px; font-weight: 700; letter-spacing: 8px; margin: 24px 0; text-align: center;">$code</div>
-                  <p style="color: #6b7280; font-size: 14px;">This code expires in 10 minutes. If you didn't request this, you can safely ignore this email.</p>
-                </div>
-              ''',
+              'html': _brandedHtml(greetName: greetName, code: code),
             }),
           )
           .timeout(const Duration(seconds: 20));
@@ -86,5 +80,28 @@ class ResendEmailService {
       // Not JSON — fall through to the status-based message below.
     }
     return 'error $statusCode';
+  }
+
+  /// Branded verification-code email — the app's monochrome black/white
+  /// look (logo, black-bordered code box, system font stack) carried over
+  /// into a plain-HTML email, with the icon inlined as a `data:` URI since
+  /// email clients can't load a local asset path.
+  String _brandedHtml({required String greetName, required String code}) {
+    return '''
+      <div style="background-color:#f7f7f8; padding:32px 16px; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+        <div style="max-width:420px; margin:0 auto; background-color:#ffffff; border:1px solid #e5e5e8; border-radius:16px; padding:32px 28px;">
+          <img src="data:image/png;base64,$managelyIconBase64" width="40" height="38" alt="Managely" style="display:block; margin:0 0 24px;" />
+          <h1 style="margin:0 0 8px; font-size:22px; font-weight:800; color:#0a0a0a;">Verify your email</h1>
+          <p style="margin:0 0 24px; font-size:15px; line-height:1.5; color:#0a0a0a;">Hi $greetName, use this code to verify your Managely account:</p>
+          <div style="border:1.5px solid #0a0a0a; border-radius:12px; padding:18px 12px; text-align:center; margin-bottom:24px;">
+            <span style="font-size:34px; font-weight:800; letter-spacing:10px; color:#0a0a0a;">$code</span>
+          </div>
+          <p style="margin:0; font-size:13px; line-height:1.5; color:#6b7280;">This code expires in 10 minutes. If you didn't request this, you can safely ignore this email.</p>
+          <div style="margin-top:28px; padding-top:20px; border-top:1px solid #e5e5e8;">
+            <p style="margin:0; font-size:12px; color:#9ca3af;">Managely &middot; Practice difficult conversations, without the risk.</p>
+          </div>
+        </div>
+      </div>
+    ''';
   }
 }

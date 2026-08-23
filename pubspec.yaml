@@ -29,6 +29,7 @@ dependencies:
   uuid: ^4.4.0
   image_picker: ^1.1.2
   http: ^1.2.2
+  dio: ^5.7.0
 
   # Firebase
   firebase_core: ^4.13.0
@@ -40,6 +41,8 @@ dependencies:
   purchases_ui_flutter: ^10.9.0
   speech_to_text: ^7.4.0
   flutter_tts: ^4.2.5
+  fl_chart: ^1.2.0
+  video_player: ^2.9.2
 
 dev_dependencies:
   flutter_test:
@@ -53,3 +56,4 @@ flutter:
     - assets/google.png
     - assets/illustrations/paperplane.png
     - assets/illustrations/dumbell.png
+    - assets/icons/premium.png

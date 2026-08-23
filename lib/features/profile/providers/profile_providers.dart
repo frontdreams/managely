@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../models/user_profile.dart';
 import '../../../models/scenario.dart';
+import '../../../models/user_role.dart';
 import '../../../core/services/service_providers.dart';
 
 /// Holds the signed-in user's [UserProfile], hydrated from and persisted to
@@ -29,8 +30,18 @@ class UserProfileNotifier extends StateNotifier<UserProfile> {
     final authName = authUser?.displayName;
     final authPhoto = authUser?.photoURL;
 
+    // Admin status comes from the unforgeable Firebase custom claim, NOT
+    // from a Firestore field — see the security note on UserRole. Force a
+    // token refresh (the `true` argument) so a claim granted server-side
+    // AFTER this device's last sign-in is picked up immediately, instead
+    // of waiting for the cached ID token to naturally expire (up to an
+    // hour) or requiring an explicit sign-out/sign-in.
+    final idTokenResult = await authUser?.getIdTokenResult(true);
+    final isAdminClaim = idTokenResult?.claims?['admin'] == true;
+    final role = isAdminClaim ? UserRole.admin : UserRole.user;
+
     if (loaded != null) {
-      var next = loaded;
+      var next = loaded.copyWith(role: role);
       if (authName != null && authName.isNotEmpty && authName != loaded.name) {
         next = next.copyWith(name: authName);
       }
@@ -55,6 +66,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile> {
     final seeded = UserProfile(
       name: (authName != null && authName.isNotEmpty) ? authName : 'You',
       photoUrl: (authPhoto != null && authPhoto.isNotEmpty) ? authPhoto : null,
+      role: role,
       isHydrated: true,
       emailVerified: !isPasswordAccount,
     );
@@ -62,14 +74,16 @@ class UserProfileNotifier extends StateNotifier<UserProfile> {
     await repo.saveProfile(uid, seeded);
   }
 
+  /// Re-runs hydration — including a forced token refresh, so this is also
+  /// the right thing to call right after granting/revoking someone's admin
+  /// claim, instead of requiring a full sign-out/sign-in to see it reflected.
+  Future<void> refresh() => _hydrate();
+
   Future<void> _persist() async {
     final uid = _uid;
     if (uid == null) return;
     await _ref.read(firestoreUserRepositoryProvider).saveProfile(uid, state);
   }
-
-  /// Re-fetches the profile from Firestore — used by pull-to-refresh.
-  Future<void> refresh() => _hydrate();
 
   /// Called once [EmailVerificationScreen] confirms the entered code
   /// matches — lets the router move the user on to onboarding.

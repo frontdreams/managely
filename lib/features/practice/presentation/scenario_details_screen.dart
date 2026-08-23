@@ -7,7 +7,6 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/skill_color.dart';
 import '../../../models/scenario.dart';
 import '../../../models/user_profile.dart';
-import '../../../shared/widgets/difficulty_stars.dart';
 import '../../../shared/widgets/practice_safely_sheet.dart';
 import '../../conversation/providers/conversation_providers.dart';
 import '../../profile/providers/profile_providers.dart';
@@ -93,8 +92,8 @@ class ScenarioDetailsScreen extends ConsumerWidget {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.workspace_premium_rounded,
-                                  size: 12, color: AppColors.primary),
+                              Image.asset('assets/icons/premium.png',
+                                  width: 12, height: 12, color: AppColors.primary),
                               const SizedBox(width: 4),
                               Text('PREMIUM',
                                   style: theme.textTheme.labelSmall
@@ -110,8 +109,6 @@ class ScenarioDetailsScreen extends ConsumerWidget {
                   const SizedBox(height: 14),
                   Row(
                     children: [
-                      DifficultyStars(filled: scenario.difficulty.stars),
-                      const SizedBox(width: 8),
                       Text(scenario.difficulty.label, style: theme.textTheme.labelMedium),
                       const SizedBox(width: 16),
                       const Icon(Icons.schedule, size: 14, color: AppColors.textSecondaryLight),
@@ -168,7 +165,8 @@ class ScenarioDetailsScreen extends ConsumerWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.lock_outline_rounded, color: AppColors.primary, size: 20),
+                    Image.asset('assets/icons/premium.png',
+                        width: 20, height: 20, color: AppColors.primary),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
@@ -230,7 +228,6 @@ class ScenarioDetailsScreen extends ConsumerWidget {
           child: isLocked
               ? _GradientButton(
                   onPressed: () => _start(context, ref, scenario),
-                  icon: Icons.workspace_premium_rounded,
                   label: 'Upgrade to Start',
                 )
               : ElevatedButton(
@@ -249,10 +246,9 @@ class ScenarioDetailsScreen extends ConsumerWidget {
 /// `ButtonStyle` can't paint a gradient background directly.
 class _GradientButton extends StatelessWidget {
   final VoidCallback onPressed;
-  final IconData icon;
   final String label;
 
-  const _GradientButton({required this.onPressed, required this.icon, required this.label});
+  const _GradientButton({required this.onPressed, required this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -270,7 +266,8 @@ class _GradientButton extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, color: AppColors.primary, size: 20),
+              Image.asset('assets/icons/premium.png',
+                  width: 20, height: 20, color: AppColors.primary),
               const SizedBox(width: 8),
               Text(
                 label,

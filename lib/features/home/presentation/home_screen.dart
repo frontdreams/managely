@@ -13,6 +13,7 @@ import '../../../shared/widgets/skill_progress_bar.dart';
 import '../../../shared/widgets/scenario_card.dart';
 import '../../profile/providers/profile_providers.dart';
 import '../../progress/providers/progress_providers.dart';
+import '../../stories/presentation/stories_tray.dart';
 import '../providers/home_providers.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -71,6 +72,12 @@ class HomeScreen extends ConsumerWidget {
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.only(top: 4, bottom: 8),
+                  child: StoriesTray(),
+                ),
+              ),
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
@@ -165,9 +172,9 @@ class HomeScreen extends ConsumerWidget {
                   ),
                 ),
               ),
-              SliverToBoxAdapter(
+              const SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 28, 20, 12),
+                  padding: EdgeInsets.fromLTRB(20, 28, 20, 12),
                   child: SectionHeader(title: 'Your Growth Area'),
                 ),
               ),
@@ -447,4 +454,3 @@ class _RecommendedCard extends StatelessWidget {
     );
   }
 }
-

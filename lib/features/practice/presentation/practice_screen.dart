@@ -95,41 +95,10 @@ class PracticeScreen extends ConsumerWidget {
                         child: child,
                       ),
                     ),
-                    child: Stack(
-                      children: [
-                        ScenarioCard(
-                          scenario: scenario,
-                          onTap: () => context.push('/scenario/${scenario.id}'),
-                        ),
-                        if (scenario.isPremium && !isPremiumUser)
-                          Positioned(
-                            top: 10,
-                            right: 10,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(colors: AppColors.goldGradient),
-                                borderRadius: BorderRadius.circular(AppTheme.radiusPill),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(Icons.lock_outline_rounded,
-                                      size: 11, color: AppColors.primary),
-                                  const SizedBox(width: 3),
-                                  Text(
-                                    'PRO',
-                                    style: theme.textTheme.labelSmall?.copyWith(
-                                      color: AppColors.primary,
-                                      fontSize: 9,
-                                      fontWeight: FontWeight.w800,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                      ],
+                    child: ScenarioCard(
+                      scenario: scenario,
+                      onTap: () => context.push('/scenario/${scenario.id}'),
+                      showPremiumBadge: scenario.isPremium && !isPremiumUser,
                     ),
                   );
                 },

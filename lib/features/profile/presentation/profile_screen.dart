@@ -67,6 +67,36 @@ class ProfileScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 14),
 
+            if (profile.isAdmin) ...[
+              const _SettingsGroupLabel(label: 'ADMIN'),
+              _SettingsGroup(
+                children: [
+                  _SettingsRow(
+                    icon: Icons.people_outline_rounded,
+                    iconColor: AppColors.primary,
+                    title: 'User Management',
+                    subtitle: 'View users, subscriptions, renewals',
+                    onTap: () => context.push('/admin/users'),
+                  ),
+                  _SettingsRow(
+                    icon: Icons.bar_chart_rounded,
+                    iconColor: AppColors.success,
+                    title: 'Revenue',
+                    subtitle: 'Charted revenue, filterable by range',
+                    onTap: () => context.push('/admin/revenue'),
+                  ),
+                  _SettingsRow(
+                    icon: Icons.auto_stories_outlined,
+                    iconColor: AppColors.iconTeal,
+                    title: 'Post Story',
+                    subtitle: 'News, Announcements, Trends, Insights, Offers',
+                    onTap: () => context.push('/admin/post-story'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+            ],
+
             const _SettingsGroupLabel(label: 'PLAN'),
             _SettingsGroup(
               children: [
@@ -331,7 +361,7 @@ class _StatBlock extends StatelessWidget {
 }
 
 /// Small uppercase, letter-spaced label sitting above a [_SettingsGroup] —
-/// the "PLAN" / "PREFERENCES" / "SKILLS" / "PRIVACY & SUPPORT" headers.
+/// the "ADMIN" / "PLAN" / "PREFERENCES" / "PRIVACY & SUPPORT" headers.
 class _SettingsGroupLabel extends StatelessWidget {
   final String label;
   const _SettingsGroupLabel({required this.label});

@@ -27,7 +27,7 @@ class RecentPracticeList extends StatefulWidget {
 }
 
 class _RecentPracticeListState extends State<RecentPracticeList> {
-  bool _collapsed = false;
+  bool _collapsed = true;
 
   @override
   Widget build(BuildContext context) {

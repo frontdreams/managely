@@ -1,4 +1,5 @@
 import 'scenario.dart';
+import 'user_role.dart';
 
 enum ManagerLevel { newManager, developingManager, experiencedManager }
 
@@ -27,6 +28,11 @@ class UserProfile {
 
   final ManagerLevel level;
   final SubscriptionTier subscriptionTier;
+
+  /// Display-only mirror of the user's actual permission level — see the
+  /// security note on [UserRole] for why this is never trusted for
+  /// anything that protects data.
+  final UserRole role;
 
   /// The user's six skills, ranked from most to least important to them —
   /// index 0 is what they most want to improve. Set once during onboarding
@@ -70,13 +76,6 @@ class UserProfile {
   /// user (or confirmed to not exist yet, for a brand-new account). Used by
   /// routing to avoid flashing onboarding before the real profile arrives.
   final bool isHydrated;
-
-  /// True once the account's email has been confirmed via the 6-digit code
-  /// sent at sign-up. Defaults to true so Google sign-ins (already
-  /// verified by Google) and accounts created before this field existed
-  /// aren't retroactively locked out — only freshly-registered
-  /// email/password accounts are seeded with this false. See
-  /// [UserProfileNotifier] for where that seeding happens.
   final bool emailVerified;
 
   const UserProfile({
@@ -84,6 +83,7 @@ class UserProfile {
     this.photoUrl,
     this.level = ManagerLevel.newManager,
     this.subscriptionTier = SubscriptionTier.free,
+    this.role = UserRole.user,
     this.focusSkills = const [],
     this.skillScores = const {
       ManagerSkill.empathy: 60,
@@ -103,7 +103,7 @@ class UserProfile {
     this.themeIsDark = false,
     this.notificationsEnabled = true,
     this.isHydrated = false,
-    this.emailVerified = true,
+    this.emailVerified = false,
   });
 
   /// How many practice conversations a free-tier user gets per ~30 days
@@ -111,6 +111,11 @@ class UserProfile {
   static const int freeConversationLimitPerCycle = 3;
 
   bool get isPremiumTier => subscriptionTier == SubscriptionTier.premium;
+
+  /// Display-only convenience — see the security note on [UserRole].
+  /// Never gate a backend call or a Firestore read purely on this; it's
+  /// only safe for deciding whether to SHOW an admin nav item.
+  bool get isAdmin => role == UserRole.admin;
 
   /// True once a free-tier user has used up their conversations for the
   /// current cycle. Always false for premium — see [isPremiumTier].
@@ -135,6 +140,7 @@ class UserProfile {
     bool clearPhoto = false,
     ManagerLevel? level,
     SubscriptionTier? subscriptionTier,
+    UserRole? role,
     List<ManagerSkill>? focusSkills,
     Map<ManagerSkill, int>? skillScores,
     int? totalConversations,
@@ -154,6 +160,7 @@ class UserProfile {
       photoUrl: clearPhoto ? null : (photoUrl ?? this.photoUrl),
       level: level ?? this.level,
       subscriptionTier: subscriptionTier ?? this.subscriptionTier,
+      role: role ?? this.role,
       focusSkills: focusSkills ?? this.focusSkills,
       skillScores: skillScores ?? this.skillScores,
       totalConversations: totalConversations ?? this.totalConversations,

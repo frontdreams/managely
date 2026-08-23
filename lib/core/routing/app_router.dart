@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/register_screen.dart';
 import '../../features/auth/presentation/forgot_password_screen.dart';
-import '../../features/auth/presentation/email_verification_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screen.dart';
 import '../../features/onboarding/presentation/skills_assessment_screen.dart';
 import '../../features/subscription/presentation/subscription_screen.dart';
@@ -21,8 +20,13 @@ import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/profile/presentation/edit_profile_screen.dart';
 import '../../features/profile/presentation/privacy_screen.dart';
 import '../../features/profile/presentation/about_screen.dart';
-import '../../features/practice/providers/practice_providers.dart';
+import '../../features/admin/presentation/user_management_screen.dart';
+import '../../features/admin/presentation/revenue_screen.dart';
+import '../../features/stories/presentation/story_viewer_screen.dart';
+import '../../features/stories/presentation/admin_post_story_screen.dart';
+import '../../models/story.dart';
 import '../../features/profile/providers/profile_providers.dart';
+import '../../models/scenario.dart';
 import '../../shared/widgets/app_shell.dart';
 import '../../shared/widgets/splash_screen.dart';
 import '../services/welcome_prefs.dart';
@@ -90,13 +94,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return loc == '/splash' ? null : '/splash';
       }
 
-      // Email/password sign-ups must confirm the 6-digit code sent to
-      // their inbox before reaching onboarding. Google sign-ins skip this
-      // — their email is already verified — see UserProfileNotifier.
-      if (!profile.emailVerified) {
-        return loc == '/verify-email' ? null : '/verify-email';
-      }
-
       // Brand-new (or otherwise not-yet-onboarded) accounts pick a plan,
       // then their focus skills, before reaching the rest of the app.
       if (!profile.onboardingComplete) {
@@ -113,7 +110,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
       if (_authRoutes.contains(loc) ||
           loc == '/welcome' ||
-          loc == '/verify-email' ||
           loc == '/subscription' ||
           loc == '/onboarding' ||
           loc == '/skills-assessment' ||
@@ -121,13 +117,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return '/home';
       }
 
-      // Nothing to review — either a stale rebuild after already leaving
-      // this flow, or a direct deep link. Send back to the composer rather
-      // than crashing on a missing scenario.
-      if (loc == '/custom-scenario/confirm' &&
-          ref.read(customScenarioDraftProvider) == null) {
-        return '/custom-scenario';
+      // Display-only gate — hides the admin screens from the nav/route for
+      // non-admins. This is NOT the real security boundary; the backend
+      // independently verifies the Firebase custom claim on every admin
+      // API call regardless of what this check does. See the security
+      // note on UserRole.
+      if (loc.startsWith('/admin') && !profile.isAdmin) {
+        return '/home';
       }
+
       return null;
     },
     routes: [
@@ -152,10 +150,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const WelcomeScreen(),
       ),
       GoRoute(
-        path: '/verify-email',
-        builder: (context, state) => const EmailVerificationScreen(),
-      ),
-      GoRoute(
         path: '/subscription',
         builder: (context, state) => const SubscriptionScreen(),
       ),
@@ -170,15 +164,35 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/custom-scenario/confirm',
         parentNavigatorKey: _rootNavigatorKey,
-        // The redirect above guarantees this is non-null by the time this
-        // builder runs.
         builder: (context, state) =>
-            CustomScenarioConfirmScreen(scenario: ref.read(customScenarioDraftProvider)!),
+            CustomScenarioConfirmScreen(scenario: state.extra as Scenario),
       ),
       GoRoute(
         path: '/upgrade',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const SubscriptionScreen(isUpgradeFlow: true),
+      ),
+      GoRoute(
+        path: '/admin/users',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const UserManagementScreen(),
+      ),
+      GoRoute(
+        path: '/admin/revenue',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const RevenueScreen(),
+      ),
+      GoRoute(
+        path: '/admin/post-story',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const AdminPostStoryScreen(),
+      ),
+      GoRoute(
+        path: '/story/:category',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => StoryViewerScreen(
+          category: StoryCategoryX.fromName(state.pathParameters['category']!),
+        ),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
