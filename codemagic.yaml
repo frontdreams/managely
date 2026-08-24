@@ -1,0 +1,111 @@
+workflows:
+  android-release:
+    name: Managely — Android
+    max_build_duration: 60
+    instance_type: linux_x2
+    environment:
+      flutter: stable
+      # Create this group in Codemagic (Teams > your team > Environment
+      # variable groups) with:
+      #   CM_KEYSTORE            - base64 of android/app/upload-keystore.jks
+      #                            (generate with: base64 -i upload-keystore.jks | pbcopy)
+      #   CM_KEYSTORE_PASSWORD   - value of storePassword in key.properties
+      #   CM_KEY_PASSWORD        - value of keyPassword in key.properties
+      #   CM_KEY_ALIAS           - value of keyAlias in key.properties (currently "upload")
+      # Mark all four as "Secure" in the Codemagic UI.
+      groups:
+        - managely_android_signing
+      vars:
+        PACKAGE_NAME: "com.managely.app"
+    cache:
+      cache_paths:
+        - $HOME/.pub-cache
+    scripts:
+      - name: Get Flutter packages
+        script: flutter packages pub get
+      - name: Decode Android keystore
+        script: |
+          echo "$CM_KEYSTORE" | base64 --decode > "$CM_BUILD_DIR/android/app/upload-keystore.jks"
+      - name: Write key.properties
+        script: |
+          cat > "$CM_BUILD_DIR/android/key.properties" <<EOF
+          storePassword=$CM_KEYSTORE_PASSWORD
+          keyPassword=$CM_KEY_PASSWORD
+          keyAlias=$CM_KEY_ALIAS
+          storeFile=upload-keystore.jks
+          EOF
+      - name: Build Android App Bundle
+        script: flutter build appbundle --release
+      - name: Build Android APK
+        script: flutter build apk --release
+    artifacts:
+      - build/app/outputs/bundle/release/*.aab
+      - build/app/outputs/flutter-apk/*.apk
+      - build/app/outputs/**/mapping.txt
+    publishing:
+      email:
+        recipients:
+          - ibrahim.isaac@frontdreams.com
+        notify:
+          success: true
+          failure: true
+      # Uncomment once you've created a Play Console service account with
+      # API access (Play Console > Users & permissions) and added its JSON
+      # key as a Codemagic env var (e.g. GCLOUD_SERVICE_ACCOUNT_CREDENTIALS,
+      # file type, secure). Publishes straight to Play Console's internal
+      # testing track.
+      # google_play:
+      #   credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+      #   track: internal
+      #   submit_as_draft: true
+
+  ios-release:
+    name: Managely — iOS
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    integrations:
+      # Create this in Codemagic (Teams > your team > Integrations >
+      # App Store Connect) with an API key generated at
+      # https://appstoreconnect.apple.com/access/api — needs the
+      # "App Manager" role. Name it exactly "managely_asc_api_key" here,
+      # or change the name below to match.
+      app_store_connect: managely_asc_api_key
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.managely.app
+      vars:
+        XCODE_WORKSPACE: "Runner.xcworkspace"
+        XCODE_SCHEME: "Runner"
+    cache:
+      cache_paths:
+        - $HOME/.pub-cache
+        - $HOME/Library/Caches/CocoaPods
+    scripts:
+      - name: Get Flutter packages
+        script: flutter packages pub get
+      - name: Set up code signing (auto, via App Store Connect integration)
+        script: xcode-project use-profiles
+      - name: Build IPA
+        script: |
+          flutter build ipa --release \
+            --export-options-plist=/Users/builder/export_options.plist
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      email:
+        recipients:
+          - ibrahim.isaac@frontdreams.com
+        notify:
+          success: true
+          failure: true
+      # Uploads straight to TestFlight once the App Store Connect
+      # integration above is wired up. Flip to false if you'd rather just
+      # download the .ipa from the build artifacts first.
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
