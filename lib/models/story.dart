@@ -129,6 +129,11 @@ class Story {
   final String postedByUid;
   final String? postedByName;
 
+  /// UIDs of everyone who's opened this story — admin-only "seen by" count,
+  /// shown as an eye icon + number in the viewer. Deduplicated server-side
+  /// via `arrayUnion` when recorded, so its length is already unique views.
+  final List<String> viewerUids;
+
   const Story({
     required this.id,
     required this.category,
@@ -141,9 +146,12 @@ class Story {
     this.expiresAt,
     required this.postedByUid,
     this.postedByName,
+    this.viewerUids = const [],
   });
 
   bool get isActive => expiresAt == null || expiresAt!.isAfter(DateTime.now());
+
+  int get viewerCount => viewerUids.length;
 
   factory Story.fromFirestore(String id, Map<String, dynamic> data) {
     return Story(
@@ -158,6 +166,7 @@ class Story {
       expiresAt: (data['expiresAt'] as dynamic)?.toDate(),
       postedByUid: data['postedByUid'] as String? ?? '',
       postedByName: data['postedByName'] as String?,
+      viewerUids: List<String>.from(data['viewerUids'] as List? ?? const []),
     );
   }
 

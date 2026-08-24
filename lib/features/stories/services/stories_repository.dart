@@ -11,7 +11,9 @@ import '../../../models/story.dart';
 /// ```
 /// match /stories/{storyId} {
 ///   allow read: if request.auth != null;
-///   allow create, update, delete: if request.auth.token.admin == true;
+///   allow create, delete: if request.auth.token.admin == true;
+///   allow update: if request.auth.token.admin == true
+///     || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['viewerUids']);
 /// }
 /// ```
 class StoriesRepository {
@@ -63,4 +65,12 @@ class StoriesRepository {
   }
 
   Future<void> deleteStory(String id) => _collection.doc(id).delete();
+
+  /// Records [uid] as having viewed story [id] — idempotent (arrayUnion
+  /// won't add a duplicate), so repeat views by the same user don't
+  /// inflate the count. Firestore rules let any signed-in user touch only
+  /// this field on a story doc, not the rest of its content.
+  Future<void> recordView(String id, String uid) {
+    return _collection.doc(id).update({'viewerUids': FieldValue.arrayUnion([uid])});
+  }
 }

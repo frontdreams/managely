@@ -27,6 +27,7 @@ import '../../features/stories/presentation/story_viewer_screen.dart';
 import '../../features/stories/presentation/admin_post_story_screen.dart';
 import '../../models/story.dart';
 import '../../features/profile/providers/profile_providers.dart';
+import '../../models/conversation.dart';
 import '../../models/scenario.dart';
 import '../../shared/widgets/app_shell.dart';
 import '../../shared/widgets/splash_screen.dart';
@@ -268,7 +269,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/evaluation',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const EvaluationScreen(),
+        builder: (context, state) =>
+            EvaluationScreen(historicalSession: state.extra as PracticeSession?),
       ),
     ],
   );

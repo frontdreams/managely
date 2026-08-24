@@ -1,9 +1,15 @@
 import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gal/gal.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:video_player/video_player.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../models/story.dart';
+import '../../profile/providers/profile_providers.dart';
 import '../providers/stories_providers.dart';
 
 const _storyDuration = Duration(seconds: 6);
@@ -61,6 +67,7 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen>
     final stories = ref.read(storiesForCategoryProvider(widget.category));
     if (stories.isEmpty || !mounted) return;
     final story = stories[_index.clamp(0, stories.length - 1)];
+    _recordView(story.id);
 
     await _disposeVideoController();
 
@@ -111,6 +118,60 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen>
     _startCurrentStory();
   }
 
+  /// Best-effort — a failed view record (offline, rules hiccup) shouldn't
+  /// ever interrupt watching the story.
+  void _recordView(String storyId) {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+    ref.read(storiesRepositoryProvider).recordView(storyId, uid).catchError((_) {});
+  }
+
+  Future<void> _saveImage(String imageUrl) async {
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final response = await http.get(Uri.parse(imageUrl));
+      if (response.statusCode != 200) throw Exception('Download failed');
+      await Gal.putImageBytes(response.bodyBytes, album: 'Managely');
+      if (mounted) messenger.showSnackBar(const SnackBar(content: Text('Saved to gallery.')));
+    } catch (_) {
+      if (mounted) {
+        messenger.showSnackBar(const SnackBar(content: Text('Couldn\'t save the image.')));
+      }
+    }
+  }
+
+  Future<void> _confirmDelete(String storyId) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete story?'),
+        content: const Text('This removes it for everyone. This can\'t be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.danger),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    try {
+      await ref.read(storiesRepositoryProvider).deleteStory(storyId);
+      if (mounted) Navigator.of(context).pop();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Couldn\'t delete: $e')));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final stories = ref.watch(storiesForCategoryProvider(widget.category));
@@ -131,6 +192,10 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen>
     // header, close button) switches to dark-on-light so it stays visible
     // against a white background, matching the story's own text color.
     final chromeColor = hasMedia ? Colors.white : story.background.textColor;
+    final isAdmin = ref.watch(userProfileProvider).isAdmin;
+    final hasBottomText =
+        (story.title != null && story.title!.isNotEmpty) ||
+            (story.body != null && story.body!.isNotEmpty);
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -160,9 +225,9 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen>
                         )
                       : _TextStoryBackground(story: story),
             ),
-            // Readability scrim over the bottom half — only needed when
-            // text sits on top of media; a solid-color text story doesn't
-            // have anything under its text to dim.
+            // Slight top scrim so the header (category, timestamp, menu)
+            // stays legible over any media — kept regardless of caption
+            // text, since it's about the header, not the bottom.
             if (hasMedia)
               Positioned.fill(
                 child: DecoratedBox(
@@ -170,12 +235,24 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen>
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.black.withOpacity(0.35),
-                        Colors.transparent,
-                        Colors.black.withOpacity(0.75),
-                      ],
-                      stops: const [0.0, 0.4, 1.0],
+                      colors: [Colors.black.withOpacity(0.35), Colors.transparent],
+                      stops: const [0.0, 0.25],
+                    ),
+                  ),
+                ),
+              ),
+            // Bottom scrim — only when there's actually a title/body
+            // sitting on top of the media to read; an image/video story
+            // with no caption gets no bottom gradient at all.
+            if (hasMedia && hasBottomText)
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Colors.transparent, Colors.black.withOpacity(0.75)],
+                      stops: const [0.55, 1.0],
                     ),
                   ),
                 ),
@@ -256,14 +333,26 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen>
                           ],
                         ),
                       ),
-                      IconButton(
-                        icon: Icon(Icons.close_rounded, color: chromeColor),
-                        onPressed: () => Navigator.of(context).pop(),
+                      _StoryMenuButton(
+                        color: chromeColor,
+                        canSave: story.imageUrl != null,
+                        canDelete: isAdmin,
+                        onClose: () => Navigator.of(context).pop(),
+                        onSave: () => _saveImage(story.imageUrl!),
+                        onDelete: () => _confirmDelete(story.id),
                       ),
                     ],
                   ),
                 ),
                 const Spacer(),
+                if (isAdmin)
+                  Padding(
+                    padding: EdgeInsets.only(right: 20, bottom: hasMedia ? 8 : 20),
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: _ViewCountBadge(count: story.viewerCount, color: chromeColor),
+                    ),
+                  ),
                 // Text-only stories show their title/body as the big
                 // centered content in [_TextStoryBackground] instead —
                 // this bottom-anchored overlay is only for media stories.
@@ -294,6 +383,112 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen>
           ],
         ),
       ),
+    );
+  }
+}
+
+enum _StoryMenuAction { close, save, delete }
+
+/// Replaces the old plain "X" close button — a vertical-dots menu with
+/// Close always present, Save only for image stories, and Delete only
+/// for admins (matches the Firestore rule: only admins can delete).
+class _StoryMenuButton extends StatelessWidget {
+  final Color color;
+  final bool canSave;
+  final bool canDelete;
+  final VoidCallback onClose;
+  final VoidCallback onSave;
+  final VoidCallback onDelete;
+
+  const _StoryMenuButton({
+    required this.color,
+    required this.canSave,
+    required this.canDelete,
+    required this.onClose,
+    required this.onSave,
+    required this.onDelete,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<_StoryMenuAction>(
+      icon: Icon(Icons.more_vert_rounded, color: color),
+      color: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.radiusMd)),
+      onSelected: (action) {
+        switch (action) {
+          case _StoryMenuAction.close:
+            onClose();
+          case _StoryMenuAction.save:
+            onSave();
+          case _StoryMenuAction.delete:
+            onDelete();
+        }
+      },
+      itemBuilder: (context) => [
+        const PopupMenuItem(
+          value: _StoryMenuAction.close,
+          child: _MenuRow(icon: Icons.close_rounded, label: 'Close'),
+        ),
+        if (canSave)
+          const PopupMenuItem(
+            value: _StoryMenuAction.save,
+            child: _MenuRow(icon: Icons.download_outlined, label: 'Save'),
+          ),
+        if (canDelete)
+          const PopupMenuItem(
+            value: _StoryMenuAction.delete,
+            child: _MenuRow(
+              icon: Icons.delete_outline_rounded,
+              label: 'Delete',
+              color: AppColors.danger,
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _MenuRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color? color;
+  const _MenuRow({required this.icon, required this.label, this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: color ?? AppColors.textPrimaryLight),
+        const SizedBox(width: 10),
+        Text(label, style: TextStyle(color: color ?? AppColors.textPrimaryLight)),
+      ],
+    );
+  }
+}
+
+/// Admin-only "seen by" indicator — eye icon plus the number of unique
+/// viewers, like Instagram/WhatsApp story view counts.
+class _ViewCountBadge extends StatelessWidget {
+  final int count;
+  final Color color;
+  const _ViewCountBadge({required this.count, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.visibility_outlined, size: 16, color: color),
+        const SizedBox(width: 5),
+        Text(
+          '$count',
+          style: Theme.of(context)
+              .textTheme
+              .labelMedium
+              ?.copyWith(color: color, fontWeight: FontWeight.w600),
+        ),
+      ],
     );
   }
 }
