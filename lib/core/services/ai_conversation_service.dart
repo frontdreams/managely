@@ -1,6 +1,7 @@
 import '../../models/scenario.dart';
 import '../../models/message.dart';
 import '../../models/evaluation.dart';
+import '../../models/debrief_analysis.dart';
 
 /// Abstraction over "the thing that plays the employee and grades the
 /// manager". The UI and providers only ever talk to this interface.
@@ -56,4 +57,19 @@ abstract class AIConversationService {
   /// the custom scenario screen), and the generated scenario's employee is
   /// always a fictional stand-in regardless of what the user typed.
   Future<Scenario> generateCustomScenario({required String prompt});
+
+  /// Compares how a practiced conversation went (the scored roleplay) with
+  /// how the REAL meeting actually went (the user's own debrief answers),
+  /// and suggests which skill to focus on next. Never makes claims about
+  /// the real employee/meeting — only reflects on the manager's own
+  /// reported experience of it, the same "coach communication, not
+  /// people" boundary the rest of the app holds to.
+  Future<DebriefAnalysis> analyzeDebrief({
+    required Scenario practicedScenario,
+    required ConversationEvaluation practiceEvaluation,
+    required int outcomeRating,
+    required String achievedObjective,
+    String? whatWentWell,
+    String? whatWasHarder,
+  });
 }

@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/register_screen.dart';
 import '../../features/auth/presentation/forgot_password_screen.dart';
-import '../../features/auth/presentation/email_verification_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screen.dart';
 import '../../features/onboarding/presentation/skills_assessment_screen.dart';
 import '../../features/subscription/presentation/subscription_screen.dart';
@@ -25,9 +24,10 @@ import '../../features/admin/presentation/user_management_screen.dart';
 import '../../features/admin/presentation/revenue_screen.dart';
 import '../../features/stories/presentation/story_viewer_screen.dart';
 import '../../features/stories/presentation/admin_post_story_screen.dart';
+import '../../features/debrief/presentation/post_meeting_debrief_screen.dart';
 import '../../models/story.dart';
+import '../../features/debrief/providers/debrief_providers.dart';
 import '../../features/profile/providers/profile_providers.dart';
-import '../../models/conversation.dart';
 import '../../models/scenario.dart';
 import '../../shared/widgets/app_shell.dart';
 import '../../shared/widgets/splash_screen.dart';
@@ -55,6 +55,7 @@ class _RouterRefreshNotifier extends ChangeNotifier {
     ref.listen(hasSeenWelcomeProvider, (_, __) => notifyListeners());
     ref.listen(authStateChangesProvider, (_, __) => notifyListeners());
     ref.listen(userProfileProvider, (_, __) => notifyListeners());
+    ref.listen(pendingDebriefIdProvider, (_, __) => notifyListeners());
   }
 }
 
@@ -96,14 +97,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return loc == '/splash' ? null : '/splash';
       }
 
-      // Email/password sign-ups start unverified (Google accounts are
-      // seeded already-verified — see ProfileProvider's hydration logic)
-      // and must confirm the code sent to their inbox before anything
-      // else, including picking a plan.
-      if (!profile.emailVerified) {
-        return loc == '/email-verification' ? null : '/email-verification';
-      }
-
       // Brand-new (or otherwise not-yet-onboarded) accounts pick a plan,
       // then their focus skills, before reaching the rest of the app.
       if (!profile.onboardingComplete) {
@@ -118,9 +111,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return loc == '/skills-assessment' ? null : '/skills-assessment';
       }
 
+      // A debrief reminder notification was tapped (even from a cold
+      // start) — take the user straight there regardless of where they
+      // were headed, then this clears itself once handled.
+      final pendingDebriefId = ref.read(pendingDebriefIdProvider);
+      if (pendingDebriefId != null && loc != '/debrief/$pendingDebriefId') {
+        return '/debrief/$pendingDebriefId';
+      }
+
       if (_authRoutes.contains(loc) ||
           loc == '/welcome' ||
-          loc == '/email-verification' ||
           loc == '/subscription' ||
           loc == '/onboarding' ||
           loc == '/skills-assessment' ||
@@ -155,10 +155,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/forgot-password',
         builder: (context, state) => const ForgotPasswordScreen(),
-      ),
-      GoRoute(
-        path: '/email-verification',
-        builder: (context, state) => const EmailVerificationScreen(),
       ),
       GoRoute(
         path: '/welcome',
@@ -201,6 +197,19 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/admin/post-story',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const AdminPostStoryScreen(),
+      ),
+      GoRoute(
+        path: '/debrief/:id',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          // Clear the pending-tap flag once we've actually built the
+          // screen for it, so the redirect gate above doesn't keep firing.
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            ref.read(pendingDebriefIdProvider.notifier).state = null;
+          });
+          return PostMeetingDebriefScreen(planId: id);
+        },
       ),
       GoRoute(
         path: '/story/:category',
@@ -269,8 +278,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/evaluation',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) =>
-            EvaluationScreen(historicalSession: state.extra as PracticeSession?),
+        builder: (context, state) => const EvaluationScreen(),
       ),
     ],
   );

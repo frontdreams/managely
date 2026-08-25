@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/skill_color.dart';
 import '../../../models/scenario.dart';
+import '../../../models/user_profile.dart';
+import '../../../models/real_meeting_plan.dart';
+import '../../../core/services/notification_service.dart';
 import '../../../shared/widgets/difficulty_stars.dart';
 import '../../../shared/widgets/practice_safely_sheet.dart';
 import '../../conversation/providers/conversation_providers.dart';
 import '../../profile/providers/profile_providers.dart';
-import '../../../models/user_profile.dart';
+import '../../debrief/providers/debrief_providers.dart';
 
 const _kSeenPrivacyKey = 'seen_practice_safely';
 
@@ -22,14 +26,67 @@ const _kSeenPrivacyKey = 'seen_practice_safely';
 /// generated [Scenario] passed in directly (it isn't part of the static
 /// scenario library, so it can't be looked up by ID the way
 /// [ScenarioDetailsScreen] looks up built-in scenarios).
-class CustomScenarioConfirmScreen extends ConsumerWidget {
+///
+/// Also where a user marks a custom scenario as tied to a REAL upcoming
+/// conversation — see the "Is this real?" section below. If they do, the
+/// details get held in [pendingRealMeetingProvider] until practice
+/// finishes, then EvaluationScreen persists it and schedules the debrief
+/// reminder.
+class CustomScenarioConfirmScreen extends ConsumerStatefulWidget {
   final Scenario scenario;
   const CustomScenarioConfirmScreen({super.key, required this.scenario});
+
+  @override
+  ConsumerState<CustomScenarioConfirmScreen> createState() =>
+      _CustomScenarioConfirmScreenState();
+}
+
+class _CustomScenarioConfirmScreenState
+    extends ConsumerState<CustomScenarioConfirmScreen> {
+  bool _isRealLife = false;
+  MeetingType _meetingType = MeetingType.oneOnOne;
+  DateTime? _scheduledAt;
+  int _durationMinutes = 30;
+  final _prepNotesController = TextEditingController();
+
+  @override
+  void dispose() {
+    _prepNotesController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickDateTime() async {
+    final now = DateTime.now();
+    final date = await showDatePicker(
+      context: context,
+      initialDate: _scheduledAt ?? now.add(const Duration(days: 1)),
+      firstDate: now,
+      lastDate: now.add(const Duration(days: 180)),
+    );
+    if (date == null || !mounted) return;
+
+    final time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(_scheduledAt ?? now.add(const Duration(hours: 1))),
+    );
+    if (time == null) return;
+
+    setState(() {
+      _scheduledAt = DateTime(date.year, date.month, date.day, time.hour, time.minute);
+    });
+  }
 
   Future<void> _start(BuildContext context, WidgetRef ref) async {
     final profile = ref.read(userProfileProvider);
     if (profile.hasReachedFreeConversationLimit) {
       context.push('/upgrade');
+      return;
+    }
+
+    if (_isRealLife && _scheduledAt == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Pick a date and time for the real conversation first.')),
+      );
       return;
     }
 
@@ -42,15 +99,28 @@ class CustomScenarioConfirmScreen extends ConsumerWidget {
     }
 
     if (!context.mounted) return;
+
+    if (_isRealLife) {
+      ref.read(pendingRealMeetingProvider.notifier).state = PendingRealMeetingDraft(
+        meetingType: _meetingType,
+        scheduledAt: _scheduledAt!,
+        durationMinutes: _durationMinutes,
+        prepNotes: _prepNotesController.text.trim().isEmpty
+            ? null
+            : _prepNotesController.text.trim(),
+      );
+    }
+
     await ref.read(userProfileProvider.notifier).recordConversationStarted();
     if (!context.mounted) return;
-    ref.read(conversationProvider.notifier).startScenario(scenario);
+    ref.read(conversationProvider.notifier).startScenario(widget.scenario);
     context.push('/conversation');
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final scenario = widget.scenario;
     final color = skillColor(scenario.primarySkill);
     final profile = ref.watch(userProfileProvider);
     final isLocked = profile.hasReachedFreeConversationLimit;
@@ -134,22 +204,138 @@ class CustomScenarioConfirmScreen extends ConsumerWidget {
               title: 'Situation',
               body: scenario.situation,
               icon: Icons.info_outline_rounded,
-              color: AppColors.iconBlue,
             ),
             const SizedBox(height: 16),
             _InfoBlock(
               title: 'Manager Objective',
               body: scenario.objective,
               icon: Icons.flag_outlined,
-              color: AppColors.iconAmber,
             ),
             const SizedBox(height: 16),
             _InfoBlock(
               title: 'Employee Style',
               body: '${scenario.employeeName} · ${scenario.employeeRole}\n${scenario.employeePersonality}',
               icon: Icons.person_outline_rounded,
-              color: AppColors.iconPurple,
             ),
+            const SizedBox(height: 24),
+
+            // ---- Real-life meeting toggle ----
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.event_available_outlined, size: 20, color: AppColors.primary),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Is this a real upcoming conversation?',
+                                  style: theme.textTheme.titleSmall),
+                              const SizedBox(height: 2),
+                              Text(
+                                'We\'ll remind you to debrief an hour after it happens.',
+                                style: theme.textTheme.bodySmall,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Switch(
+                          value: _isRealLife,
+                          onChanged: (v) {
+                            setState(() => _isRealLife = v);
+                            if (v) NotificationService.instance.requestPermissions();
+                          },
+                        ),
+                      ],
+                    ),
+                    if (_isRealLife) ...[
+                      const Divider(height: 28),
+                      Text('Meeting type', style: theme.textTheme.labelLarge),
+                      const SizedBox(height: 10),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: MeetingType.values.map((t) {
+                          final selected = t == _meetingType;
+                          return ChoiceChip(
+                            selected: selected,
+                            onSelected: (_) => setState(() => _meetingType = t),
+                            avatar: Icon(t.icon,
+                                size: 16, color: selected ? Colors.white : AppColors.primary),
+                            label: Text(t.label),
+                            selectedColor: AppColors.primary,
+                            labelStyle: TextStyle(color: selected ? Colors.white : null),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 18),
+                      Text('When', style: theme.textTheme.labelLarge),
+                      const SizedBox(height: 10),
+                      InkWell(
+                        onTap: _pickDateTime,
+                        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: AppColors.borderLight),
+                            borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.calendar_today_outlined,
+                                  size: 18, color: AppColors.textSecondaryLight),
+                              const SizedBox(width: 10),
+                              Text(
+                                _scheduledAt == null
+                                    ? 'Choose date & time'
+                                    : DateFormat('EEE, MMM d · h:mm a').format(_scheduledAt!),
+                                style: theme.textTheme.bodyMedium,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 18),
+                      Text('Duration', style: theme.textTheme.labelLarge),
+                      const SizedBox(height: 10),
+                      Wrap(
+                        spacing: 8,
+                        children: [15, 30, 45, 60].map((mins) {
+                          final selected = mins == _durationMinutes;
+                          return ChoiceChip(
+                            selected: selected,
+                            onSelected: (_) => setState(() => _durationMinutes = mins),
+                            label: Text('$mins min'),
+                            selectedColor: AppColors.primary,
+                            labelStyle: TextStyle(color: selected ? Colors.white : null),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 18),
+                      Text('Anything else worth noting? (optional)',
+                          style: theme.textTheme.labelLarge),
+                      const SizedBox(height: 10),
+                      TextField(
+                        controller: _prepNotesController,
+                        minLines: 2,
+                        maxLines: 4,
+                        textCapitalization: TextCapitalization.sentences,
+                        decoration: const InputDecoration(
+                          hintText: 'History, context, what you\'re nervous about...',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+
             const SizedBox(height: 20),
             Center(
               child: TextButton.icon(
@@ -222,13 +408,7 @@ class _InfoBlock extends StatelessWidget {
   final String title;
   final String body;
   final IconData icon;
-  final Color color;
-  const _InfoBlock({
-    required this.title,
-    required this.body,
-    required this.icon,
-    required this.color,
-  });
+  const _InfoBlock({required this.title, required this.body, required this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -241,17 +421,8 @@ class _InfoBlock extends StatelessWidget {
           children: [
             Row(
               children: [
-                Container(
-                  width: 32,
-                  height: 32,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: color.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(AppTheme.radiusSm),
-                  ),
-                  child: Icon(icon, size: 18, color: color),
-                ),
-                const SizedBox(width: 10),
+                Icon(icon, size: 18, color: AppColors.primary),
+                const SizedBox(width: 8),
                 Text(title, style: theme.textTheme.titleSmall),
               ],
             ),

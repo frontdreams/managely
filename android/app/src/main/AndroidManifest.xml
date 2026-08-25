@@ -6,6 +6,12 @@
          instead, which needs no declared permission. -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="29" />
+    <!-- Post-meeting debrief reminders (flutter_local_notifications). -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
     <application
         android:label="Managely"
         android:name="${applicationName}"
@@ -38,6 +44,20 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- Let scheduled debrief reminders survive process death / a
+             device reboot — provided by flutter_local_notifications itself,
+             no plugin code of ours needed. -->
+        <receiver
+            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"
+            android:exported="false" />
     </application>
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     <!-- Required to query activities that can process text, see:

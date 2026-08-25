@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 import '../../models/scenario.dart';
 import '../../models/message.dart';
 import '../../models/evaluation.dart';
+import '../../models/debrief_analysis.dart';
 import 'ai_conversation_service.dart';
 import 'scenario_json_mapper.dart';
 
@@ -17,12 +17,12 @@ const _uuid = Uuid();
 /// Wire this in by replacing the override in `service_providers.dart`:
 ///
 /// ```dart
-final aiConversationServiceProvider = Provider<AIConversationService>((ref) {
-   return RemoteAIConversationService(
-     baseUrl: 'https://managely-backend.onrender.com',
-     appSharedSecret: '43a7d7aed10e26ee6346d84e23253204',
-   );
- });
+/// final aiConversationServiceProvider = Provider<AIConversationService>((ref) {
+///   return RemoteAIConversationService(
+///     baseUrl: 'https://your-backend.example.com',
+///     appSharedSecret: 'the same secret you set in the backend .env',
+///   );
+/// });
 /// ```
 class RemoteAIConversationService implements AIConversationService {
   RemoteAIConversationService({
@@ -124,5 +124,44 @@ class RemoteAIConversationService implements AIConversationService {
 
     final body = jsonDecode(response.body) as Map<String, dynamic>;
     return ScenarioJsonMapper.scenarioFromJson(body, id: 'custom-${_uuid.v4()}');
+  }
+
+  @override
+  Future<DebriefAnalysis> analyzeDebrief({
+    required Scenario practicedScenario,
+    required ConversationEvaluation practiceEvaluation,
+    required int outcomeRating,
+    required String achievedObjective,
+    String? whatWentWell,
+    String? whatWasHarder,
+  }) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/v1/debrief-analysis'),
+      headers: _headers,
+      body: jsonEncode({
+        'scenario': {
+          'title': practicedScenario.title,
+          'situation': practicedScenario.situation,
+          'objective': practicedScenario.objective,
+        },
+        'practiceEvaluation': {
+          'overallScore': practiceEvaluation.overallScore,
+          'skillScores': {
+            for (final s in practiceEvaluation.skillScores) s.skill.name: s.score,
+          },
+        },
+        'outcomeRating': outcomeRating,
+        'achievedObjective': achievedObjective,
+        'whatWentWell': whatWentWell,
+        'whatWasHarder': whatWasHarder,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('debrief-analysis failed: ${response.statusCode} ${response.body}');
+    }
+
+    final body = jsonDecode(response.body) as Map<String, dynamic>;
+    return ScenarioJsonMapper.debriefAnalysisFromJson(body);
   }
 }

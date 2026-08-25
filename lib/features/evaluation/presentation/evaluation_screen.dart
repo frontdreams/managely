@@ -1,22 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/skill_color.dart';
+import '../../../core/services/notification_service.dart';
 import '../../../models/conversation.dart';
 import '../../../models/evaluation.dart';
 import '../../../models/scenario.dart';
+import '../../../models/real_meeting_plan.dart';
 import '../../../shared/widgets/skill_progress_bar.dart';
 import '../../../shared/widgets/animated_score_counter.dart';
 import '../../conversation/providers/conversation_providers.dart';
 import '../../profile/providers/profile_providers.dart';
+import '../../debrief/providers/debrief_providers.dart';
 import '../providers/evaluation_providers.dart';
 
 /// Shows the result of a just-finished conversation by default. When
 /// [historicalSession] is passed (tapping a past entry on the Progress
 /// screen), it instead replays that session's stored evaluation read-only —
 /// no recording, no "Try Again" (there's no live scenario to retry).
+///
+/// If the just-finished practice was tied to a real upcoming conversation
+/// (see [pendingRealMeetingProvider], set on CustomScenarioConfirmScreen),
+/// this screen also: persists a [RealMeetingPlan] with the practice
+/// results attached, schedules the post-meeting debrief reminder, and
+/// shows a "good luck" card instead of nothing.
 class EvaluationScreen extends ConsumerStatefulWidget {
   final PracticeSession? historicalSession;
   const EvaluationScreen({super.key, this.historicalSession});
@@ -27,6 +38,7 @@ class EvaluationScreen extends ConsumerStatefulWidget {
 
 class _EvaluationScreenState extends ConsumerState<EvaluationScreen> {
   bool _recorded = false;
+  PendingRealMeetingDraft? _linkedMeetingDraft;
 
   @override
   void didChangeDependencies() {
@@ -37,14 +49,58 @@ class _EvaluationScreenState extends ConsumerState<EvaluationScreen> {
       if (state.evaluation != null && state.scenario != null) {
         _recorded = true;
         // Defer to avoid modifying providers during build.
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          ref.read(evaluationRecorderProvider).record(
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          await ref.read(evaluationRecorderProvider).record(
                 scenario: state.scenario!,
                 evaluation: state.evaluation!,
               );
+          await _linkRealMeetingIfPending(state.scenario!, state.evaluation!);
         });
       }
     }
+  }
+
+  Future<void> _linkRealMeetingIfPending(
+    Scenario scenario,
+    ConversationEvaluation evaluation,
+  ) async {
+    final draft = ref.read(pendingRealMeetingProvider);
+    if (draft == null) return;
+
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+
+    final plan = RealMeetingPlan(
+      id: '',
+      scenarioId: scenario.id,
+      scenarioTitle: scenario.title,
+      meetingType: draft.meetingType,
+      scheduledAt: draft.scheduledAt,
+      durationMinutes: draft.durationMinutes,
+      prepNotes: draft.prepNotes,
+      createdAt: DateTime.now(),
+    );
+
+    final repo = ref.read(realMeetingRepositoryProvider);
+    final planId = await repo.create(uid, plan);
+    await repo.attachPracticeResult(
+      uid,
+      planId,
+      practiceScore: evaluation.overallScore,
+      practiceSkillScores: {
+        for (final s in evaluation.skillScores) s.skill.name: s.score,
+      },
+    );
+
+    await NotificationService.instance.scheduleDebriefReminder(
+      planId: planId,
+      meetingScheduledAt: draft.scheduledAt,
+      meetingTypeLabel: draft.meetingType.label,
+    );
+
+    ref.read(pendingRealMeetingProvider.notifier).state = null;
+
+    if (mounted) setState(() => _linkedMeetingDraft = draft);
   }
 
   @override
@@ -81,6 +137,7 @@ class _EvaluationScreenState extends ConsumerState<EvaluationScreen> {
         evaluation: evaluation,
         showLeading: true,
         isPremiumUser: isPremiumUser,
+        linkedMeetingDraft: null,
         onTryAgain: null,
         onDone: () => context.pop(),
       );
@@ -95,7 +152,7 @@ class _EvaluationScreenState extends ConsumerState<EvaluationScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const CircularProgressIndicator(color: AppColors.primary),
+                const CircularProgressIndicator(color: Colors.white),
                 const SizedBox(height: 20),
                 Text(
                   'Evaluating your conversation…',
@@ -117,6 +174,7 @@ class _EvaluationScreenState extends ConsumerState<EvaluationScreen> {
       evaluation: evaluation,
       showLeading: false,
       isPremiumUser: isPremiumUser,
+      linkedMeetingDraft: _linkedMeetingDraft,
       onTryAgain: () {
         ref.read(conversationProvider.notifier).retrySameScenario();
         _recorded = false;
@@ -136,6 +194,7 @@ class _EvaluationBody extends StatelessWidget {
   final ConversationEvaluation evaluation;
   final bool showLeading;
   final bool isPremiumUser;
+  final PendingRealMeetingDraft? linkedMeetingDraft;
   final VoidCallback? onTryAgain;
   final VoidCallback onDone;
 
@@ -145,6 +204,7 @@ class _EvaluationBody extends StatelessWidget {
     required this.evaluation,
     required this.showLeading,
     required this.isPremiumUser,
+    required this.linkedMeetingDraft,
     required this.onTryAgain,
     required this.onDone,
   });
@@ -186,6 +246,10 @@ class _EvaluationBody extends StatelessWidget {
                 ],
               ),
             ),
+            if (linkedMeetingDraft != null) ...[
+              const SizedBox(height: 24),
+              _GoodLuckCard(draft: linkedMeetingDraft!),
+            ],
             const SizedBox(height: 28),
             Card(
               child: Padding(
@@ -224,7 +288,7 @@ class _EvaluationBody extends StatelessWidget {
               _FeedbackSection(
                 title: 'Try this next time',
                 icon: Icons.lightbulb_outline_rounded,
-                color: AppColors.iconBlue,
+                color: AppColors.primary,
                 points: evaluation.tryNextTime,
               ),
             ] else
@@ -244,12 +308,57 @@ class _EvaluationBody extends StatelessWidget {
               onPressed: onDone,
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.textOnBrand,
-                side: const BorderSide(color: AppColors.borderLight),
+                side: const BorderSide(color: Colors.white54),
               ),
               child: Text(showLeading ? 'Close' : 'Back to Home'),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Shown when this practice session was tied to a real upcoming
+/// conversation — confirms the reminder is set and sends the user off
+/// with encouragement rather than just silence.
+class _GoodLuckCard extends StatelessWidget {
+  final PendingRealMeetingDraft draft;
+  const _GoodLuckCard({required this.draft});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final when = DateFormat('EEE, MMM d · h:mm a').format(draft.scheduledAt);
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(colors: AppColors.heroGradient),
+        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.emoji_events_outlined, color: Colors.white),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'You\'re ready.',
+                  style: theme.textTheme.titleMedium?.copyWith(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Good luck with your ${draft.meetingType.label.toLowerCase()} on $when. We\'ll check in an hour after so you can log how it actually went.',
+            style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white.withOpacity(0.85)),
+          ),
+        ],
       ),
     );
   }
@@ -367,17 +476,8 @@ class _FeedbackSection extends StatelessWidget {
           children: [
             Row(
               children: [
-                Container(
-                  width: 32,
-                  height: 32,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: color.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(AppTheme.radiusSm),
-                  ),
-                  child: Icon(icon, color: color, size: 18),
-                ),
-                const SizedBox(width: 10),
+                Icon(icon, color: color, size: 20),
+                const SizedBox(width: 8),
                 Text(title, style: theme.textTheme.titleSmall),
               ],
             ),

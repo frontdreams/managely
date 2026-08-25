@@ -1,5 +1,6 @@
 import '../../models/scenario.dart';
 import '../../models/evaluation.dart';
+import '../../models/debrief_analysis.dart';
 
 /// Converts between the backend's JSON shape and Managely's Dart models.
 /// Kept separate from [RemoteAIConversationService] so the parsing logic is
@@ -86,6 +87,14 @@ class ScenarioJsonMapper {
       tryNextTime:
           ((json['tryNextTime'] as List?) ?? []).map((e) => e as String).toList(),
       previousScore: (json['previousScore'] as num?)?.toInt(),
+    );
+  }
+
+  static DebriefAnalysis debriefAnalysisFromJson(Map<String, dynamic> json) {
+    return DebriefAnalysis(
+      comparisonSummary: json['comparisonSummary'] as String? ?? '',
+      recommendedSkill: skillFromName(json['recommendedSkill'] as String? ?? ''),
+      encouragement: json['encouragement'] as String? ?? '',
     );
   }
 }

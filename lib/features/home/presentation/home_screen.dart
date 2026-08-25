@@ -14,6 +14,7 @@ import '../../../shared/widgets/scenario_card.dart';
 import '../../profile/providers/profile_providers.dart';
 import '../../progress/providers/progress_providers.dart';
 import '../../stories/presentation/stories_tray.dart';
+import '../../debrief/providers/debrief_providers.dart';
 import '../providers/home_providers.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -33,6 +34,7 @@ class HomeScreen extends ConsumerWidget {
     final sessions = ref.watch(sessionHistoryProvider);
     final recentSessionsPreview = sessions.take(5).toList();
     final weakest = profile.weakestSkill;
+    final dueDebriefs = ref.watch(dueDebriefsProvider).valueOrNull ?? [];
 
     return Scaffold(
       appBar: AppBar(
@@ -78,6 +80,17 @@ class HomeScreen extends ConsumerWidget {
                   child: StoriesTray(),
                 ),
               ),
+              if (dueDebriefs.isNotEmpty)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+                    child: _DueDebriefBanner(
+                      planId: dueDebriefs.first.id,
+                      scenarioTitle: dueDebriefs.first.scenarioTitle,
+                      onTap: () => context.push('/debrief/${dueDebriefs.first.id}'),
+                    ),
+                  ),
+                ),
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
@@ -413,6 +426,65 @@ class _ContinuePractisingCard extends StatelessWidget {
                     Text('Continue Practising', style: theme.textTheme.labelMedium),
                     const SizedBox(height: 2),
                     Text(scenario.title, style: theme.textTheme.titleMedium),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondaryLight),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Shown when a real meeting the user prepped for has passed with no
+/// debrief logged yet — the fallback for when the scheduled notification
+/// was missed, dismissed, or notifications are disabled entirely.
+class _DueDebriefBanner extends StatelessWidget {
+  final String planId;
+  final String scenarioTitle;
+  final VoidCallback onTap;
+
+  const _DueDebriefBanner({
+    required this.planId,
+    required this.scenarioTitle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Card(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: AppColors.iconAmber.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+                ),
+                child: const Icon(Icons.rate_review_outlined, color: AppColors.iconAmber),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('How did it go?', style: theme.textTheme.titleMedium),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Log your debrief for "$scenarioTitle"',
+                      style: theme.textTheme.bodyMedium,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ],
                 ),
               ),

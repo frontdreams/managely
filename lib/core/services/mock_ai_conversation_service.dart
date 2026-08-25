@@ -3,6 +3,7 @@ import 'package:uuid/uuid.dart';
 import '../../models/scenario.dart';
 import '../../models/message.dart';
 import '../../models/evaluation.dart';
+import '../../models/debrief_analysis.dart';
 import 'ai_conversation_service.dart';
 
 /// Local, offline implementation of [AIConversationService].
@@ -356,26 +357,68 @@ class MockAIConversationService implements AIConversationService {
 
   List<PossibleResponse> _genericPossibleResponses(String employeeName) {
     return [
-      const PossibleResponse(triggerTone: 'empathetic', replies: [
+      PossibleResponse(triggerTone: 'empathetic', replies: [
         'I appreciate you saying that. It helps to know you actually see where I\'m coming from.',
         'Thanks for putting it that way — I\'m more open to hearing the rest now.',
       ]),
-      const PossibleResponse(triggerTone: 'aggressive', replies: [
+      PossibleResponse(triggerTone: 'aggressive', replies: [
         'I don\'t think that tone is necessary. I\'m trying to hear you out here.',
         'Okay, that feels a bit harsh — can we take a step back?',
       ]),
-      const PossibleResponse(triggerTone: 'vague', replies: [
+      PossibleResponse(triggerTone: 'vague', replies: [
         'I\'m still not totally clear on what you\'re asking me to do differently.',
         'Okay... but what would that actually look like in practice?',
       ]),
-      const PossibleResponse(triggerTone: 'clear', replies: [
+      PossibleResponse(triggerTone: 'clear', replies: [
         'Okay, that\'s clear — I can work with that.',
         'Got it, thanks for being direct. That actually makes this easier.',
       ]),
-      const PossibleResponse(triggerTone: 'default', replies: [
+      PossibleResponse(triggerTone: 'default', replies: [
         'Okay, I\'m listening — go on.',
         'Alright, tell me more about what you\'re thinking.',
       ]),
     ];
+  }
+
+  // ---------------------------------------------------------------------
+  // Debrief analysis
+  // ---------------------------------------------------------------------
+
+  @override
+  Future<DebriefAnalysis> analyzeDebrief({
+    required Scenario practicedScenario,
+    required ConversationEvaluation practiceEvaluation,
+    required int outcomeRating,
+    required String achievedObjective,
+    String? whatWentWell,
+    String? whatWasHarder,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 1200));
+
+    // Weakest-scoring skill from the practice session is a reasonable
+    // local stand-in for "what to focus on next" without a real model
+    // reading the debrief text.
+    final weakest = practiceEvaluation.skillScores
+        .reduce((a, b) => a.score <= b.score ? a : b)
+        .skill;
+
+    final wentWell = outcomeRating >= 4;
+    final struggled = outcomeRating <= 2 || achievedObjective == 'no';
+
+    final summary = struggled
+        ? 'The real conversation was harder than the practice run suggested — that gap is useful information, not a failure. Your practice score was ${practiceEvaluation.overallScore}, but the real moment clearly threw something the rehearsal didn\'t prepare you for.'
+        : wentWell
+            ? 'The real conversation tracked closely with how you practiced it — a strong sign the rehearsal actually prepared you. Your practice score was ${practiceEvaluation.overallScore}, and it sounds like that held up in the room.'
+            : 'A mixed outcome — parts of the real conversation went the way you practiced, and parts didn\'t. That\'s normal; real conversations rarely follow the script exactly.';
+
+    final encouragement = struggled
+        ? 'Real conversations are unpredictable in ways rehearsal can\'t fully capture — showing up and having it anyway is the actual skill being built here.'
+        : 'Keep stacking these — the gap between practice and reality gets smaller each time.';
+
+    return DebriefAnalysis(
+      comparisonSummary: summary,
+      recommendedSkill: weakest,
+      encouragement: encouragement,
+    );
   }
 }
