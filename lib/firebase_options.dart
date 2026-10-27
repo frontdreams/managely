@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDzKZ1_kMokngXFtf1s9mKpqUVSgUOZvUc',
-    appId: '1:156202336382:android:af18b5722e80673121182f',
+    appId: '1:156202336382:android:4ad9debc756d181c21182f',
     messagingSenderId: '156202336382',
     projectId: 'managely-app',
     storageBucket: 'managely-app.firebasestorage.app',
@@ -59,10 +59,10 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyAcoDQRNOevoWs8A4JOpmXhALa6fRX5nUk',
-    appId: '1:156202336382:ios:2f0ee4baaf260a9d21182f',
+    appId: '1:156202336382:ios:3d7c18b1524a8aaf21182f',
     messagingSenderId: '156202336382',
     projectId: 'managely-app',
     storageBucket: 'managely-app.firebasestorage.app',
-    iosBundleId: 'com.managely.app',
+    iosBundleId: 'com.managelyhub.app',
   );
 }

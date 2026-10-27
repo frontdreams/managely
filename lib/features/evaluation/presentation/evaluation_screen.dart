@@ -11,6 +11,7 @@ import '../../../models/conversation.dart';
 import '../../../models/evaluation.dart';
 import '../../../models/scenario.dart';
 import '../../../models/real_meeting_plan.dart';
+import '../../../models/user_profile.dart';
 import '../../../shared/widgets/skill_progress_bar.dart';
 import '../../../shared/widgets/animated_score_counter.dart';
 import '../../conversation/providers/conversation_providers.dart';
@@ -367,13 +368,18 @@ class _GoodLuckCard extends StatelessWidget {
 /// Shown instead of the three detailed feedback sections for free-tier
 /// users — overall score and skill bars above this are still visible to
 /// everyone, only the narrative breakdown is gated.
-class _PremiumFeedbackUpsell extends StatelessWidget {
+class _PremiumFeedbackUpsell extends ConsumerWidget {
   final VoidCallback onUpgrade;
   const _PremiumFeedbackUpsell({required this.onUpgrade});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final profile = ref.watch(userProfileProvider);
+    final isOrgMember = profile.isOrgMember;
+    final isPendingOrgMember = isOrgMember && profile.orgMemberStatus == OrgMemberStatus.pending;
+    final tierName = isOrgMember ? 'Professional' : 'Premium';
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -395,9 +401,13 @@ class _PremiumFeedbackUpsell extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'See exactly what you did well, where the gap was, and what to '
-            'try next time — Premium members get the full skill-by-skill '
-            'breakdown after every conversation.',
+            isPendingOrgMember
+                ? 'See exactly what you did well, where the gap was, and what to '
+                    'try next time — once your admin approves your account, you\'ll get '
+                    'the full skill-by-skill breakdown after every conversation.'
+                : 'See exactly what you did well, where the gap was, and what to '
+                    'try next time — $tierName members get the full skill-by-skill '
+                    'breakdown after every conversation.',
             style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.primary),
           ),
           const SizedBox(height: 16),
@@ -407,7 +417,7 @@ class _PremiumFeedbackUpsell extends StatelessWidget {
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Upgrade to Premium'),
+            child: Text(isOrgMember ? 'View Company Plan' : 'Upgrade to Premium'),
           ),
         ],
       ),

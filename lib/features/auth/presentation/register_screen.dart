@@ -152,7 +152,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         const AuthOrDivider(),
         const SizedBox(height: 20),
         GoogleSignInButton(onPressed: isLoading ? null : _google),
-        const SizedBox(height: 28),
+        const SizedBox(height: 20),
+        Center(
+          child: TextButton.icon(
+            onPressed: isLoading ? null : () => context.push('/register/organization'),
+            icon: const Icon(Icons.apartment_outlined, size: 18),
+            label: const Text('Signing up for a company? Create a company account'),
+            style: TextButton.styleFrom(foregroundColor: AppColors.textOnBrandMuted),
+          ),
+        ),
+        const SizedBox(height: 8),
         Center(
           child: Wrap(
             alignment: WrapAlignment.center,

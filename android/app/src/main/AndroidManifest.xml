@@ -12,6 +12,12 @@
     <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <!-- Google Play Billing (in_app_purchase_android) — subscriptions. -->
+    <uses-permission android:name="com.android.vending.BILLING"/>
+    <!-- Advertising ID access — pulled in transitively by Play services
+         deps (Billing/Firebase); required explicitly on API 33+ or Play
+         Console flags the app as needing it declared. -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
     <application
         android:label="Managely"
         android:name="${applicationName}"

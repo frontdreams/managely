@@ -171,4 +171,85 @@ class Scenario {
     required this.learningPoints,
     this.isPremium = false,
   });
+
+  /// Generic dialogue tree used when a Firestore scenario doc doesn't have
+  /// its own `possibleResponses` — e.g. one created from managelyweb's
+  /// admin dashboard, which doesn't have a UI for authoring per-tone
+  /// replies. Keeps [MockAIConversationService]'s offline tone-matching
+  /// working for every scenario, curated or not.
+  static const List<PossibleResponse> _defaultPossibleResponses = [
+    PossibleResponse(triggerTone: 'empathetic', replies: [
+      'I appreciate you saying that.',
+      'Thanks for putting it that way.',
+    ]),
+    PossibleResponse(triggerTone: 'aggressive', replies: [
+      "I don't think that tone is necessary.",
+      'Okay, that feels a bit harsh.',
+    ]),
+    PossibleResponse(triggerTone: 'vague', replies: [
+      "I'm still not totally clear on what you mean.",
+      'Okay... but what would that look like?',
+    ]),
+    PossibleResponse(triggerTone: 'clear', replies: [
+      "Okay, that's clear — I can work with that.",
+      'Got it, thanks for being direct.',
+    ]),
+    PossibleResponse(triggerTone: 'default', replies: [
+      "Okay, I'm listening — go on.",
+      'Alright, tell me more.',
+    ]),
+  ];
+
+  /// Builds a [Scenario] from a `scenarios/{id}` Firestore document — the
+  /// same shape managely-backend's `POST /admin/scenarios` writes.
+  factory Scenario.fromFirestore(String id, Map<String, dynamic> data) {
+    SkillCategory category = SkillCategory.values.firstWhere(
+      (c) => c.name == data['category'],
+      orElse: () => SkillCategory.difficultConversations,
+    );
+    ScenarioDifficulty difficulty = ScenarioDifficulty.values.firstWhere(
+      (d) => d.name == data['difficulty'],
+      orElse: () => ScenarioDifficulty.medium,
+    );
+    ManagerSkill primarySkill = ManagerSkill.values.firstWhere(
+      (s) => s.name == data['primarySkill'],
+      orElse: () => ManagerSkill.clarity,
+    );
+    final skillsPractised = ((data['skillsPractised'] as List?) ?? [])
+        .map((name) => ManagerSkill.values.firstWhere(
+              (s) => s.name == name,
+              orElse: () => ManagerSkill.clarity,
+            ))
+        .toList();
+    final possibleResponses = ((data['possibleResponses'] as List?) ?? [])
+        .map((r) => PossibleResponse(
+              triggerTone: (r as Map)['triggerTone'] as String? ?? 'default',
+              replies: ((r['replies'] as List?) ?? []).cast<String>(),
+            ))
+        .toList();
+
+    return Scenario(
+      id: id,
+      title: data['title'] as String? ?? 'Untitled Scenario',
+      description: data['description'] as String? ?? '',
+      category: category,
+      difficulty: difficulty,
+      primarySkill: primarySkill,
+      estimatedMinutes: (data['estimatedMinutes'] as num?)?.toInt() ?? 6,
+      skillsPractised:
+          skillsPractised.isNotEmpty ? skillsPractised : [primarySkill],
+      employeeName: data['employeeName'] as String? ?? 'Jordan',
+      employeeRole: data['employeeRole'] as String? ?? 'Employee',
+      employeePersonality: data['employeePersonality'] as String? ?? '',
+      situation: data['situation'] as String? ?? '',
+      objective: data['objective'] as String? ?? '',
+      openingMessage: data['openingMessage'] as String? ?? '',
+      possibleResponses: possibleResponses.isNotEmpty
+          ? possibleResponses
+          : _defaultPossibleResponses,
+      learningPoints:
+          ((data['learningPoints'] as List?) ?? []).cast<String>(),
+      isPremium: data['isPremium'] as bool? ?? false,
+    );
+  }
 }

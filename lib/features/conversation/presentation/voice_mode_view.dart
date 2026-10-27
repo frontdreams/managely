@@ -163,8 +163,12 @@ class _VoiceModeViewState extends ConsumerState<VoiceModeView>
         setState(() => _soundLevel = level);
       },
       listenOptions: SpeechListenOptions(
-        listenFor: const Duration(seconds: 30),
-        pauseFor: const Duration(seconds: 2),
+        // Generous caps: pauseFor is "how long a silence means you're
+        // done talking" — 2s was cutting people off mid-thought during a
+        // normal conversational pause. listenFor is the hard ceiling on a
+        // single turn's length; 30s was too short for a longer answer.
+        listenFor: const Duration(minutes: 2),
+        pauseFor: const Duration(seconds: 6),
       ),
     );
   }

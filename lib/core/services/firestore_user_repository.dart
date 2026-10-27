@@ -24,6 +24,22 @@ class FirestoreUserRepository {
     return _userDoc(uid).set(_profileToJson(profile), SetOptions(merge: true));
   }
 
+  /// Live updates to just the `subscriptionTier` field — the one field that
+  /// can now change purely server-side (a renewal, cancellation, or refund
+  /// verified by managely-backend from a Play/App Store notification, with
+  /// no app interaction at all). Everything else about the profile is only
+  /// ever changed by this device, so a narrow single-field stream avoids
+  /// the churn/races of turning the whole profile into stream-driven state.
+  Stream<SubscriptionTier> watchSubscriptionTier(String uid) {
+    return _userDoc(uid).snapshots().map((snap) {
+      final raw = snap.data()?['subscriptionTier'] as String?;
+      return SubscriptionTier.values.firstWhere(
+        (t) => t.name == raw,
+        orElse: () => SubscriptionTier.free,
+      );
+    });
+  }
+
   /// Stores a freshly-generated email-verification code and its expiry —
   /// called right before (or when resending) the code email goes out.
   Future<void> setVerificationCode(
@@ -128,6 +144,20 @@ class FirestoreUserRepository {
       notificationsEnabled: json['notificationsEnabled'] as bool? ?? true,
       isHydrated: true,
       emailVerified: json['emailVerified'] as bool? ?? defaults.emailVerified,
+      // Backend-only fields (see routes/organizations.js /
+      // routes/purchases.js) — deliberately absent from _profileToJson so
+      // a client write can never set these itself, same reasoning as
+      // subscriptionTier.
+      orgId: json['orgId'] as String?,
+      orgName: json['orgName'] as String?,
+      orgRole: OrgRole.values.firstWhere(
+        (r) => r.name == json['orgRole'],
+        orElse: () => defaults.orgRole,
+      ),
+      orgMemberStatus: OrgMemberStatus.values.firstWhere(
+        (s) => s.name == json['orgMemberStatus'],
+        orElse: () => defaults.orgMemberStatus,
+      ),
     );
   }
 

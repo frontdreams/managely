@@ -20,10 +20,6 @@ class UserProfileNotifier extends StateNotifier<UserProfile> {
     final uid = _uid;
     if (uid == null) return;
 
-    // Link this device's RevenueCat customer to the Firebase UID so
-    // entitlements follow the account, not just the install.
-    await _ref.read(revenueCatServiceProvider).logIn(uid);
-
     final repo = _ref.read(firestoreUserRepositoryProvider);
     final loaded = await repo.loadProfile(uid);
     final authUser = _ref.read(firebaseAuthProvider).currentUser;
@@ -107,13 +103,14 @@ class UserProfileNotifier extends StateNotifier<UserProfile> {
     await _persist();
   }
 
-  /// Keeps [UserProfile.subscriptionTier] in sync with RevenueCat's actual
-  /// entitlement status. This is the SOURCE OF TRUTH for whether someone
-  /// is Premium once RevenueCat is wired up — driven by
-  /// `customerInfoStreamProvider` in main.dart, which fires on purchase,
-  /// renewal, expiration, refund, or a restore on another device. Prefer
-  /// this over calling [setSubscriptionTier] directly from UI after a
-  /// purchase completes; let the entitlement stream be authoritative.
+  /// Keeps [UserProfile.subscriptionTier] in sync with the actual verified
+  /// entitlement status — the SOURCE OF TRUTH for whether someone is
+  /// Premium, driven by two things: the purchase-stream listener in
+  /// main.dart (right after managely-backend verifies a fresh
+  /// purchase/restore), and `subscriptionTierStreamProvider` (a live
+  /// Firestore watch picking up renewals/cancellations verified purely
+  /// server-side, with no app interaction). Prefer this over calling
+  /// [setSubscriptionTier] directly from UI after a purchase completes.
   Future<void> syncSubscriptionFromEntitlement(bool isPremiumActive) async {
     final tier = isPremiumActive ? SubscriptionTier.premium : SubscriptionTier.free;
     if (tier == state.subscriptionTier) return;

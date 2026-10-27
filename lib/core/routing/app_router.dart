@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/register_screen.dart';
+import '../../features/organization/presentation/organization_register_screen.dart';
+import '../../features/organization/presentation/organization_settings_screen.dart';
 import '../../features/auth/presentation/forgot_password_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screen.dart';
 import '../../features/onboarding/presentation/skills_assessment_screen.dart';
@@ -25,10 +27,12 @@ import '../../features/admin/presentation/revenue_screen.dart';
 import '../../features/stories/presentation/story_viewer_screen.dart';
 import '../../features/stories/presentation/admin_post_story_screen.dart';
 import '../../features/debrief/presentation/post_meeting_debrief_screen.dart';
+import '../../features/notifications/presentation/notifications_screen.dart';
 import '../../models/story.dart';
+import '../../models/conversation.dart';
 import '../../features/debrief/providers/debrief_providers.dart';
+import '../../features/practice/providers/practice_providers.dart';
 import '../../features/profile/providers/profile_providers.dart';
-import '../../models/scenario.dart';
 import '../../shared/widgets/app_shell.dart';
 import '../../shared/widgets/splash_screen.dart';
 import '../services/welcome_prefs.dart';
@@ -36,7 +40,7 @@ import '../services/service_providers.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
-const _authRoutes = {'/login', '/register', '/forgot-password'};
+const _authRoutes = {'/login', '/register', '/register/organization', '/forgot-password'};
 
 /// Keeps the splash screen on screen for at least this long, even if auth
 /// and onboarding state resolve sooner.
@@ -137,6 +141,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return '/home';
       }
 
+      // Custom scenarios (describing your own situation) are a Premium
+      // feature — also display-only, same caveat as the admin gate above:
+      // nothing server-side actually enforces this (there's no "scenario
+      // tier" to check against), so don't treat it as a real boundary.
+      if (loc.startsWith('/custom-scenario') && !profile.isPremiumTier) {
+        return '/upgrade';
+      }
+
       return null;
     },
     routes: [
@@ -151,6 +163,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/register',
         builder: (context, state) => const RegisterScreen(),
+        routes: [
+          GoRoute(
+            path: 'organization',
+            builder: (context, state) => const OrganizationRegisterScreen(),
+          ),
+        ],
       ),
       GoRoute(
         path: '/forgot-password',
@@ -175,8 +193,23 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/custom-scenario/confirm',
         parentNavigatorKey: _rootNavigatorKey,
+        // CustomScenarioScreen stashes the generated scenario in
+        // customScenarioDraftProvider rather than passing it via `extra` —
+        // `extra` only survives the one push call and gets lost (crashing
+        // this screen) if the router ever rebuilds this route for any
+        // other reason, e.g. a redirect re-evaluation.
         builder: (context, state) =>
-            CustomScenarioConfirmScreen(scenario: state.extra as Scenario),
+            CustomScenarioConfirmScreen(scenario: ref.read(customScenarioDraftProvider)!),
+      ),
+      GoRoute(
+        path: '/notifications',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const NotificationsScreen(),
+      ),
+      GoRoute(
+        path: '/organization',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const OrganizationSettingsScreen(),
       ),
       GoRoute(
         path: '/upgrade',
@@ -226,7 +259,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               i,
               initialLocation: i == navigationShell.currentIndex,
             ),
-            onCreatePressed: () => context.push('/custom-scenario'),
+            onCreatePressed: () => context.push(
+              ref.read(userProfileProvider).isPremiumTier ? '/custom-scenario' : '/upgrade',
+            ),
             child: navigationShell,
           );
         },
@@ -278,7 +313,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/evaluation',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const EvaluationScreen(),
+        builder: (context, state) =>
+            EvaluationScreen(historicalSession: state.extra as PracticeSession?),
       ),
     ],
   );

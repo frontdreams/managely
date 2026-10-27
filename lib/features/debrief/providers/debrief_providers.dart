@@ -36,9 +36,25 @@ final pendingDebriefIdProvider = StateProvider<String?>((ref) => null);
 
 /// Meetings that happened over an hour ago with no debrief logged yet —
 /// backs the Home screen's reminder banner, in case the OS notification
-/// was missed, dismissed, or notifications are disabled entirely.
+/// was missed, dismissed, or notifications are disabled entirely. These
+/// are also the "unread" notifications in the bell icon/Notifications
+/// screen — see [unreadNotificationsCountProvider].
 final dueDebriefsProvider = StreamProvider.autoDispose<List<RealMeetingPlan>>((ref) {
   final uid = ref.watch(authStateChangesProvider).valueOrNull?.uid;
   if (uid == null) return const Stream.empty();
   return ref.watch(realMeetingRepositoryProvider).watchDueDebriefs(uid);
+});
+
+/// Backs the Notifications screen — every meeting whose debrief window has
+/// opened, whether already logged (read) or still pending (unread, i.e.
+/// in [dueDebriefsProvider] too).
+final debriefNotificationsProvider = StreamProvider.autoDispose<List<RealMeetingPlan>>((ref) {
+  final uid = ref.watch(authStateChangesProvider).valueOrNull?.uid;
+  if (uid == null) return const Stream.empty();
+  return ref.watch(realMeetingRepositoryProvider).watchNotifications(uid);
+});
+
+/// Unread count for the bell icon's badge.
+final unreadNotificationsCountProvider = Provider.autoDispose<int>((ref) {
+  return ref.watch(dueDebriefsProvider).valueOrNull?.length ?? 0;
 });

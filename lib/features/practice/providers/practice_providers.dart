@@ -1,9 +1,28 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/services/service_providers.dart';
 import '../../../data/mock_scenarios.dart';
 import '../../../models/scenario.dart';
+import '../services/scenarios_repository.dart';
 
+final scenariosRepositoryProvider = Provider<ScenariosRepository>((ref) {
+  return ScenariosRepository(ref.watch(firestoreProvider));
+});
+
+/// Live scenarios from Firestore — the practice library managed from
+/// managelyweb's admin dashboard.
+final scenariosStreamProvider = StreamProvider<List<Scenario>>((ref) {
+  return ref.watch(scenariosRepositoryProvider).watchAll();
+});
+
+/// The practice library: Firestore once it has loaded and isn't empty,
+/// otherwise the bundled [MockScenarios] — as an offline/cold-start
+/// fallback, not a permanent data source. Kept as a plain (synchronous)
+/// [Provider] so every existing consumer of the library doesn't need to
+/// handle Firestore's loading/error states individually; it still updates
+/// live as [scenariosStreamProvider] emits new snapshots.
 final allScenariosProvider = Provider<List<Scenario>>((ref) {
-  return MockScenarios.all;
+  final remote = ref.watch(scenariosStreamProvider).valueOrNull;
+  return (remote != null && remote.isNotEmpty) ? remote : MockScenarios.all;
 });
 
 /// Currently selected category filter on the Practice screen. `null` means

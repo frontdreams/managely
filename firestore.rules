@@ -3,7 +3,27 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if request.auth != null && request.auth.uid == userId;
+
+      // The owning user can write anything about their own profile EXCEPT
+      // grant themselves `subscriptionTier: 'premium'`/`'professional'`,
+      // or any of the `org*` fields, directly — those are only trustworthy
+      // when managely-backend sets them, after verifying a real purchase
+      // (routes/purchases.js) or an organization action (routes/
+      // organizations.js). The backend uses firebase-admin, which bypasses
+      // these rules entirely, so it's unaffected by this restriction; a
+      // client-side write is the only thing blocked. Explicitly choosing
+      // the free tier (or just not touching these fields at all) is still
+      // always allowed.
+      allow create: if request.auth != null && request.auth.uid == userId
+        && (!('subscriptionTier' in request.resource.data)
+            || request.resource.data.subscriptionTier == 'free')
+        && !request.resource.data.keys().hasAny(['orgId', 'orgName', 'orgRole', 'orgMemberStatus']);
+      allow update: if request.auth != null && request.auth.uid == userId
+        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['subscriptionTier'])
+            || request.resource.data.subscriptionTier == 'free')
+        && !request.resource.data.diff(resource.data).affectedKeys()
+            .hasAny(['orgId', 'orgName', 'orgRole', 'orgMemberStatus']);
 
       match /sessions/{sessionId} {
         allow read, write: if request.auth != null && request.auth.uid == userId;
@@ -38,6 +58,61 @@ service cloud.firestore {
       // doc — not anyone else's.
       allow read, write: if request.auth != null
         && request.auth.uid == uid;
+    }
+
+    match /scenarios/{scenarioId} {
+      // Everyone signed in can read the practice library.
+      allow read: if request.auth != null;
+      // Only the admin custom claim can write — managed via the
+      // managely-backend admin API (routes/admin.js), which is how
+      // managelyweb's admin dashboard edits this collection.
+      allow write: if request.auth != null
+        && request.auth.token.admin == true;
+    }
+
+    match /site_content/{docId} {
+      // The landing page's hero copy/image and app store links — public,
+      // since anonymous site visitors need to read it. In practice this is
+      // only ever touched via managely-backend (routes/admin.js), which
+      // uses firebase-admin and bypasses these rules entirely; they exist
+      // as a direct-access backstop, same as every other collection here.
+      allow read: if true;
+      allow write: if request.auth != null
+        && request.auth.token.admin == true;
+    }
+
+    // Purchase-token/transaction -> uid lookups (routes/purchases.js) and
+    // the resulting event log. Written and read only by managely-backend
+    // via firebase-admin (bypasses these rules) — never by the app
+    // directly, so there's no legitimate client access to allow at all.
+    match /purchase_tokens/{docId} {
+      allow read, write: if false;
+    }
+    match /apple_transactions/{docId} {
+      allow read, write: if false;
+    }
+    match /subscription_events/{docId} {
+      allow read, write: if false;
+    }
+
+    // Organization accounts (routes/organizations.js) — doc id is the
+    // company's email domain. Name/tier/seatLimit aren't sensitive, so any
+    // signed-in user can read an org doc (needed to show e.g. "Acme Inc —
+    // Professional" on a member's own profile). All writes (create, seat
+    // purchases, approve/remove) go through the backend only.
+    match /organizations/{domain} {
+      allow read: if request.auth != null;
+      allow write: if false;
+
+      // A member can read their own membership doc (to see pending/
+      // approved/removed status); the org's owner can read every member's
+      // doc, for the admin approval screen.
+      match /members/{uid} {
+        allow read: if request.auth != null
+          && (request.auth.uid == uid
+              || get(/databases/$(database)/documents/organizations/$(domain)).data.ownerUid == request.auth.uid);
+        allow write: if false;
+      }
     }
   }
 }

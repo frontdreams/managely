@@ -51,6 +51,10 @@ class HomeScreen extends ConsumerWidget {
           ],
         ),
         actions: [
+          _NotificationBellButton(
+            unreadCount: ref.watch(unreadNotificationsCountProvider),
+            onTap: () => context.push('/notifications'),
+          ),
           Padding(
             padding: const EdgeInsets.only(right: 20),
             child: GestureDetector(
@@ -80,17 +84,6 @@ class HomeScreen extends ConsumerWidget {
                   child: StoriesTray(),
                 ),
               ),
-              if (dueDebriefs.isNotEmpty)
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-                    child: _DueDebriefBanner(
-                      planId: dueDebriefs.first.id,
-                      scenarioTitle: dueDebriefs.first.scenarioTitle,
-                      onTap: () => context.push('/debrief/${dueDebriefs.first.id}'),
-                    ),
-                  ),
-                ),
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
@@ -100,10 +93,21 @@ class HomeScreen extends ConsumerWidget {
                   ),
                 ),
               ),
+              if (dueDebriefs.isNotEmpty)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                    child: _DueDebriefBanner(
+                      planId: dueDebriefs.first.id,
+                      scenarioTitle: dueDebriefs.first.scenarioTitle,
+                      onTap: () => context.push('/debrief/${dueDebriefs.first.id}'),
+                    ),
+                  ),
+                ),
               if (recent != null)
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                     child: _ContinuePractisingCard(
                       scenario: recent,
                       onTap: () => context.push('/scenario/${recent.id}'),
@@ -523,6 +527,42 @@ class _RecommendedCard extends StatelessWidget {
         ),
         ScenarioCard(scenario: scenario, onTap: onTap),
       ],
+    );
+  }
+}
+
+/// Bell icon in the Home app bar, just before the profile avatar — opens
+/// the Notifications screen. Shows a small red dot when there's at least
+/// one unread notification (currently: a due, not-yet-logged debrief).
+class _NotificationBellButton extends StatelessWidget {
+  final int unreadCount;
+  final VoidCallback onTap;
+  const _NotificationBellButton({required this.unreadCount, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: onTap,
+      icon: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          const Icon(Icons.notifications_outlined, color: AppColors.textOnBrand),
+          if (unreadCount > 0)
+            Positioned(
+              top: -1,
+              right: -1,
+              child: Container(
+                width: 9,
+                height: 9,
+                decoration: BoxDecoration(
+                  color: AppColors.danger,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppColors.bgLight, width: 1.5),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

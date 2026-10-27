@@ -7,12 +7,27 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/services/service_providers.dart';
 import '../../../core/utils/skill_color.dart';
-import '../../../data/mock_scenarios.dart';
 import '../../../models/real_meeting_plan.dart';
 import '../../../models/evaluation.dart';
 import '../../../models/scenario.dart';
 import '../../../models/debrief_analysis.dart';
+import '../../practice/providers/practice_providers.dart';
 import '../providers/debrief_providers.dart';
+
+// The theme's default InputDecorationTheme uses a fully-rounded pill
+// border (AppTheme.radiusPill) for enabledBorder/focusedBorder — fine for
+// single-line fields, but reads oddly on these multi-line debrief fields.
+// Explicit, more rectangular borders here override that theme default
+// (an InputDecoration with only `border:` set still falls back to the
+// theme's enabledBorder/focusedBorder, so all three need overriding).
+const _debriefFieldBorder = OutlineInputBorder(
+  borderRadius: BorderRadius.all(Radius.circular(AppTheme.radiusSm)),
+  borderSide: BorderSide(color: AppColors.borderLight),
+);
+const _debriefFieldFocusedBorder = OutlineInputBorder(
+  borderRadius: BorderRadius.all(Radius.circular(AppTheme.radiusSm)),
+  borderSide: BorderSide(color: AppColors.primary, width: 1.5),
+);
 
 /// Reached by tapping the "How did it go?" reminder notification (or the
 /// pending-debrief banner on Home if it's missed). A short checklist about
@@ -270,7 +285,11 @@ class _PostMeetingDebriefScreenState extends ConsumerState<PostMeetingDebriefScr
               minLines: 2,
               maxLines: 4,
               textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(border: OutlineInputBorder()),
+              decoration: const InputDecoration(
+                border: _debriefFieldBorder,
+                enabledBorder: _debriefFieldBorder,
+                focusedBorder: _debriefFieldFocusedBorder,
+              ),
             ),
             const SizedBox(height: 24),
             Text('What was harder than expected? (optional)', style: theme.textTheme.titleMedium),
@@ -280,7 +299,11 @@ class _PostMeetingDebriefScreenState extends ConsumerState<PostMeetingDebriefScr
               minLines: 2,
               maxLines: 4,
               textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(border: OutlineInputBorder()),
+              decoration: const InputDecoration(
+                border: _debriefFieldBorder,
+                enabledBorder: _debriefFieldBorder,
+                focusedBorder: _debriefFieldFocusedBorder,
+              ),
             ),
             const SizedBox(height: 32),
             ElevatedButton(
@@ -333,7 +356,8 @@ class _ResultView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final recommendedScenarios = MockScenarios.all
+    final recommendedScenarios = ref
+        .watch(allScenariosProvider)
         .where((s) => s.skillsPractised.contains(analysis.recommendedSkill))
         .toList();
     final suggestion = recommendedScenarios.isNotEmpty ? recommendedScenarios.first : null;

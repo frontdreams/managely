@@ -22,6 +22,66 @@
           }
         },
         {
+          "client_id": "156202336382-omoh4acnnqp85hi36v8hgq9poqg6p02l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.managely.app",
+            "certificate_hash": "96d06dcb2c4534fd6222109fa7ad2c1fc73031d3"
+          }
+        },
+        {
+          "client_id": "156202336382-or3mdka5q5bqq5bhqpfsrdh5o6io3rkt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDzKZ1_kMokngXFtf1s9mKpqUVSgUOZvUc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "156202336382-or3mdka5q5bqq5bhqpfsrdh5o6io3rkt.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "156202336382-9ffjkohdsfjtfu2c640jdveh8trqsiuk.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.managely.app"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:156202336382:android:4ad9debc756d181c21182f",
+        "android_client_info": {
+          "package_name": "com.managelyhub.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "156202336382-ecpi3jkbj09ts1ceukqjinv8hs9osa1m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.managelyhub.app",
+            "certificate_hash": "96d06dcb2c4534fd6222109fa7ad2c1fc73031d3"
+          }
+        },
+        {
+          "client_id": "156202336382-ol5id0jp6f4l4nkeb28ft67473ct1nv2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.managelyhub.app",
+            "certificate_hash": "a17a547b21c61e204d5d512ba35115c6e4a1256a"
+          }
+        },
+        {
           "client_id": "156202336382-or3mdka5q5bqq5bhqpfsrdh5o6io3rkt.apps.googleusercontent.com",
           "client_type": 3
         }

@@ -1,4 +1,4 @@
-package com.managely.app
+package com.managelyhub.app
 
 import io.flutter.embedding.android.FlutterActivity
 

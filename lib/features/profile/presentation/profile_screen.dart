@@ -12,6 +12,12 @@ import '../providers/profile_providers.dart';
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
+  String _planSubtitle(UserProfile profile) {
+    if (!profile.isPremiumTier) return 'Free plan';
+    if (profile.isOrgMember) return 'Professional';
+    return 'Premium';
+  }
+
   Future<void> _confirmSignOut(BuildContext context, WidgetRef ref) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -104,12 +110,41 @@ class ProfileScreen extends ConsumerWidget {
                 _SettingsRow(
                   icon: Icons.workspace_premium_outlined,
                   iconColor: AppColors.iconAmber,
-                  title: 'Manage Subscription',
-                  subtitle: profile.isPremiumTier ? 'Premium' : 'Free plan',
+                  title: profile.isOrgMember ? 'Company Subscription' : 'Manage Subscription',
+                  subtitle: _planSubtitle(profile),
                   onTap: () => context.push('/upgrade'),
                 ),
               ],
             ),
+
+            if (profile.isOrgMember) ...[
+              const SizedBox(height: 20),
+              const _SettingsGroupLabel(label: 'ORGANIZATION'),
+              _SettingsGroup(
+                children: [
+                  if (profile.isOrgOwner)
+                    _SettingsRow(
+                      icon: Icons.groups_outlined,
+                      iconColor: AppColors.primary,
+                      title: 'Manage Team',
+                      subtitle: 'Approve or remove members',
+                      onTap: () => context.push('/organization'),
+                    )
+                  else
+                    _SettingsRow(
+                      icon: Icons.apartment_outlined,
+                      iconColor: AppColors.primary,
+                      title: profile.orgName ?? 'Your organization',
+                      subtitle: profile.orgMemberStatus == OrgMemberStatus.pending
+                          ? 'Waiting for your admin to approve you'
+                          : profile.orgMemberStatus == OrgMemberStatus.removed
+                              ? 'Your access was removed'
+                              : 'Member',
+                      onTap: null,
+                    ),
+                ],
+              ),
+            ],
 
             const SizedBox(height: 20),
             const _SettingsGroupLabel(label: 'PREFERENCES'),
@@ -446,7 +481,7 @@ class _SettingsRow extends StatelessWidget {
   final Color iconColor;
   final String title;
   final String? subtitle;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   const _SettingsRow({
     required this.icon,

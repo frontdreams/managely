@@ -16,7 +16,7 @@ workflows:
       groups:
         - managely_android_signing
       vars:
-        PACKAGE_NAME: "com.managely.app"
+        PACKAGE_NAME: "com.managelyhub.app"
     cache:
       cache_paths:
         - $HOME/.pub-cache
@@ -76,7 +76,7 @@ workflows:
       cocoapods: default
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: com.managely.app
+        bundle_identifier: com.managelyhub.app
       vars:
         XCODE_WORKSPACE: "Runner.xcworkspace"
         XCODE_SCHEME: "Runner"

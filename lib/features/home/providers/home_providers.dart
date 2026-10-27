@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../models/scenario.dart';
-import '../../../data/mock_scenarios.dart';
+import '../../practice/providers/practice_providers.dart';
 import '../../profile/providers/profile_providers.dart';
 import '../../progress/providers/progress_providers.dart';
 
@@ -8,12 +8,12 @@ import '../../progress/providers/progress_providers.dart';
 final recommendedScenarioProvider = Provider<Scenario>((ref) {
   final profile = ref.watch(userProfileProvider);
   final weakest = profile.weakestSkill;
+  final all = ref.watch(allScenariosProvider);
 
-  final matches = MockScenarios.all
-      .where((s) => s.skillsPractised.contains(weakest))
-      .toList();
+  final matches =
+      all.where((s) => s.skillsPractised.contains(weakest)).toList();
 
-  return matches.isNotEmpty ? matches.first : MockScenarios.all.first;
+  return matches.isNotEmpty ? matches.first : all.first;
 });
 
 /// The most recent scenario the user practised, for "Continue Practising".
@@ -23,9 +23,11 @@ final recommendedScenarioProvider = Provider<Scenario>((ref) {
 /// library scenario (including having no sessions at all).
 final mostRecentScenarioProvider = Provider<Scenario?>((ref) {
   final sessions = ref.watch(sessionHistoryProvider);
+  final all = ref.watch(allScenariosProvider);
   for (final session in sessions) {
-    final scenario = MockScenarios.byIdOrNull(session.scenarioId);
-    if (scenario != null) return scenario;
+    for (final scenario in all) {
+      if (scenario.id == session.scenarioId) return scenario;
+    }
   }
   return null;
 });

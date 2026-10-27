@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/skill_color.dart';
 import '../../../models/scenario.dart';
+import '../../../shared/widgets/animated_score_counter.dart';
 import '../../../shared/widgets/recent_practice_list.dart';
 import '../../../shared/widgets/section_header.dart';
 import '../../../shared/widgets/skill_progress_bar.dart';
@@ -17,6 +19,11 @@ class ProgressScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(userProfileProvider);
     final sessions = ref.watch(sessionHistoryProvider);
+    final scoreColor = profile.averageScore >= 75
+        ? AppColors.success
+        : profile.averageScore >= 55
+            ? AppColors.warning
+            : AppColors.danger;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Your Progress')),
@@ -27,8 +34,15 @@ class ProgressScreen extends ConsumerWidget {
         ]),
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(20, 4, 20, 110),
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 110),
           children: [
+            _ProgressHeroCard(
+              averageScore: profile.averageScore,
+              scoreColor: scoreColor,
+              currentStreak: profile.currentStreak,
+              totalConversations: profile.totalConversations,
+            ),
+            const SizedBox(height: 20),
             GridView.count(
               crossAxisCount: 2,
               shrinkWrap: true,
@@ -63,12 +77,12 @@ class ProgressScreen extends ConsumerWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
             const SectionHeader(title: 'Skill Development'),
             const SizedBox(height: 12),
             Card(
               child: Padding(
-                padding: const EdgeInsets.all(14),
+                padding: const EdgeInsets.all(18),
                 child: Column(
                   children: [
                     for (final entry in profile.skillScores.entries) ...[
@@ -77,17 +91,16 @@ class ProgressScreen extends ConsumerWidget {
                         value: entry.value,
                         color: skillColor(entry.key),
                         icon: entry.key.icon,
-                        barHeight: 5,
-                        compact: true,
+                        barHeight: 6,
                       ),
                       if (entry.key != profile.skillScores.keys.last)
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 18),
                     ],
                   ],
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
             const SectionHeader(title: 'Recent Practice'),
             const SizedBox(height: 12),
             RecentPracticeList(
@@ -97,6 +110,93 @@ class ProgressScreen extends ConsumerWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// A single, confident summary at the top of the page — the same scoring
+/// ring the Evaluation screen uses, so a glance at Progress and a glance
+/// at a just-finished session feel like the same visual language instead
+/// of two unrelated screens bolted together.
+class _ProgressHeroCard extends StatelessWidget {
+  final int averageScore;
+  final Color scoreColor;
+  final int currentStreak;
+  final int totalConversations;
+
+  const _ProgressHeroCard({
+    required this.averageScore,
+    required this.scoreColor,
+    required this.currentStreak,
+    required this.totalConversations,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(22),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: AppColors.heroGradient,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.25),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          AnimatedScoreCounter(score: averageScore, color: Colors.white, size: 92),
+          const SizedBox(width: 20),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Overall Score',
+                  style: theme.textTheme.titleMedium?.copyWith(color: Colors.white),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  totalConversations > 0
+                      ? 'Averaged across $totalConversations conversations.'
+                      : 'Complete a scenario to start tracking your score.',
+                  style: theme.textTheme.bodySmall?.copyWith(color: Colors.white70),
+                ),
+                if (currentStreak > 0) ...[
+                  const SizedBox(height: 10),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.16),
+                      borderRadius: BorderRadius.circular(AppTheme.radiusPill),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text('🔥', style: TextStyle(fontSize: 12)),
+                        const SizedBox(width: 5),
+                        Text(
+                          '$currentStreak day streak',
+                          style: theme.textTheme.labelSmall?.copyWith(color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -125,7 +225,15 @@ class _StatCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Icon(icon, color: color, size: 20),
+            Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+              ),
+              child: Icon(icon, color: color, size: 18),
+            ),
             const Spacer(),
             Text(value, style: theme.textTheme.headlineSmall),
             Text(label, style: theme.textTheme.labelMedium, maxLines: 1, overflow: TextOverflow.ellipsis),

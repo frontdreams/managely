@@ -130,20 +130,19 @@ class _CustomScenarioScreenState extends ConsumerState<CustomScenarioScreen> {
                     style: theme.textTheme.labelSmall
                         ?.copyWith(color: AppColors.textOnBrandMuted, letterSpacing: 0.6),
                   ),
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    height: 34,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _examplePrompts.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: 8),
-                      itemBuilder: (context, i) => _IdeaChip(
-                        label: _examplePrompts[i],
-                        onTap: _isGenerating
-                            ? null
-                            : () => setState(() => _controller.text = _examplePrompts[i]),
-                      ),
-                    ),
+                  const SizedBox(height: 10),
+                  Column(
+                    children: [
+                      for (var i = 0; i < _examplePrompts.length; i++) ...[
+                        _ExampleRow(
+                          label: _examplePrompts[i],
+                          onTap: _isGenerating
+                              ? null
+                              : () => setState(() => _controller.text = _examplePrompts[i]),
+                        ),
+                        if (i != _examplePrompts.length - 1) const SizedBox(height: 8),
+                      ],
+                    ],
                   ),
                   if (_errorMessage != null) ...[
                     const SizedBox(height: 18),
@@ -277,31 +276,46 @@ class _Composer extends StatelessWidget {
   }
 }
 
-/// A small tappable example prompt, sized for a horizontal suggestion row —
-/// legible directly on the purple background.
-class _IdeaChip extends StatelessWidget {
+/// A full-width, tappable example prompt row — stacked vertically so every
+/// example is readable at once rather than requiring a horizontal scroll.
+/// Tapping fills the composer with it; the user can still edit before
+/// sending, or ignore all of them and write their own from scratch.
+class _ExampleRow extends StatelessWidget {
   final String label;
   final VoidCallback? onTap;
-  const _IdeaChip({required this.label, required this.onTap});
+  const _ExampleRow({required this.label, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: AppColors.surfaceLight,
-          border: Border.all(color: AppColors.borderLight),
-          borderRadius: BorderRadius.circular(AppTheme.radiusPill),
-        ),
-        child: Text(
-          label,
-          overflow: TextOverflow.ellipsis,
-          maxLines: 1,
-          style: theme.textTheme.labelSmall?.copyWith(color: AppColors.textOnBrandMuted),
+    return Material(
+      color: AppColors.surfaceLight,
+      borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            border: Border.all(color: AppColors.borderLight),
+            borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.chat_bubble_outline_rounded,
+                  size: 16, color: AppColors.textOnBrandMuted),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  label,
+                  style: theme.textTheme.bodySmall?.copyWith(color: AppColors.textOnBrandMuted),
+                ),
+              ),
+              const Icon(Icons.chevron_right_rounded,
+                  size: 18, color: AppColors.textOnBrandMuted),
+            ],
+          ),
         ),
       ),
     );

@@ -3,7 +3,23 @@ import 'user_role.dart';
 
 enum ManagerLevel { newManager, developingManager, experiencedManager }
 
-enum SubscriptionTier { free, premium }
+/// `professional` is functionally identical to `premium` everywhere this is
+/// checked (see [UserProfile.isPremiumTier]) — it exists as a separate
+/// value only so the UI can show "Professional" instead of "Premium" for
+/// members of a paying organization, per the org account model (see
+/// [UserProfile.orgId]).
+enum SubscriptionTier { free, premium, professional }
+
+/// This account's relationship to an organization — none for a regular
+/// individual account. See [UserProfile.orgId].
+enum OrgRole { none, owner, member }
+
+/// Only meaningful when [UserProfile.orgRole] isn't [OrgRole.none]. A
+/// member's [SubscriptionTier] only actually reflects the org's paid plan
+/// once they're `approved` — see routes/organizations.js's approve/remove
+/// routes, the only things allowed to change this (same
+/// client-can't-grant-itself-access rule as subscriptionTier itself).
+enum OrgMemberStatus { none, pending, approved, removed }
 
 extension ManagerLevelX on ManagerLevel {
   String get label {
@@ -78,6 +94,14 @@ class UserProfile {
   final bool isHydrated;
   final bool emailVerified;
 
+  /// The company email domain this account belongs to (e.g. "acme.com"),
+  /// or null for a regular individual account — also the Firestore doc id
+  /// under `organizations/`. See [OrgRole] / [OrgMemberStatus].
+  final String? orgId;
+  final String? orgName;
+  final OrgRole orgRole;
+  final OrgMemberStatus orgMemberStatus;
+
   const UserProfile({
     this.name = 'You',
     this.photoUrl,
@@ -104,13 +128,22 @@ class UserProfile {
     this.notificationsEnabled = true,
     this.isHydrated = false,
     this.emailVerified = false,
+    this.orgId,
+    this.orgName,
+    this.orgRole = OrgRole.none,
+    this.orgMemberStatus = OrgMemberStatus.none,
   });
 
   /// How many practice conversations a free-tier user gets per ~30 days
   /// before hitting the upgrade prompt. Premium users are unlimited.
   static const int freeConversationLimitPerCycle = 3;
 
-  bool get isPremiumTier => subscriptionTier == SubscriptionTier.premium;
+  bool get isPremiumTier =>
+      subscriptionTier == SubscriptionTier.premium ||
+      subscriptionTier == SubscriptionTier.professional;
+
+  bool get isOrgOwner => orgRole == OrgRole.owner;
+  bool get isOrgMember => orgId != null;
 
   /// Display-only convenience — see the security note on [UserRole].
   /// Never gate a backend call or a Firestore read purely on this; it's
@@ -154,6 +187,10 @@ class UserProfile {
     bool? notificationsEnabled,
     bool? isHydrated,
     bool? emailVerified,
+    String? orgId,
+    String? orgName,
+    OrgRole? orgRole,
+    OrgMemberStatus? orgMemberStatus,
   }) {
     return UserProfile(
       name: name ?? this.name,
@@ -176,6 +213,10 @@ class UserProfile {
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       isHydrated: isHydrated ?? this.isHydrated,
       emailVerified: emailVerified ?? this.emailVerified,
+      orgId: orgId ?? this.orgId,
+      orgName: orgName ?? this.orgName,
+      orgRole: orgRole ?? this.orgRole,
+      orgMemberStatus: orgMemberStatus ?? this.orgMemberStatus,
     );
   }
 }

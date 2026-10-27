@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>156202336382-9ffjkohdsfjtfu2c640jdveh8trqsiuk.apps.googleusercontent.com</string>
+	<string>156202336382-c4um76h4c1hapil7c6m9k3t8r5ofnjer.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.156202336382-9ffjkohdsfjtfu2c640jdveh8trqsiuk</string>
+	<string>com.googleusercontent.apps.156202336382-c4um76h4c1hapil7c6m9k3t8r5ofnjer</string>
 	<key>ANDROID_CLIENT_ID</key>
 	<string>156202336382-65hl3derds7k1pob7vppeuibsmp605ag.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
@@ -15,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.managely.app</string>
+	<string>com.managelyhub.app</string>
 	<key>PROJECT_ID</key>
 	<string>managely-app</string>
 	<key>STORAGE_BUCKET</key>
@@ -31,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:156202336382:ios:2f0ee4baaf260a9d21182f</string>
+	<string>1:156202336382:ios:3d7c18b1524a8aaf21182f</string>
 </dict>
 </plist>

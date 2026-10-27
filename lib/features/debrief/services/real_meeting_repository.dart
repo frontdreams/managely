@@ -76,4 +76,19 @@ class RealMeetingRepository {
             .where((plan) => plan.isDebriefDue)
             .toList());
   }
+
+  /// Every plan whose debrief window has opened, whether it's already been
+  /// logged (read) or is still pending (unread) — backs the in-app
+  /// Notifications screen. [watchDueDebriefs] returns just the unread
+  /// subset of this, most-recently-scheduled first.
+  Stream<List<RealMeetingPlan>> watchNotifications(String uid) {
+    return _collection(uid).snapshots().map((snap) {
+      final plans = snap.docs
+          .map((doc) => RealMeetingPlan.fromFirestore(doc.id, doc.data()))
+          .where((plan) => DateTime.now().isAfter(plan.debriefAvailableAt))
+          .toList();
+      plans.sort((a, b) => b.scheduledAt.compareTo(a.scheduledAt));
+      return plans;
+    });
+  }
 }

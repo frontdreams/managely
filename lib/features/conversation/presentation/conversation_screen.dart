@@ -99,6 +99,12 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
         if (!mounted) return;
         setState(() => _soundLevel = level);
       },
+      // Same generous caps as voice mode — without these the platform
+      // default cuts the user off after a short silence, mid-sentence.
+      listenOptions: SpeechListenOptions(
+        listenFor: const Duration(minutes: 2),
+        pauseFor: const Duration(seconds: 6),
+      ),
     );
   }
 
