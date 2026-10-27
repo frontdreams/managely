@@ -185,13 +185,6 @@ class _OrganizationRegisterScreenState extends ConsumerState<OrganizationRegiste
           child: Wrap(
             alignment: WrapAlignment.center,
             children: [
-              Text(
-                'Signing up as an individual? ',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(color: AppColors.textOnBrandMuted),
-              ),
               TextButton(
                 onPressed: isLoading ? null : () => context.pop(),
                 style: TextButton.styleFrom(
@@ -200,7 +193,7 @@ class _OrganizationRegisterScreenState extends ConsumerState<OrganizationRegiste
                   minimumSize: const Size(0, 0),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
-                child: const Text('Personal sign up'),
+                child: const Text('Create Personal Account'),
               ),
             ],
           ),

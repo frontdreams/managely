@@ -1,8 +1,8 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import '../../../core/services/tts_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../models/message.dart';
 import '../../../shared/widgets/app_snackbar.dart';
@@ -33,7 +33,7 @@ class VoiceModeView extends ConsumerStatefulWidget {
 class _VoiceModeViewState extends ConsumerState<VoiceModeView>
     with SingleTickerProviderStateMixin {
   final SpeechToText _speech = SpeechToText();
-  final FlutterTts _tts = FlutterTts();
+  final TtsService _tts = TtsService();
   late final AnimationController _arcController;
 
   _VoiceStatus _status = _VoiceStatus.thinking;
@@ -48,65 +48,19 @@ class _VoiceModeViewState extends ConsumerState<VoiceModeView>
       duration: const Duration(milliseconds: 1600),
     )..repeat();
 
-    _tts.setCompletionHandler(() {
+    _tts.onComplete = () {
       if (!mounted || _status != _VoiceStatus.speaking) return;
       _startListening();
-    });
-    _tts.setErrorHandler((_) {
+    };
+    _tts.onError = (_) {
       if (!mounted || _status != _VoiceStatus.speaking) return;
       _startListening();
-    });
+    };
 
     _init();
   }
 
-  /// Quality hints found in on-device TTS voice names — engines that
-  /// expose better-than-default voices (e.g. Android's network/enhanced
-  /// Google voices) mark them this way, but there's no standard API to
-  /// ask for "the best one" directly.
-  static const _voiceQualityKeywords = ['network', 'enhanced', 'premium', 'neural'];
-
-  /// Picks the best-sounding English voice already installed on the
-  /// device instead of leaving the engine on its bare default (which is
-  /// often the most robotic-sounding option it has). Silently leaves the
-  /// default in place if voice enumeration isn't supported on this
-  /// platform or nothing suitable is found.
-  Future<void> _selectBestVoice() async {
-    try {
-      final voices = await _tts.getVoices;
-      if (voices is! List) return;
-
-      Map<String, String>? best;
-      var bestScore = -1;
-
-      for (final raw in voices) {
-        if (raw is! Map) continue;
-        final name = (raw['name'] ?? '').toString();
-        final locale = (raw['locale'] ?? '').toString();
-        if (!locale.toLowerCase().startsWith('en')) continue;
-
-        var score = locale.toLowerCase() == 'en-us' ? 2 : 0;
-        final lowerName = name.toLowerCase();
-        for (final keyword in _voiceQualityKeywords) {
-          if (lowerName.contains(keyword)) score += 3;
-        }
-        if (lowerName.contains('local') || lowerName.contains('compact')) score -= 1;
-
-        if (score > bestScore) {
-          bestScore = score;
-          best = {'name': name, 'locale': locale};
-        }
-      }
-
-      if (best != null) await _tts.setVoice(best);
-    } catch (_) {
-      // Voice enumeration/selection isn't available on every platform —
-      // fall back silently to the engine's default voice.
-    }
-  }
-
   Future<void> _init() async {
-    await _selectBestVoice();
     _speechAvailable = await _speech.initialize(
       onStatus: (status) {
         if (!mounted) return;
@@ -218,7 +172,7 @@ class _VoiceModeViewState extends ConsumerState<VoiceModeView>
   @override
   void dispose() {
     _speech.stop();
-    _tts.stop();
+    _tts.dispose();
     _arcController.dispose();
     super.dispose();
   }

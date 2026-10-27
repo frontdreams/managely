@@ -157,7 +157,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           child: TextButton.icon(
             onPressed: isLoading ? null : () => context.push('/register/organization'),
             icon: const Icon(Icons.apartment_outlined, size: 18),
-            label: const Text('Signing up for a company? Create a company account'),
+            label: const Text('Create company account'),
             style: TextButton.styleFrom(foregroundColor: AppColors.textOnBrandMuted),
           ),
         ),

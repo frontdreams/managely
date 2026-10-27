@@ -1,7 +1,7 @@
 name: managely
 description: "Managely — Practice before the stakes are real. AI-powered management conversation simulator."
 publish_to: "none"
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: ">=3.3.0 <4.0.0"
@@ -41,11 +41,11 @@ dependencies:
   in_app_purchase: ^3.2.3
   in_app_purchase_android: ^0.5.0
   speech_to_text: ^7.4.0
-  flutter_tts: ^4.2.5
   fl_chart: ^1.2.0
   video_player: ^2.9.2
   timezone: ^0.11.1
   flutter_local_notifications: ^22.3.0
+  audioplayers: ^6.7.1
 
 dev_dependencies:
   flutter_test:
