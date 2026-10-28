@@ -111,7 +111,7 @@ class OnboardingScreen extends ConsumerWidget {
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
-                            _labels(context)[skill] ?? skill.label,
+                            _labels(context)[skill] ?? skill.labelFor(context),
                             style: theme.textTheme.titleSmall
                                 ?.copyWith(color: context.textOnBrand),
                           ),

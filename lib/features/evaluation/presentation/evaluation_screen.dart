@@ -94,10 +94,11 @@ class _EvaluationScreenState extends ConsumerState<EvaluationScreen> {
       },
     );
 
+    if (!mounted) return;
     await NotificationService.instance.scheduleDebriefReminder(
       planId: planId,
       meetingScheduledAt: draft.scheduledAt,
-      meetingTypeLabel: draft.meetingType.label,
+      meetingTypeLabel: draft.meetingType.labelFor(context),
     );
 
     ref.read(pendingRealMeetingProvider.notifier).state = null;
@@ -267,7 +268,7 @@ class _EvaluationBody extends StatelessWidget {
                   children: [
                     for (final s in evaluation.skillScores) ...[
                       SkillProgressBar(
-                        label: s.skill.label,
+                        label: s.skill.labelFor(context),
                         value: s.score,
                         color: skillColor(s.skill),
                         icon: s.skill.icon,
@@ -367,7 +368,7 @@ class _GoodLuckCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             AppLocalizations.of(context)
-                .evaluationGoodLuckBody(draft.meetingType.label.toLowerCase(), when),
+                .evaluationGoodLuckBody(draft.meetingType.labelFor(context).toLowerCase(), when),
             style: theme.textTheme.bodyMedium
                 ?.copyWith(color: Colors.white.withOpacity(0.85)),
           ),

@@ -255,7 +255,7 @@ class _SkillFrameworkTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(skill.label, style: theme.textTheme.titleSmall),
+                Text(skill.labelFor(context), style: theme.textTheme.titleSmall),
                 const SizedBox(height: 4),
                 Text(note.description, style: theme.textTheme.bodyMedium),
                 const SizedBox(height: 6),

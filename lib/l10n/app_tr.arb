@@ -393,5 +393,32 @@
   "storyDeleteDialogBody": "Bu, herkes için kaldırılacak. Bu işlem geri alınamaz.",
   "storyDeleteButton": "Sil",
   "storyDeleteFailed": "Silinemedi: {error}",
-  "storySaveAction": "Kaydet"
+  "storySaveAction": "Kaydet",
+
+  "skillEmpathy": "Empati",
+  "skillClarity": "Netlik",
+  "skillAssertiveness": "Kararlılık",
+  "skillActiveListening": "Aktif Dinleme",
+  "skillConflictManagement": "Çatışma Yönetimi",
+  "skillBoundarySetting": "Sınır Koyma",
+
+  "categoryFeedback": "Geri Bildirim",
+  "categoryBoundaries": "Sınırlar",
+  "categoryConflict": "Çatışma",
+  "categorySayingNo": "Hayır Deme",
+  "categoryPerformance": "Performans",
+  "categoryDifficultConversations": "Zor Konuşmalar",
+
+  "difficultyEasy": "Kolay",
+  "difficultyMedium": "Orta",
+  "difficultyHard": "Zor",
+
+  "managerLevelNew": "Yeni Yönetici",
+  "managerLevelDeveloping": "Gelişmekte Olan Yönetici",
+  "managerLevelExperienced": "Deneyimli Yönetici",
+
+  "meetingTypeOneOnOne": "1:1",
+  "meetingTypePresentation": "Sunum",
+  "meetingTypeTeamMeeting": "Ekip Toplantısı",
+  "meetingTypeOther": "Diğer"
 }

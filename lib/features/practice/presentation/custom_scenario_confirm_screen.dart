@@ -180,7 +180,7 @@ class _CustomScenarioConfirmScreenState
                     children: [
                       Icon(scenario.category.icon, color: color, size: 18),
                       const SizedBox(width: 8),
-                      Text(scenario.category.label,
+                      Text(scenario.category.labelFor(context),
                           style: theme.textTheme.labelMedium
                               ?.copyWith(color: color)),
                     ],
@@ -192,7 +192,7 @@ class _CustomScenarioConfirmScreenState
                     children: [
                       DifficultyStars(filled: scenario.difficulty.stars),
                       const SizedBox(width: 8),
-                      Text(scenario.difficulty.label,
+                      Text(scenario.difficulty.labelFor(context),
                           style: theme.textTheme.labelMedium),
                       const SizedBox(width: 16),
                       Icon(Icons.schedule,
@@ -210,7 +210,7 @@ class _CustomScenarioConfirmScreenState
                         .map((s) => Chip(
                               avatar:
                                   Icon(s.icon, size: 14, color: skillColor(s)),
-                              label: Text(s.label),
+                              label: Text(s.labelFor(context)),
                               backgroundColor: skillColor(s).withOpacity(0.12),
                               labelStyle: theme.textTheme.labelMedium
                                   ?.copyWith(color: skillColor(s)),
@@ -295,7 +295,7 @@ class _CustomScenarioConfirmScreenState
                                 color: selected
                                     ? Colors.white
                                     : AppColors.primary),
-                            label: Text(t.label),
+                            label: Text(t.labelFor(context)),
                             selectedColor: AppColors.primary,
                             labelStyle: TextStyle(
                                 color: selected ? Colors.white : null),

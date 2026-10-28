@@ -92,7 +92,7 @@ class ScenarioDetailsScreen extends ConsumerWidget {
                     children: [
                       Icon(scenario.category.icon, color: color, size: 18),
                       const SizedBox(width: 8),
-                      Text(scenario.category.label,
+                      Text(scenario.category.labelFor(context),
                           style: theme.textTheme.labelMedium
                               ?.copyWith(color: color)),
                       if (scenario.isPremium) ...[
@@ -128,7 +128,7 @@ class ScenarioDetailsScreen extends ConsumerWidget {
                   const SizedBox(height: 14),
                   Row(
                     children: [
-                      Text(scenario.difficulty.label,
+                      Text(scenario.difficulty.labelFor(context),
                           style: theme.textTheme.labelMedium),
                       const SizedBox(width: 16),
                       Icon(Icons.schedule,
@@ -146,7 +146,7 @@ class ScenarioDetailsScreen extends ConsumerWidget {
                         .map((s) => Chip(
                               avatar:
                                   Icon(s.icon, size: 14, color: skillColor(s)),
-                              label: Text(s.label),
+                              label: Text(s.labelFor(context)),
                               backgroundColor: skillColor(s).withOpacity(0.12),
                               labelStyle: theme.textTheme.labelMedium
                                   ?.copyWith(color: skillColor(s)),

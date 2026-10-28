@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 /// The broad skill category a scenario primarily trains.
 enum SkillCategory {
@@ -11,6 +12,8 @@ enum SkillCategory {
 }
 
 extension SkillCategoryX on SkillCategory {
+  /// English-only — kept for non-UI uses (logging, debug output). Any
+  /// widget showing this to the user should use [labelFor] instead.
   String get label {
     switch (this) {
       case SkillCategory.feedback:
@@ -25,6 +28,24 @@ extension SkillCategoryX on SkillCategory {
         return 'Performance';
       case SkillCategory.difficultConversations:
         return 'Difficult Conversations';
+    }
+  }
+
+  String labelFor(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    switch (this) {
+      case SkillCategory.feedback:
+        return l10n.categoryFeedback;
+      case SkillCategory.boundaries:
+        return l10n.categoryBoundaries;
+      case SkillCategory.conflict:
+        return l10n.categoryConflict;
+      case SkillCategory.sayingNo:
+        return l10n.categorySayingNo;
+      case SkillCategory.performance:
+        return l10n.categoryPerformance;
+      case SkillCategory.difficultConversations:
+        return l10n.categoryDifficultConversations;
     }
   }
 
@@ -57,6 +78,8 @@ enum ManagerSkill {
 }
 
 extension ManagerSkillX on ManagerSkill {
+  /// English-only — kept for non-UI uses (logging, debug output). Any
+  /// widget showing this to the user should use [labelFor] instead.
   String get label {
     switch (this) {
       case ManagerSkill.empathy:
@@ -71,6 +94,24 @@ extension ManagerSkillX on ManagerSkill {
         return 'Conflict Management';
       case ManagerSkill.boundarySetting:
         return 'Boundary Setting';
+    }
+  }
+
+  String labelFor(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    switch (this) {
+      case ManagerSkill.empathy:
+        return l10n.skillEmpathy;
+      case ManagerSkill.clarity:
+        return l10n.skillClarity;
+      case ManagerSkill.assertiveness:
+        return l10n.skillAssertiveness;
+      case ManagerSkill.activeListening:
+        return l10n.skillActiveListening;
+      case ManagerSkill.conflictManagement:
+        return l10n.skillConflictManagement;
+      case ManagerSkill.boundarySetting:
+        return l10n.skillBoundarySetting;
     }
   }
 
@@ -106,6 +147,8 @@ extension ScenarioDifficultyX on ScenarioDifficulty {
     }
   }
 
+  /// English-only — kept for non-UI uses (logging, debug output). Any
+  /// widget showing this to the user should use [labelFor] instead.
   String get label {
     switch (this) {
       case ScenarioDifficulty.easy:
@@ -114,6 +157,18 @@ extension ScenarioDifficultyX on ScenarioDifficulty {
         return 'Medium';
       case ScenarioDifficulty.hard:
         return 'Hard';
+    }
+  }
+
+  String labelFor(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    switch (this) {
+      case ScenarioDifficulty.easy:
+        return l10n.difficultyEasy;
+      case ScenarioDifficulty.medium:
+        return l10n.difficultyMedium;
+      case ScenarioDifficulty.hard:
+        return l10n.difficultyHard;
     }
   }
 }

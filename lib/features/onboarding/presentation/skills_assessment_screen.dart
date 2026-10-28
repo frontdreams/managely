@@ -147,7 +147,7 @@ class _QuestionView extends ConsumerWidget {
                         children: [
                           Icon(question.skill.icon, size: 14, color: color),
                           const SizedBox(width: 4),
-                          Text(question.skill.label,
+                          Text(question.skill.labelFor(context),
                               style: theme.textTheme.labelMedium
                                   ?.copyWith(color: color)),
                         ],
@@ -262,7 +262,7 @@ class _ResultsView extends ConsumerWidget {
                   children: [
                     for (final entry in result.skillScores.entries) ...[
                       SkillProgressBar(
-                        label: entry.key.label,
+                        label: entry.key.labelFor(context),
                         value: entry.value,
                         color: skillColor(entry.key),
                         icon: entry.key.icon,

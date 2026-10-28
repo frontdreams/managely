@@ -51,7 +51,7 @@ class ScenarioCard extends StatelessWidget {
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          scenario.category.label,
+                          scenario.category.labelFor(context),
                           style: theme.textTheme.labelMedium
                               ?.copyWith(color: color),
                         ),
@@ -79,13 +79,13 @@ class ScenarioCard extends StatelessWidget {
                       Icon(scenario.primarySkill.icon,
                           size: 14, color: context.textOnBrandMuted),
                       const SizedBox(width: 4),
-                      Text(scenario.primarySkill.label,
+                      Text(scenario.primarySkill.labelFor(context),
                           style: theme.textTheme.labelMedium),
                       const SizedBox(width: 14),
                       Icon(Icons.bar_chart_rounded,
                           size: 14, color: context.textOnBrandMuted),
                       const SizedBox(width: 4),
-                      Text(scenario.difficulty.label,
+                      Text(scenario.difficulty.labelFor(context),
                           style: theme.textTheme.labelMedium),
                       const Spacer(),
                       Icon(Icons.arrow_forward_rounded, size: 18, color: color),

@@ -90,7 +90,7 @@ class ProgressScreen extends ConsumerWidget {
                   children: [
                     for (final entry in profile.skillScores.entries) ...[
                       SkillProgressBar(
-                        label: entry.key.label,
+                        label: entry.key.labelFor(context),
                         value: entry.value,
                         color: skillColor(entry.key),
                         icon: entry.key.icon,

@@ -288,7 +288,7 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
                 Text(
                   state.roundNumber > 1
                       ? AppLocalizations.of(context).conversationRoundNumber(state.roundNumber)
-                      : scenario.difficulty.label,
+                      : scenario.difficulty.labelFor(context),
                   style: Theme.of(context)
                       .textTheme
                       .labelMedium

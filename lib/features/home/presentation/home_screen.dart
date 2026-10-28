@@ -138,7 +138,7 @@ class HomeScreen extends ConsumerWidget {
                         children: [
                           for (final entry in profile.skillScores.entries) ...[
                             SkillProgressBar(
-                              label: entry.key.label,
+                              label: entry.key.labelFor(context),
                               value: entry.value,
                               color: skillColor(entry.key),
                               icon: entry.key.icon,
@@ -224,7 +224,7 @@ class HomeScreen extends ConsumerWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(weakest.label,
+                                    Text(weakest.labelFor(context),
                                         style: Theme.of(context)
                                             .textTheme
                                             .titleMedium),
@@ -254,7 +254,7 @@ class HomeScreen extends ConsumerWidget {
                                 BorderRadius.circular(AppTheme.radiusPill),
                           ),
                         ),
-                        child: Text(l10n.homePractiseSkillButton(weakest.label)),
+                        child: Text(l10n.homePractiseSkillButton(weakest.labelFor(context))),
                       ),
                     ],
                   ),
@@ -541,7 +541,7 @@ class _RecommendedCard extends StatelessWidget {
           padding: const EdgeInsets.only(bottom: 10, left: 4),
           child: Text(
             AppLocalizations.of(context)
-                .homeRecommendedCaption(weakestSkill.label.toLowerCase()),
+                .homeRecommendedCaption(weakestSkill.labelFor(context).toLowerCase()),
             style: theme.textTheme.bodyMedium
                 ?.copyWith(color: context.textOnBrandMuted),
           ),

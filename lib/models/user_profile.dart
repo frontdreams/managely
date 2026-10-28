@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart' show ThemeMode;
+import 'package:flutter/material.dart' show BuildContext, ThemeMode;
+import '../l10n/app_localizations.dart';
 import 'scenario.dart';
 import 'user_role.dart';
 
@@ -23,6 +24,8 @@ enum OrgRole { none, owner, member }
 enum OrgMemberStatus { none, pending, approved, removed }
 
 extension ManagerLevelX on ManagerLevel {
+  /// English-only — kept for non-UI uses (logging, debug output). Any
+  /// widget showing this to the user should use [labelFor] instead.
   String get label {
     switch (this) {
       case ManagerLevel.newManager:
@@ -31,6 +34,18 @@ extension ManagerLevelX on ManagerLevel {
         return 'Developing Manager';
       case ManagerLevel.experiencedManager:
         return 'Experienced Manager';
+    }
+  }
+
+  String labelFor(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    switch (this) {
+      case ManagerLevel.newManager:
+        return l10n.managerLevelNew;
+      case ManagerLevel.developingManager:
+        return l10n.managerLevelDeveloping;
+      case ManagerLevel.experiencedManager:
+        return l10n.managerLevelExperienced;
     }
   }
 }

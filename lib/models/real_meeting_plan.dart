@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../l10n/app_localizations.dart';
 
 enum MeetingType { oneOnOne, presentation, teamMeeting, other }
 
 extension MeetingTypeX on MeetingType {
+  /// English-only — kept for non-UI uses (logging, debug output, the
+  /// text baked into a scheduled local notification at schedule time).
+  /// Any widget showing this to the user should use [labelFor] instead.
   String get label {
     switch (this) {
       case MeetingType.oneOnOne:
@@ -14,6 +18,20 @@ extension MeetingTypeX on MeetingType {
         return 'Team Meeting';
       case MeetingType.other:
         return 'Other';
+    }
+  }
+
+  String labelFor(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    switch (this) {
+      case MeetingType.oneOnOne:
+        return l10n.meetingTypeOneOnOne;
+      case MeetingType.presentation:
+        return l10n.meetingTypePresentation;
+      case MeetingType.teamMeeting:
+        return l10n.meetingTypeTeamMeeting;
+      case MeetingType.other:
+        return l10n.meetingTypeOther;
     }
   }
 

@@ -180,9 +180,9 @@ class _NotificationTile extends StatelessWidget {
                   Text(
                     _isUnread
                         ? AppLocalizations.of(context)
-                            .notificationsTimeToDebrief(plan.meetingType.label)
+                            .notificationsTimeToDebrief(plan.meetingType.labelFor(context))
                         : AppLocalizations.of(context)
-                            .notificationsDebriefed(plan.meetingType.label),
+                            .notificationsDebriefed(plan.meetingType.labelFor(context)),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: _isUnread ? FontWeight.w700 : FontWeight.w500,
                       color: context.textOnBrand,

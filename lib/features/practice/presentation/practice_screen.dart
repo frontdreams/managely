@@ -62,7 +62,7 @@ class PracticeScreen extends ConsumerWidget {
                   ...SkillCategory.values.map((c) => Padding(
                         padding: const EdgeInsets.only(right: 8),
                         child: _CategoryChip(
-                          label: c.label,
+                          label: c.labelFor(context),
                           icon: c.icon,
                           selected: selectedCategory == c,
                           onTap: () => ref

@@ -205,7 +205,7 @@ class _PostMeetingDebriefScreenState extends ConsumerState<PostMeetingDebriefScr
                       children: [
                         Text(plan.scenarioTitle, style: theme.textTheme.titleSmall),
                         Text(
-                          '${plan.meetingType.label} · ${DateFormat('EEE, MMM d').format(plan.scheduledAt)}',
+                          '${plan.meetingType.labelFor(context)} · ${DateFormat('EEE, MMM d').format(plan.scheduledAt)}',
                           style: theme.textTheme.bodySmall,
                         ),
                       ],
@@ -423,7 +423,7 @@ class _ResultView extends ConsumerWidget {
                 children: [
                   Icon(analysis.recommendedSkill.icon, color: skillColor(analysis.recommendedSkill)),
                   const SizedBox(width: 12),
-                  Text(analysis.recommendedSkill.label, style: theme.textTheme.titleSmall),
+                  Text(analysis.recommendedSkill.labelFor(context), style: theme.textTheme.titleSmall),
                 ],
               ),
             ),

@@ -203,7 +203,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       borderRadius: BorderRadius.circular(AppTheme.radiusPill),
                     ),
                     child: Text(
-                      level.label,
+                      level.labelFor(context),
                       style: theme.textTheme.labelLarge?.copyWith(
                         color:
                             selected ? AppColors.primary : context.textOnBrand,

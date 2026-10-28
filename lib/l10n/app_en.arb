@@ -514,5 +514,32 @@
   "@storyDeleteFailed": {
     "placeholders": { "error": {"type": "String"} }
   },
-  "storySaveAction": "Save"
+  "storySaveAction": "Save",
+
+  "skillEmpathy": "Empathy",
+  "skillClarity": "Clarity",
+  "skillAssertiveness": "Assertiveness",
+  "skillActiveListening": "Active Listening",
+  "skillConflictManagement": "Conflict Management",
+  "skillBoundarySetting": "Boundary Setting",
+
+  "categoryFeedback": "Feedback",
+  "categoryBoundaries": "Boundaries",
+  "categoryConflict": "Conflict",
+  "categorySayingNo": "Saying No",
+  "categoryPerformance": "Performance",
+  "categoryDifficultConversations": "Difficult Conversations",
+
+  "difficultyEasy": "Easy",
+  "difficultyMedium": "Medium",
+  "difficultyHard": "Hard",
+
+  "managerLevelNew": "New Manager",
+  "managerLevelDeveloping": "Developing Manager",
+  "managerLevelExperienced": "Experienced Manager",
+
+  "meetingTypeOneOnOne": "1:1",
+  "meetingTypePresentation": "Presentation",
+  "meetingTypeTeamMeeting": "Team Meeting",
+  "meetingTypeOther": "Other"
 }

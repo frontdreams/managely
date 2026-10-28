@@ -62,7 +62,7 @@ class ProfileScreen extends ConsumerWidget {
             _ProfileHeaderCard(
               name: profile.name,
               photoUrl: profile.photoUrl,
-              levelLabel: profile.level.label,
+              levelLabel: profile.level.labelFor(context),
               isPremium: profile.isPremiumTier,
               onEdit: () => context.push('/profile/edit'),
               conversations: profile.totalConversations,
