@@ -107,14 +107,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return (loc == '/subscription' || loc == '/onboarding') ? null : '/subscription';
       }
 
-      // Onboarding (priorities) is done, but the baseline Skills Assessment
-      // isn't — nobody should reach an AI roleplay or see skill scores on
-      // Home that were never actually measured. Hold them here until they
-      // finish it.
-      if (!profile.skillsAssessmentComplete) {
-        return loc == '/skills-assessment' ? null : '/skills-assessment';
-      }
-
       // A debrief reminder notification was tapped (even from a cold
       // start) — take the user straight there regardless of where they
       // were headed, then this clears itself once handled.
@@ -123,12 +115,19 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return '/debrief/$pendingDebriefId';
       }
 
+      // The Skills Assessment can be skipped (see SkillsAssessmentScreen),
+      // so unlike the other one-time screens below it's only bounced away
+      // from once actually completed — otherwise a skip would land on
+      // '/skills-assessment' only to be immediately redirected right back
+      // to it. It's re-entered deliberately, by pushing it, whenever a
+      // practice session is about to start and this is still false — see
+      // the gate in ScenarioDetailsScreen and CustomScenarioConfirmScreen.
       if (_authRoutes.contains(loc) ||
           loc == '/welcome' ||
           loc == '/subscription' ||
           loc == '/onboarding' ||
-          loc == '/skills-assessment' ||
-          loc == '/splash') {
+          loc == '/splash' ||
+          (loc == '/skills-assessment' && profile.skillsAssessmentComplete)) {
         return '/home';
       }
 

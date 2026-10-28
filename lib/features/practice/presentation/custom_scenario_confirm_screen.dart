@@ -78,6 +78,14 @@ class _CustomScenarioConfirmScreenState
 
   Future<void> _start(BuildContext context, WidgetRef ref) async {
     final profile = ref.read(userProfileProvider);
+
+    // Same compulsory-before-practice gate as ScenarioDetailsScreen — see
+    // the comment there.
+    if (!profile.skillsAssessmentComplete) {
+      context.push('/skills-assessment');
+      return;
+    }
+
     if (profile.hasReachedFreeConversationLimit) {
       context.push('/upgrade');
       return;

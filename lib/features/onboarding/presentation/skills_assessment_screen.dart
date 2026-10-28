@@ -9,12 +9,16 @@ import '../../../shared/widgets/skill_progress_bar.dart';
 import '../../profile/providers/profile_providers.dart';
 import '../providers/skills_assessment_providers.dart';
 
-/// The baseline Skills Assessment. Reached once, right after the priority
-/// ranking step in onboarding — see the redirect logic in `app_router.dart`
-/// that keeps a user here until it's complete. This is what sets the real
-/// starting numbers behind every skill bar in the app, instead of a
-/// hardcoded default. See [SkillsAssessmentQuestions] for the question
-/// bank and the research each question is grounded in.
+/// The baseline Skills Assessment. First reached right after the priority
+/// ranking step in onboarding, but skippable from there (see the "Skip for
+/// now" action below) — Home shows neutral default skill scores until it's
+/// actually completed. It's re-entered, this time compulsorily, whenever a
+/// skipped user tries to start a real practice session: see the gate in
+/// `ScenarioDetailsScreen` and `CustomScenarioConfirmScreen`, and the
+/// matching carve-out for this route in `app_router.dart`'s redirect. This
+/// is what sets the real starting numbers behind every skill bar in the
+/// app, instead of a hardcoded default. See [SkillsAssessmentQuestions] for
+/// the question bank and the research each question is grounded in.
 class SkillsAssessmentScreen extends ConsumerStatefulWidget {
   const SkillsAssessmentScreen({super.key});
 
@@ -44,7 +48,23 @@ class _SkillsAssessmentScreenState extends ConsumerState<SkillsAssessmentScreen>
   Future<void> _finishAndContinue() async {
     final result = ref.read(assessmentResultProvider);
     await ref.read(userProfileProvider.notifier).setBaselineSkillScores(result.skillScores);
-    if (mounted) context.go('/home');
+    if (mounted) _leave();
+  }
+
+  // Leaves without completing the assessment — reachable whenever it's
+  // allowed to skip (see [_QuestionView]'s skip button) or whenever
+  // completing it finishes a practice-session gate instead of first-run
+  // onboarding. Pops back to whatever pushed this screen (e.g. the
+  // scenario the user was about to start) if there is one, otherwise this
+  // was reached straight from onboarding and there's nothing to pop back
+  // to, so it goes to Home instead.
+  void _leave() {
+    if (!context.mounted) return;
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.go('/home');
+    }
   }
 
   @override
@@ -52,13 +72,14 @@ class _SkillsAssessmentScreenState extends ConsumerState<SkillsAssessmentScreen>
     if (_showingResults) {
       return _ResultsView(onContinue: _finishAndContinue);
     }
-    return _QuestionView(onSelect: _selectAnswer);
+    return _QuestionView(onSelect: _selectAnswer, onSkip: _leave);
   }
 }
 
 class _QuestionView extends ConsumerWidget {
   final void Function(String questionId, int score) onSelect;
-  const _QuestionView({required this.onSelect});
+  final VoidCallback onSkip;
+  const _QuestionView({required this.onSelect, required this.onSkip});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -75,6 +96,15 @@ class _QuestionView extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Skills Assessment'),
         automaticallyImplyLeading: false,
+        actions: [
+          TextButton(
+            onPressed: onSkip,
+            child: Text(
+              'Skip for now',
+              style: theme.textTheme.labelLarge?.copyWith(color: AppColors.textOnBrandMuted),
+            ),
+          ),
+        ],
       ),
       body: SafeArea(
         child: Column(

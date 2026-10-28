@@ -161,7 +161,8 @@ class MockScenarios {
       skillsPractised: [ManagerSkill.boundarySetting, ManagerSkill.clarity],
       employeeName: 'Sam',
       employeeRole: 'Product Designer',
-      employeePersonality: 'Eager, slightly anxious about being seen as committed',
+      employeePersonality:
+          'Eager, slightly anxious about being seen as committed',
       situation:
           'Sam has sent work messages at 11pm three times this week, and other teammates have started to feel pressure to reply.',
       objective:
@@ -259,7 +260,8 @@ class MockScenarios {
       skillsPractised: [ManagerSkill.clarity, ManagerSkill.empathy],
       employeeName: 'Nina',
       employeeRole: 'Data Analyst',
-      employeePersonality: 'Proud of her work, a bit defensive about quality critique',
+      employeePersonality:
+          'Proud of her work, a bit defensive about quality critique',
       situation:
           'Nina\'s last two reports had calculation errors that made it to leadership before anyone caught them.',
       objective:
@@ -354,7 +356,10 @@ class MockScenarios {
       difficulty: ScenarioDifficulty.medium,
       primarySkill: ManagerSkill.boundarySetting,
       estimatedMinutes: 5,
-      skillsPractised: [ManagerSkill.boundarySetting, ManagerSkill.assertiveness],
+      skillsPractised: [
+        ManagerSkill.boundarySetting,
+        ManagerSkill.assertiveness
+      ],
       employeeName: 'Riley',
       employeeRole: 'Account Manager',
       employeePersonality: 'Persistent, good at making a compelling case',
@@ -448,10 +453,14 @@ class MockScenarios {
       difficulty: ScenarioDifficulty.medium,
       primarySkill: ManagerSkill.assertiveness,
       estimatedMinutes: 6,
-      skillsPractised: [ManagerSkill.assertiveness, ManagerSkill.activeListening],
+      skillsPractised: [
+        ManagerSkill.assertiveness,
+        ManagerSkill.activeListening
+      ],
       employeeName: 'Casey',
       employeeRole: 'Product Manager',
-      employeePersonality: 'Confident, direct, respects reasoning over authority',
+      employeePersonality:
+          'Confident, direct, respects reasoning over authority',
       situation:
           'Casey disagrees with your decision to delay the launch by two weeks and thinks it\'s the wrong call.',
       objective:
@@ -484,6 +493,306 @@ class MockScenarios {
         'Let the disagreement be fully heard before defending the decision.',
         'Explain the reasoning with specifics, not just authority ("because I said so").',
         'It\'s okay to hold the decision while still validating the dissent.',
+      ],
+      isPremium: true,
+    ),
+    Scenario(
+      id: 'role-elimination-notice',
+      title: 'Delivering a Role Elimination Notice',
+      description:
+          'A restructuring is eliminating an employee\'s role, and you have to deliver the news directly and compassionately.',
+      category: SkillCategory.difficultConversations,
+      difficulty: ScenarioDifficulty.hard,
+      primarySkill: ManagerSkill.empathy,
+      estimatedMinutes: 8,
+      skillsPractised: [ManagerSkill.empathy, ManagerSkill.clarity],
+      employeeName: 'Morgan',
+      employeeRole: 'Customer Support Specialist',
+      employeePersonality:
+          'Blindsided, worried about finances, trying to stay composed',
+      situation:
+          'A company-wide restructuring is eliminating Morgan\'s role effective in three weeks. Morgan has no idea this meeting is coming.',
+      objective:
+          'Deliver the news clearly and honestly, give Morgan room to react, and be straightforward about severance and next steps without over-promising.',
+      openingMessage:
+          'Hey, you wanted to grab a quick call? I\'ve got five minutes before my next thing, what\'s up?',
+      possibleResponses: [
+        PossibleResponse(triggerTone: 'empathetic', replies: [
+          'Okay... I wasn\'t expecting that at all. Can you give me a second? ...Okay. What happens with my health insurance?',
+          'I appreciate you telling me straight instead of dragging it out. I\'m still in shock, but thank you for that.',
+        ]),
+        PossibleResponse(triggerTone: 'aggressive', replies: [
+          'Are you kidding me? Three weeks? After everything I\'ve put into this role?',
+          'This feels like a gut punch delivered with zero warning. I don\'t even know what to say to you right now.',
+        ]),
+        PossibleResponse(triggerTone: 'vague', replies: [
+          'Wait, so is this definite, or is there still a chance this changes?',
+          'I don\'t really understand what "role eliminated" actually means for me starting tomorrow.',
+        ]),
+        PossibleResponse(triggerTone: 'clear', replies: [
+          'Okay. So last day is the 30th, severance is four weeks, and I keep benefits through the end of the month. That\'s at least something concrete.',
+          'Thank you for laying out exactly what happens next — this is hard enough without being left guessing.',
+        ]),
+        PossibleResponse(triggerTone: 'default', replies: [
+          'I need a minute.',
+          'Okay... I don\'t really know what to say.',
+        ]),
+      ],
+      learningPoints: [
+        'Lead with the decision clearly in the first sentence — don\'t bury it.',
+        'Allow silence; don\'t fill it with over-explaining or justifying.',
+        'Have the concrete details (last day, severance, benefits) ready before the conversation, not promised for later.',
+      ],
+      isPremium: true,
+    ),
+    Scenario(
+      id: 'supporting-grieving-employee',
+      title: 'Supporting a Grieving Employee\'s Return',
+      description:
+          'An employee is returning to work after a family bereavement, and you need to check in without overstepping or ignoring it.',
+      category: SkillCategory.difficultConversations,
+      difficulty: ScenarioDifficulty.medium,
+      primarySkill: ManagerSkill.empathy,
+      estimatedMinutes: 6,
+      skillsPractised: [ManagerSkill.empathy, ManagerSkill.activeListening],
+      employeeName: 'Elena',
+      employeeRole: 'Project Coordinator',
+      employeePersonality:
+          'Private, doesn\'t want to be treated differently, still processing grief',
+      situation:
+          'Elena just returned from two weeks of bereavement leave after losing a parent. This is her first day back, and you\'re checking in before her first meeting.',
+      objective:
+          'Acknowledge the loss genuinely, offer flexibility without assuming what she needs, and let her set the pace for how much she wants to talk about it.',
+      openingMessage:
+          'Hey. Thanks for checking in — honestly I just want to get back into things, if that\'s okay.',
+      possibleResponses: [
+        PossibleResponse(triggerTone: 'empathetic', replies: [
+          'That makes sense. I just want you to know the offer to adjust anything stands any time, no need to ask twice.',
+          'Okay — I hear you. If anything changes this week, even day to day, just tell me and we\'ll figure it out.',
+        ]),
+        PossibleResponse(triggerTone: 'aggressive', replies: [
+          'I didn\'t ask for this conversation to become a whole thing. I said I\'m fine.',
+          'Can we please just talk about the actual work now?',
+        ]),
+        PossibleResponse(triggerTone: 'vague', replies: [
+          'I don\'t really know what I need yet, honestly. Can we just see how today goes?',
+          'I guess... maybe just don\'t make a big deal out of it in front of everyone?',
+        ]),
+        PossibleResponse(triggerTone: 'clear', replies: [
+          'Okay, that\'s genuinely helpful to hear. I\'ll let you know if I need to step out of anything this week.',
+          'I appreciate you saying that directly instead of dancing around it.',
+        ]),
+        PossibleResponse(triggerTone: 'default', replies: [
+          'I appreciate you asking.',
+          'Yeah, I\'m okay. Let\'s just get going.',
+        ]),
+      ],
+      learningPoints: [
+        'Acknowledge the loss once, briefly, without demanding she talk about it.',
+        'Offer flexibility as a standing option, not a one-time question she has to accept on the spot.',
+        'Let her set the pace — don\'t assume she wants either sympathy or normalcy.',
+      ],
+      isPremium: true,
+    ),
+    Scenario(
+      id: 'burnout-disclosure',
+      title: 'An Employee Discloses They\'re Burning Out',
+      description:
+          'An employee admits they\'re burning out mid-project, and you need to respond without either dismissing it or panicking.',
+      category: SkillCategory.boundaries,
+      difficulty: ScenarioDifficulty.medium,
+      primarySkill: ManagerSkill.activeListening,
+      estimatedMinutes: 6,
+      skillsPractised: [
+        ManagerSkill.activeListening,
+        ManagerSkill.boundarySetting
+      ],
+      employeeName: 'Theo',
+      employeeRole: 'Backend Engineer',
+      employeePersonality:
+          'Usually upbeat, now flat and exhausted, embarrassed to be bringing it up',
+      situation:
+          'Theo has been covering for a departed teammate for six weeks on top of his own workload, and finally admits he\'s running on empty.',
+      objective:
+          'Hear Theo out fully, validate without minimizing, and agree on a concrete reduction in load rather than just a sympathetic word.',
+      openingMessage:
+          'Honestly? I\'m not okay. I\'ve been saying I\'m fine for weeks but I\'m not sure I can keep up this pace much longer.',
+      possibleResponses: [
+        PossibleResponse(triggerTone: 'empathetic', replies: [
+          'Thank you for telling me — that actually means a lot, I know that wasn\'t easy to say.',
+          'Okay, I hear you. What\'s the one thing off your plate that would actually make this week survivable?',
+        ]),
+        PossibleResponse(triggerTone: 'aggressive', replies: [
+          'I don\'t need a motivational speech right now, I need less work.',
+          'I\'ve been dropping hints for weeks. I shouldn\'t have had to say it this directly.',
+        ]),
+        PossibleResponse(triggerTone: 'vague', replies: [
+          'I don\'t know, maybe it\'ll get better once the project\'s done? I don\'t want to make it a bigger deal than it is.',
+          'I\'m not asking you to fix everything, I just... needed to say it out loud, I guess.',
+        ]),
+        PossibleResponse(triggerTone: 'clear', replies: [
+          'Okay, taking the on-call rotation off me for two weeks would genuinely help. Thank you for asking specifically instead of just saying "let me know".',
+          'If we can get even one more person on this by next sprint, that changes everything.',
+        ]),
+        PossibleResponse(triggerTone: 'default', replies: [
+          'I just needed to say that out loud, I think.',
+          'I don\'t really know what I need right now, honestly.',
+        ]),
+      ],
+      learningPoints: [
+        'Don\'t rush to solve it before you\'ve actually heard the full extent of it.',
+        'Validate the disclosure itself — it usually took courage to say.',
+        'Leave with one concrete, immediate change, not just a promise to "look into it".',
+      ],
+      isPremium: true,
+    ),
+    Scenario(
+      id: 'toxic-high-performer',
+      title: 'Managing a High Performer Who Undermines the Team',
+      description:
+          'Your top performer gets great results but consistently undermines and talks over teammates, and others have started to complain.',
+      category: SkillCategory.conflict,
+      difficulty: ScenarioDifficulty.hard,
+      primarySkill: ManagerSkill.conflictManagement,
+      estimatedMinutes: 7,
+      skillsPractised: [
+        ManagerSkill.conflictManagement,
+        ManagerSkill.assertiveness
+      ],
+      employeeName: 'Harrison',
+      employeeRole: 'Senior Sales Executive',
+      employeePersonality:
+          'Confident, results-driven, dismissive of feedback that isn\'t about numbers',
+      situation:
+          'Harrison consistently hits the highest sales numbers on the team, but two teammates have independently told you he talks over them in client calls and takes sole credit for joint wins.',
+      objective:
+          'Address the behavior directly without letting the strong numbers excuse it, and be clear that results don\'t exempt him from how he treats the team.',
+      openingMessage:
+          'I\'m guessing this is about the numbers? Because if so, I don\'t really get the issue — I closed more than anyone else this quarter.',
+      possibleResponses: [
+        PossibleResponse(triggerTone: 'empathetic', replies: [
+          'Okay... I didn\'t realize it was landing that way. I don\'t mean to steamroll people, I just get focused.',
+          'Fair. I can see how that would be frustrating for them, even if it wasn\'t intentional.',
+        ]),
+        PossibleResponse(triggerTone: 'aggressive', replies: [
+          'So now hitting my numbers is a problem? Feels like I\'m being punished for performing.',
+          'This sounds like other people\'s insecurity, not something I actually need to change.',
+        ]),
+        PossibleResponse(triggerTone: 'vague', replies: [
+          'Okay, so what exactly am I supposed to do differently in calls?',
+          'I\'m not really sure what "taking credit" even looks like from my side.',
+        ]),
+        PossibleResponse(triggerTone: 'clear', replies: [
+          'Okay — so let the junior reps take point on calls they sourced, and credit wins by name in the team channel. I can do that.',
+          'Got it. That\'s a specific enough ask that I can actually act on, instead of just "be nicer".',
+        ]),
+        PossibleResponse(triggerTone: 'default', replies: [
+          'Alright, I\'m listening.',
+          'Okay, go on.',
+        ]),
+      ],
+      learningPoints: [
+        'Separate performance from conduct explicitly — strong numbers don\'t buy an exemption.',
+        'Use specific, observed examples rather than a general "people feel undermined".',
+        'End with a concrete behavioral change, not just an attitude adjustment.',
+      ],
+      isPremium: true,
+    ),
+    Scenario(
+      id: 'inclusion-concern',
+      title: 'An Employee Raises a Feeling-Excluded Concern',
+      description:
+          'An employee tells you they\'ve felt consistently left out of key discussions and decisions that affect their work.',
+      category: SkillCategory.conflict,
+      difficulty: ScenarioDifficulty.hard,
+      primarySkill: ManagerSkill.activeListening,
+      estimatedMinutes: 7,
+      skillsPractised: [ManagerSkill.activeListening, ManagerSkill.empathy],
+      employeeName: 'Aisha',
+      employeeRole: 'UX Researcher',
+      employeePersonality:
+          'Measured, has clearly thought about this before raising it, a little guarded',
+      situation:
+          'Aisha tells you she\'s noticed she\'s regularly left off meeting invites and Slack threads where decisions affecting her research get made, and she doesn\'t think it\'s accidental anymore.',
+      objective:
+          'Listen fully without getting defensive or rushing to explain it away, and commit to a concrete way of checking whether the pattern is real.',
+      openingMessage:
+          'I\'ve thought about whether to bring this up for a while, so I want to say it clearly: I keep getting left out of decisions that directly affect my work, and I don\'t think it\'s a coincidence anymore.',
+      possibleResponses: [
+        PossibleResponse(triggerTone: 'empathetic', replies: [
+          'Thank you for trusting me with this — I know that took thought to bring up. Can you walk me through a specific instance?',
+          'I hear you, and I don\'t want to explain it away before actually looking into it properly.',
+        ]),
+        PossibleResponse(triggerTone: 'aggressive', replies: [
+          'Whoa, I don\'t think anyone\'s doing that on purpose, that feels like a big accusation.',
+          'I don\'t appreciate being told I\'m excluding people when that was never my intention.',
+        ]),
+        PossibleResponse(triggerTone: 'vague', replies: [
+          'I mean, maybe it\'s just been a busy few weeks for everyone? I\'m sure it\'s not intentional.',
+          'I\'m not totally sure what you want me to do about it right now.',
+        ]),
+        PossibleResponse(triggerTone: 'clear', replies: [
+          'Okay — auditing the last month of invites and actually asking the team directly is a real step, not just a reassurance. I appreciate that.',
+          'That\'s specific enough that I can tell you\'re actually going to look into it, not just brush past it.',
+        ]),
+        PossibleResponse(triggerTone: 'default', replies: [
+          'I just needed you to actually hear this.',
+          'I\'ve been sitting on this for a while, honestly.',
+        ]),
+      ],
+      learningPoints: [
+        'Resist the urge to immediately defend the team or explain it away.',
+        'Ask for specific instances rather than responding to the pattern in the abstract.',
+        'Commit to a concrete way of checking the pattern (e.g. an invite audit), not just a verbal reassurance.',
+      ],
+      isPremium: true,
+    ),
+    Scenario(
+      id: 'declining-promotion-request',
+      title: 'Declining an Internal Promotion Request',
+      description:
+          'An employee asks you directly for a promotion they\'re not ready for yet, and you need to say no clearly while keeping them motivated.',
+      category: SkillCategory.sayingNo,
+      difficulty: ScenarioDifficulty.medium,
+      primarySkill: ManagerSkill.clarity,
+      estimatedMinutes: 6,
+      skillsPractised: [ManagerSkill.clarity, ManagerSkill.boundarySetting],
+      employeeName: 'Owen',
+      employeeRole: 'Associate Analyst',
+      employeePersonality:
+          'Ambitious, a little impatient, takes rejection personally',
+      situation:
+          'Owen has asked directly to be promoted to Senior Analyst this cycle, but he\'s missing two of the role\'s core requirements and isn\'t ready yet.',
+      objective:
+          'Say no clearly for this cycle, be specific about the gap, and give him a real path rather than a vague "maybe next time".',
+      openingMessage:
+          'So, have you had a chance to think about what I asked last week? About the Senior Analyst promotion?',
+      possibleResponses: [
+        PossibleResponse(triggerTone: 'empathetic', replies: [
+          'Okay... that\'s disappointing, but I\'d rather know exactly what\'s missing than guess. What specifically am I short on?',
+          'Thanks for being straight with me instead of just stringing me along.',
+        ]),
+        PossibleResponse(triggerTone: 'aggressive', replies: [
+          'Wait, so basically no? After everything I\'ve put in this year?',
+          'This feels like a moving target — nobody told me these specific requirements until right now.',
+        ]),
+        PossibleResponse(triggerTone: 'vague', replies: [
+          'So is this a "not yet" or a "never"? I need to know which one I\'m planning around.',
+          'I\'m not really clear on what "not quite ready" actually means in practice.',
+        ]),
+        PossibleResponse(triggerTone: 'clear', replies: [
+          'Okay — stakeholder presentations and one more full project cycle leading a workstream. That\'s concrete, I can work toward that.',
+          'Got it. If those are the two things, I\'d rather know now than find out again next cycle.',
+        ]),
+        PossibleResponse(triggerTone: 'default', replies: [
+          'Okay, I\'m listening.',
+          'Alright, go ahead.',
+        ]),
+      ],
+      learningPoints: [
+        'Say no in the first sentence — don\'t bury it under context.',
+        'Name the specific, closeable gap instead of a vague "not ready yet".',
+        'Give a real path forward (concrete criteria, rough timeline) so no doesn\'t read as a dead end.',
       ],
       isPremium: true,
     ),

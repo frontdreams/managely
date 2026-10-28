@@ -21,6 +21,15 @@ class ScenarioDetailsScreen extends ConsumerWidget {
   Future<void> _start(BuildContext context, WidgetRef ref, Scenario scenario) async {
     final profile = ref.read(userProfileProvider);
 
+    // The baseline Skills Assessment is skippable right after signup, but
+    // compulsory before an actual practice session — a roleplay needs a
+    // real starting skill score to measure against. Completing it pops
+    // back here, so the user just taps Start again.
+    if (!profile.skillsAssessmentComplete) {
+      context.push('/skills-assessment');
+      return;
+    }
+
     // Premium-only scenario, free-tier user — send them to upgrade instead
     // of starting. Checked before the usage-cap check since it's a
     // different reason for being blocked.
