@@ -7,6 +7,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/skill_color.dart';
 import '../../../core/services/notification_service.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../models/conversation.dart';
 import '../../../models/evaluation.dart';
 import '../../../models/scenario.dart';
@@ -120,12 +121,12 @@ class _EvaluationScreenState extends ConsumerState<EvaluationScreen> {
       if (evaluation == null) {
         // Predates full evaluation data being stored per session.
         return Scaffold(
-          appBar: AppBar(title: const Text('Session Details')),
-          body: const Center(
+          appBar: AppBar(title: Text(AppLocalizations.of(context).evaluationSessionDetailsTitle)),
+          body: Center(
             child: Padding(
-              padding: EdgeInsets.all(24),
+              padding: const EdgeInsets.all(24),
               child: Text(
-                'Full details aren\'t available for this older session.',
+                AppLocalizations.of(context).evaluationOlderSessionUnavailable,
                 textAlign: TextAlign.center,
               ),
             ),
@@ -157,7 +158,7 @@ class _EvaluationScreenState extends ConsumerState<EvaluationScreen> {
                 const CircularProgressIndicator(color: Colors.white),
                 const SizedBox(height: 20),
                 Text(
-                  'Evaluating your conversation…',
+                  AppLocalizations.of(context).evaluationInProgress,
                   style: theme.textTheme.bodyMedium
                       ?.copyWith(color: context.textOnBrandMuted),
                 ),
@@ -220,9 +221,12 @@ class _EvaluationBody extends StatelessWidget {
             ? AppColors.warning
             : AppColors.danger;
 
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(showLeading ? 'Session Details' : 'Conversation Complete'),
+        title: Text(showLeading
+            ? l10n.evaluationSessionDetailsTitle
+            : l10n.evaluationConversationCompleteTitle),
         automaticallyImplyLeading: showLeading,
       ),
       body: SafeArea(
@@ -278,21 +282,21 @@ class _EvaluationBody extends StatelessWidget {
             const SizedBox(height: 24),
             if (isPremiumUser) ...[
               _FeedbackSection(
-                title: 'What you did well',
+                title: l10n.evaluationWhatYouDidWell,
                 icon: Icons.thumb_up_alt_outlined,
                 color: AppColors.success,
                 points: evaluation.whatYouDidWell,
               ),
               const SizedBox(height: 16),
               _FeedbackSection(
-                title: 'Your opportunity',
+                title: l10n.evaluationYourOpportunity,
                 icon: Icons.visibility_outlined,
                 color: AppColors.warning,
                 points: evaluation.opportunities,
               ),
               const SizedBox(height: 16),
               _FeedbackSection(
-                title: 'Try this next time',
+                title: l10n.evaluationTryNextTime,
                 icon: Icons.lightbulb_outline_rounded,
                 color: AppColors.primary,
                 points: evaluation.tryNextTime,
@@ -306,7 +310,7 @@ class _EvaluationBody extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: onTryAgain,
                 icon: const Icon(Icons.replay_rounded),
-                label: const Text('Try Again'),
+                label: Text(l10n.evaluationTryAgainButton),
               ),
               const SizedBox(height: 12),
             ],
@@ -316,7 +320,7 @@ class _EvaluationBody extends StatelessWidget {
                 foregroundColor: context.textOnBrand,
                 side: const BorderSide(color: Colors.white54),
               ),
-              child: Text(showLeading ? 'Close' : 'Back to Home'),
+              child: Text(showLeading ? l10n.commonClose : l10n.evaluationBackToHomeButton),
             ),
           ],
         ),
@@ -353,7 +357,7 @@ class _GoodLuckCard extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'You\'re ready.',
+                  AppLocalizations.of(context).evaluationYouAreReady,
                   style: theme.textTheme.titleMedium
                       ?.copyWith(color: Colors.white),
                 ),
@@ -362,7 +366,8 @@ class _GoodLuckCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Good luck with your ${draft.meetingType.label.toLowerCase()} on $when. We\'ll check in an hour after so you can log how it actually went.',
+            AppLocalizations.of(context)
+                .evaluationGoodLuckBody(draft.meetingType.label.toLowerCase(), when),
             style: theme.textTheme.bodyMedium
                 ?.copyWith(color: Colors.white.withOpacity(0.85)),
           ),
@@ -386,7 +391,9 @@ class _PremiumFeedbackUpsell extends ConsumerWidget {
     final isOrgMember = profile.isOrgMember;
     final isPendingOrgMember =
         isOrgMember && profile.orgMemberStatus == OrgMemberStatus.pending;
-    final tierName = isOrgMember ? 'Professional' : 'Premium';
+    final tierName = isOrgMember
+        ? AppLocalizations.of(context).tierProfessional
+        : AppLocalizations.of(context).tierPremium;
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -403,7 +410,7 @@ class _PremiumFeedbackUpsell extends ConsumerWidget {
                   color: AppColors.primary),
               const SizedBox(width: 8),
               Text(
-                'Unlock Deeper Feedback',
+                AppLocalizations.of(context).evaluationUnlockDeeperFeedback,
                 style: theme.textTheme.titleMedium
                     ?.copyWith(color: AppColors.primary),
               ),
@@ -412,12 +419,8 @@ class _PremiumFeedbackUpsell extends ConsumerWidget {
           const SizedBox(height: 8),
           Text(
             isPendingOrgMember
-                ? 'See exactly what you did well, where the gap was, and what to '
-                    'try next time — once your admin approves your account, you\'ll get '
-                    'the full skill-by-skill breakdown after every conversation.'
-                : 'See exactly what you did well, where the gap was, and what to '
-                    'try next time — $tierName members get the full skill-by-skill '
-                    'breakdown after every conversation.',
+                ? AppLocalizations.of(context).evaluationUpsellPendingOrgMember
+                : AppLocalizations.of(context).evaluationUpsellBody(tierName),
             style:
                 theme.textTheme.bodyMedium?.copyWith(color: AppColors.primary),
           ),
@@ -428,8 +431,9 @@ class _PremiumFeedbackUpsell extends ConsumerWidget {
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
             ),
-            child:
-                Text(isOrgMember ? 'View Company Plan' : 'Upgrade to Premium'),
+            child: Text(isOrgMember
+                ? AppLocalizations.of(context).evaluationViewCompanyPlan
+                : AppLocalizations.of(context).evaluationUpgradeToPremium),
           ),
         ],
       ),
@@ -469,7 +473,8 @@ class _ImprovementPill extends StatelessWidget {
               color: color),
           const SizedBox(width: 6),
           Text(
-            'Previous $previous → New $current  (${isPositive ? '+' : ''}$improvement)',
+            AppLocalizations.of(context).evaluationImprovementPill(
+                previous, current, isPositive ? '+$improvement' : '$improvement'),
             style:
                 Theme.of(context).textTheme.labelLarge?.copyWith(color: color),
           ),

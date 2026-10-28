@@ -25,6 +25,12 @@ class AdminPostStoryScreen extends ConsumerStatefulWidget {
 class _AdminPostStoryScreenState extends ConsumerState<AdminPostStoryScreen> {
   StoryCategory _category = StoryCategory.announcements;
   StoryBackground _background = StoryBackground.black;
+  // Null = shows to everyone regardless of their app language — the
+  // right default, since most existing/no-language stories are meant to
+  // be universal (e.g. image-only). Pick 'en'/'tr' to restrict a story
+  // written in that language to viewers whose resolved app language
+  // matches — see storiesForCategoryProvider's filtering.
+  String? _language;
   final _titleController = TextEditingController();
   final _bodyController = TextEditingController();
   DateTime? _expiresAt;
@@ -138,6 +144,7 @@ class _AdminPostStoryScreenState extends ConsumerState<AdminPostStoryScreen> {
             expiresAt: _expiresAt,
             postedByUid: uid,
             postedByName: profile.name,
+            language: _language,
           );
       if (mounted) context.pop();
     } catch (e) {
@@ -217,6 +224,18 @@ class _AdminPostStoryScreenState extends ConsumerState<AdminPostStoryScreen> {
                   ),
                 );
               }).toList(),
+            ),
+            const SizedBox(height: 20),
+            Text('Audience language', style: theme.textTheme.titleSmall),
+            const SizedBox(height: 4),
+            Text(
+              'Restricts who sees this story to just that language — everyone else never gets it.',
+              style: theme.textTheme.bodySmall?.copyWith(color: context.textOnBrandMuted),
+            ),
+            const SizedBox(height: 10),
+            _LanguagePicker(
+              selected: _language,
+              onSelected: (lang) => setState(() => _language = lang),
             ),
             const SizedBox(height: 24),
             TextField(
@@ -298,6 +317,53 @@ class _AdminPostStoryScreenState extends ConsumerState<AdminPostStoryScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Lets the admin restrict a story to one language's viewers, or leave it
+/// at "Everyone" (null) so it shows regardless of app language.
+class _LanguagePicker extends StatelessWidget {
+  final String? selected;
+  final ValueChanged<String?> onSelected;
+
+  const _LanguagePicker({required this.selected, required this.onSelected});
+
+  static const _options = <({String? value, String label})>[
+    (value: null, label: 'Everyone'),
+    (value: 'en', label: 'English only'),
+    (value: 'tr', label: 'Türkçe only'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: _options.map((option) {
+        final isSelected = option.value == selected;
+        return GestureDetector(
+          onTap: () => onSelected(option.value),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 150),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: isSelected ? AppColors.primary : context.surfaceOnBrand,
+              borderRadius: BorderRadius.circular(AppTheme.radiusPill),
+              border: Border.all(
+                color: isSelected ? AppColors.primary : context.borderOnBrand,
+              ),
+            ),
+            child: Text(
+              option.label,
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: isSelected ? Colors.white : context.textOnBrandMuted,
+              ),
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 }

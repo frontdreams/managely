@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Shown before a user's first scenario (and reachable via "Learn More"
 /// afterwards). Encourages fictional/anonymized input.
@@ -35,16 +35,18 @@ class PracticeSafelySheet extends StatelessWidget {
             Container(
               width: 52,
               height: 52,
-              decoration: const BoxDecoration(
-                color: AppColors.accentLight,
+              decoration: BoxDecoration(
+                color: context.surfaceOnBrand,
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.shield_outlined, color: AppColors.primary),
             ),
             const SizedBox(height: 16),
-            Text('Practice Safely', style: theme.textTheme.headlineSmall),
+            Text(AppLocalizations.of(context).practiceSafelyTitle,
+                style: theme.textTheme.headlineSmall),
             const SizedBox(height: 10),
-            Text(AppConstants.privacyNotice, style: theme.textTheme.bodyMedium),
+            Text(AppLocalizations.of(context).privacyNotice,
+                style: theme.textTheme.bodyMedium),
             const SizedBox(height: 24),
             Row(
               children: [
@@ -54,14 +56,14 @@ class PracticeSafelySheet extends StatelessWidget {
                       Navigator.of(context).pop();
                       context.push('/profile/privacy');
                     },
-                    child: const Text('Learn More'),
+                    child: Text(AppLocalizations.of(context).practiceSafelyLearnMore),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Got it'),
+                    child: Text(AppLocalizations.of(context).practiceSafelyGotIt),
                   ),
                 ),
               ],

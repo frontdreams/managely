@@ -201,5 +201,233 @@
   "customScenarioFictionalEmployeeNotice": "{name} is fictional, even if a real name was mentioned in your description.",
   "@customScenarioFictionalEmployeeNotice": {
     "placeholders": { "name": {"type": "String"} }
-  }
+  },
+
+  "conversationVoiceUnavailable": "Voice input isn't available — check your microphone permission.",
+  "conversationEndDialogTitle": "End Conversation?",
+  "conversationEndDialogBody": "You'll get feedback on how you communicated so far.",
+  "conversationKeepTalking": "Keep Talking",
+  "conversationEndAndGetFeedback": "End & Get Feedback",
+  "conversationExitDialogTitle": "Exit Practice?",
+  "conversationExitDialogBody": "Your progress in this conversation will be lost.",
+  "conversationExitButton": "Exit",
+  "conversationVoiceModeTooltip": "Voice Mode",
+  "conversationRoundNumber": "Round {number}",
+  "@conversationRoundNumber": {
+    "placeholders": { "number": {"type": "int"} }
+  },
+  "conversationEmployeeLabel": "Employee",
+  "conversationListening": "Listening…",
+  "conversationTypeResponse": "Type your response...",
+  "conversationEndButton": "End Conversation",
+
+  "voiceModeUnavailableOnDevice": "Voice input isn't available on this device.",
+  "voiceModeEmployeeThinking": "{name} is thinking…",
+  "@voiceModeEmployeeThinking": {
+    "placeholders": { "name": {"type": "String"} }
+  },
+  "voiceModeEmployeeSpeaking": "{name} is speaking…",
+  "@voiceModeEmployeeSpeaking": {
+    "placeholders": { "name": {"type": "String"} }
+  },
+  "voiceModeMicMuted": "Mic muted",
+  "voiceModeTranscriptButton": "Transcript",
+  "voiceModeTapToInterrupt": "Tap the orb to interrupt",
+
+  "tierProfessional": "Professional",
+  "tierPremium": "Premium",
+
+  "evaluationSessionDetailsTitle": "Session Details",
+  "evaluationOlderSessionUnavailable": "Full details aren't available for this older session.",
+  "evaluationInProgress": "Evaluating your conversation…",
+  "evaluationConversationCompleteTitle": "Conversation Complete",
+  "evaluationWhatYouDidWell": "What you did well",
+  "evaluationYourOpportunity": "Your opportunity",
+  "evaluationTryNextTime": "Try this next time",
+  "evaluationTryAgainButton": "Try Again",
+  "evaluationBackToHomeButton": "Back to Home",
+  "evaluationYouAreReady": "You're ready.",
+  "evaluationGoodLuckBody": "Good luck with your {meetingType} on {when}. We'll check in an hour after so you can log how it actually went.",
+  "@evaluationGoodLuckBody": {
+    "placeholders": { "meetingType": {"type": "String"}, "when": {"type": "String"} }
+  },
+  "evaluationUnlockDeeperFeedback": "Unlock Deeper Feedback",
+  "evaluationUpsellPendingOrgMember": "See exactly what you did well, where the gap was, and what to try next time — once your admin approves your account, you'll get the full skill-by-skill breakdown after every conversation.",
+  "evaluationUpsellBody": "See exactly what you did well, where the gap was, and what to try next time — {tier} members get the full skill-by-skill breakdown after every conversation.",
+  "@evaluationUpsellBody": {
+    "placeholders": { "tier": {"type": "String"} }
+  },
+  "evaluationViewCompanyPlan": "View Company Plan",
+  "evaluationUpgradeToPremium": "Upgrade to Premium",
+  "evaluationImprovementPill": "Previous {previous} → New {current}  ({delta})",
+  "@evaluationImprovementPill": {
+    "placeholders": {
+      "previous": {"type": "int"},
+      "current": {"type": "int"},
+      "delta": {"type": "String"}
+    }
+  },
+
+  "progressTitle": "Your Progress",
+  "progressTotalSessions": "Total Sessions",
+  "progressCompletedScenarios": "Completed Scenarios",
+  "progressAverageScore": "Average Score",
+  "progressCurrentStreak": "Current Streak",
+  "progressSkillDevelopment": "Skill Development",
+  "progressOverallScore": "Overall Score",
+  "progressAveragedAcross": "Averaged across {count} conversations.",
+  "@progressAveragedAcross": {
+    "placeholders": { "count": {"type": "int"} }
+  },
+  "progressNoScoreYet": "Complete a scenario to start tracking your score.",
+  "progressDayStreak": "{count} day streak",
+  "@progressDayStreak": {
+    "placeholders": { "count": {"type": "int"} }
+  },
+
+  "profileFreePlan": "Free plan",
+  "profileLogOutDialogTitle": "Log Out?",
+  "profileLogOutDialogBody": "You'll need to sign back in to keep practising.",
+  "profileLogOutButton": "Log Out",
+  "profileSettingsHeader": "Settings",
+  "profileGroupAdmin": "ADMIN",
+  "profileGroupPlan": "PLAN",
+  "profileGroupOrganization": "ORGANIZATION",
+  "profileGroupPreferences": "PREFERENCES",
+  "profileGroupPrivacySupport": "PRIVACY & SUPPORT",
+  "profileUserManagement": "User Management",
+  "profileUserManagementSubtitle": "View users, subscriptions, renewals",
+  "profileRevenue": "Revenue",
+  "profileRevenueSubtitle": "Charted revenue, filterable by range",
+  "profilePostStory": "Post Story",
+  "profilePostStorySubtitle": "News, Trends, Insights, Offers",
+  "profileCompanySubscription": "Company Subscription",
+  "profileManageSubscription": "Manage Subscription",
+  "profileManageTeam": "Manage Team",
+  "profileManageTeamSubtitle": "Approve or remove members",
+  "profileYourOrganization": "Your organization",
+  "profileWaitingForApproval": "Waiting for your admin to approve you",
+  "profileAccessRemoved": "Your access was removed",
+  "profileMember": "Member",
+  "profileEditProfile": "Edit Profile",
+  "profileNotifications": "Notifications",
+  "profilePrivacy": "Privacy",
+  "profileAboutManagely": "About Managely",
+  "profileAboutManagelySubtitle": "How scoring works, and the app's mission",
+  "profileStatSessions": "Sessions",
+  "profileStatAvgScore": "Avg Score",
+  "profileStatImproving": "Improving",
+
+  "editProfilePhotoError": "Couldn't open camera or photos: {error}",
+  "@editProfilePhotoError": {
+    "placeholders": { "error": {"type": "String"} }
+  },
+  "editProfileTitle": "Edit Profile",
+  "editProfileChangePhoto": "Change photo",
+  "editProfileNameHint": "Your name",
+  "editProfileManagerLevel": "Manager level",
+  "editProfileSaveButton": "Save Changes",
+  "editProfileUpdatePhoto": "Update Photo",
+  "editProfileTakePhoto": "Take Photo",
+  "editProfileChooseFromGallery": "Choose from Gallery",
+  "editProfileRemovePhoto": "Remove Photo",
+
+  "responsibleAiStatement": "Managely is designed to coach communication rather than make employment decisions. It never recommends firing, promoting, disciplining, or making legal, medical, or psychological judgments about any real person.",
+  "privacyNotice": "Managely is a practice environment. Avoid entering names, medical information, private family information, or other sensitive information about real employees.",
+
+  "privacyTitle": "Privacy & Responsible AI",
+  "privacySection1Title": "Use fictional scenarios whenever possible",
+  "privacySection1Body": "Managely works best with fictional or composite situations. You don't need real names, real details, or real outcomes to get useful practice.",
+  "privacySection2Title": "Avoid personal information",
+  "privacySection2Body": "Avoid entering real employees' names, medical information, family details, or anything you wouldn't want stored or reviewed.",
+  "privacySection3Title": "AI feedback is coaching, not HR advice",
+  "privacySection3Body": "Evaluations describe your communication patterns in this conversation only. They are not professional, legal, medical, or HR guidance.",
+  "privacySection4Title": "Managely does not make employment decisions",
+  "privacySection4Body": "Managely will never recommend firing, disciplining, promoting, or making salary or legal decisions about any real person. Those decisions belong to you, your manager, and your HR team.",
+
+  "aboutTitle": "About Managely",
+  "aboutTagline": "Practice before the stakes are real.",
+  "aboutWhatManagelyDoesTitle": "What Managely Does",
+  "aboutWhatManagelyDoesBody": "Managely is a practice space for the conversations new managers dread most — difficult feedback, saying no, setting boundaries, handling conflict. You roleplay with an AI \"employee\" that responds the way a real person would, then get a clear read on how you communicated. Nothing here evaluates or makes decisions about real employees — only your side of the conversation.",
+  "aboutHowScoringWorksTitle": "How Scoring Works",
+  "aboutHowScoringWorksBody": "Your starting scores come from a short situational-judgment assessment — realistic workplace scenarios with answer choices that vary in quality, not a self-rating you fill in yourself (self-ratings are notoriously unreliable; people tend to overrate themselves). From there, every practice conversation nudges your scores based on the same signals: specificity, tone, whether you listened before responding, and how you handled pushback.",
+  "aboutScoresDisclaimer": "These scores are research-informed, not a certified clinical or psychometric instrument (like a licensed EQ-i or TKI assessment). Treat them as a useful signal for practice, not a formal evaluation.",
+  "aboutSixSkillsTitle": "The Six Skills We Measure",
+  "aboutSixSkillsSubtitle": "Each is drawn from a different, well-established framework used in real leadership and coaching training.",
+  "aboutResponsibleAiTitle": "Responsible AI",
+  "aboutVersionLine": "Managely · Version {version} ({buildNumber})",
+  "@aboutVersionLine": {
+    "placeholders": { "version": {"type": "String"}, "buildNumber": {"type": "String"} }
+  },
+  "aboutFrameworkEmpathyDescription": "Recognizing and responding to what someone else is feeling before reacting to what they said.",
+  "aboutFrameworkEmpathyFramework": "Grounded in Goleman's Emotional Intelligence framework.",
+  "aboutFrameworkClarityDescription": "Stating a specific, observable expectation instead of a vague impression.",
+  "aboutFrameworkClarityFramework": "Grounded in the Center for Creative Leadership's SBI model (Situation-Behavior-Impact).",
+  "aboutFrameworkAssertivenessDescription": "Saying what you need clearly and directly, without either backing down or steamrolling.",
+  "aboutFrameworkAssertivenessFramework": "Grounded in DESC scripting (Bower & Bower assertiveness training).",
+  "aboutFrameworkActiveListeningDescription": "Actually hearing someone out — reflecting back what they said before responding.",
+  "aboutFrameworkActiveListeningFramework": "Grounded in Motivational Interviewing's OARS model (Open questions, Affirmations, Reflective listening, Summarizing).",
+  "aboutFrameworkConflictDescription": "Handling disagreement in a way that resolves it, rather than avoiding or escalating it.",
+  "aboutFrameworkConflictFramework": "Grounded in the Thomas-Kilmann Conflict Mode Instrument (TKI).",
+  "aboutFrameworkBoundaryDescription": "Holding a fair line — for yourself or your team — without being harsh about it.",
+  "aboutFrameworkBoundaryFramework": "Grounded in the Crucial Conversations framework (Patterson, Grenny, McMillan, Switzler).",
+
+  "practiceSafelyTitle": "Practice Safely",
+  "practiceSafelyLearnMore": "Learn More",
+  "practiceSafelyGotIt": "Got it",
+
+  "subscriptionBenefitUnlimited": "Unlimited practice conversations",
+  "subscriptionBenefitEveryScenario": "Every scenario, including advanced ones",
+  "subscriptionBenefitDeeperFeedback": "Deeper AI feedback after each session",
+  "subscriptionBenefitNewScenarios": "New scenarios as soon as they launch",
+  "subscriptionPurchaseFailed": "Purchase failed. Please try again.",
+  "subscriptionNoPurchaseFound": "No previous purchase found to restore.",
+  "subscriptionRestoreFailed": "Restore failed. Please try again.",
+  "subscriptionManageTitle": "Manage Subscription",
+  "subscriptionCompanyTitle": "Company Subscription",
+  "subscriptionIndividualTitle": "Get the most out of Managely",
+  "subscriptionYourCompanyFallback": "your company",
+  "subscriptionCompanySubtitle": "Pick the seat band that fits your team — everyone on {companyName}'s domain gets Professional access once you upgrade.",
+  "@subscriptionCompanySubtitle": {
+    "placeholders": { "companyName": {"type": "String"} }
+  },
+  "subscriptionIndividualSubtitle": "Start with Premium, or continue for free — you can change this anytime in your profile.",
+  "subscriptionContinueForFree": "Continue for Free",
+  "subscriptionPricingLoadError": "Couldn't load pricing right now.",
+  "subscriptionNoPlansConfigured": "No subscription plans are configured yet.",
+  "subscriptionPerYear": " / year",
+  "subscriptionPerMonth": " / month",
+  "subscriptionSaveMoreBadge": "SAVE MORE",
+  "subscriptionBestValueBadge": "BEST VALUE",
+  "subscriptionStartPremiumAnnual": "Start Premium — Annual",
+  "subscriptionStartPremium": "Start Premium",
+  "subscriptionRestorePurchases": "Restore Purchases",
+  "subscriptionNoCompanyPlansConfigured": "No company plans are configured yet.",
+  "subscriptionUpToSeats": "Up to {seats} seats",
+  "@subscriptionUpToSeats": {
+    "placeholders": { "seats": {"type": "int"} }
+  },
+  "subscriptionPricePerMonth": "{price} / month",
+  "@subscriptionPricePerMonth": {
+    "placeholders": { "price": {"type": "String"} }
+  },
+  "subscriptionChooseButton": "Choose",
+  "subscriptionYourOrganizationFallback": "your organization",
+  "subscriptionHasProfessionalAccess": "You have Professional access",
+  "subscriptionGrantedThrough": "Granted through {orgName}.",
+  "@subscriptionGrantedThrough": {
+    "placeholders": { "orgName": {"type": "String"} }
+  },
+  "subscriptionWaitingForApproval": "Waiting for approval",
+  "subscriptionWaitingForApprovalBody": "An admin at {orgName} needs to approve your account before you get Professional access.",
+  "@subscriptionWaitingForApprovalBody": {
+    "placeholders": { "orgName": {"type": "String"} }
+  },
+  "subscriptionOrgNotUpgradedYet": "Your organization hasn't upgraded yet",
+  "subscriptionAskAdminToSubscribe": "Ask your admin to subscribe {orgName} to Professional.",
+  "@subscriptionAskAdminToSubscribe": {
+    "placeholders": { "orgName": {"type": "String"} }
+  },
+  "subscriptionMonthly": "Monthly",
+  "subscriptionAnnual": "Annual"
 }

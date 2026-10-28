@@ -136,6 +136,14 @@ class Story {
   final String postedByUid;
   final String? postedByName;
 
+  /// Which language this story's content (title/body) was written in —
+  /// 'en' or 'tr'. Null means it's language-neutral (e.g. image/video-only,
+  /// or deliberately posted for everyone) and shows regardless of the
+  /// viewer's app language. Non-null restricts it to viewers whose
+  /// resolved app language (see resolvedLanguageCodeProvider) matches —
+  /// see [storiesForCategoryProvider]'s filtering.
+  final String? language;
+
   /// UIDs of everyone who's opened this story — admin-only "seen by" count,
   /// shown as an eye icon + number in the viewer. Deduplicated server-side
   /// via `arrayUnion` when recorded, so its length is already unique views.
@@ -153,6 +161,7 @@ class Story {
     this.expiresAt,
     required this.postedByUid,
     this.postedByName,
+    this.language,
     this.viewerUids = const [],
   });
 
@@ -173,6 +182,7 @@ class Story {
       expiresAt: (data['expiresAt'] as dynamic)?.toDate(),
       postedByUid: data['postedByUid'] as String? ?? '',
       postedByName: data['postedByName'] as String?,
+      language: data['language'] as String?,
       viewerUids: List<String>.from(data['viewerUids'] as List? ?? const []),
     );
   }
@@ -187,6 +197,7 @@ class Story {
       'background': background.name,
       'postedByUid': postedByUid,
       'postedByName': postedByName,
+      'language': language,
       // createdAt/expiresAt are set by the repository using
       // FieldValue.serverTimestamp() / Timestamp.fromDate() respectively.
     };

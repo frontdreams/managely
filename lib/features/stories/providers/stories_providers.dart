@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/providers/locale_providers.dart';
 import '../../../core/services/service_providers.dart';
 import '../../../models/story.dart';
 import '../services/stories_repository.dart';
@@ -31,10 +32,21 @@ final activeStoriesProvider = StreamProvider<List<Story>>((ref) {
 
 /// Just this category's stories, oldest first — the order a story viewer
 /// should play them in (like Instagram: earliest unseen story first).
+///
+/// Also where language targeting is enforced: a story posted with
+/// [Story.language] set only shows to viewers whose resolved app language
+/// (see [resolvedLanguageCodeProvider]) matches it — a story posted in
+/// Turkish never reaches an English-language viewer and vice versa.
+/// Stories with no language set (image/video-only, or deliberately for
+/// everyone) always show, regardless of viewer language.
 final storiesForCategoryProvider =
     Provider.family<List<Story>, StoryCategory>((ref, category) {
   final all = ref.watch(activeStoriesProvider).valueOrNull ?? [];
-  final filtered = all.where((s) => s.category == category).toList();
+  final language = ref.watch(resolvedLanguageCodeProvider);
+  final filtered = all
+      .where((s) => s.category == category)
+      .where((s) => s.language == null || s.language == language)
+      .toList();
   filtered.sort((a, b) => a.createdAt.compareTo(b.createdAt));
   return filtered;
 });

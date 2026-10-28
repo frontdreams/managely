@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import '../../../core/services/tts_service.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../models/message.dart';
 import '../../../shared/widgets/app_snackbar.dart';
 import '../providers/conversation_providers.dart';
@@ -82,7 +83,7 @@ class _VoiceModeViewState extends ConsumerState<VoiceModeView>
     if (!mounted) return;
 
     if (!_speechAvailable) {
-      AppSnackBar.show(context, 'Voice input isn\'t available on this device.');
+      AppSnackBar.show(context, AppLocalizations.of(context).voiceModeUnavailableOnDevice);
       setState(() => _status = _VoiceStatus.muted);
       return;
     }
@@ -178,15 +179,16 @@ class _VoiceModeViewState extends ConsumerState<VoiceModeView>
   }
 
   String _statusLabel(String employeeName) {
+    final l10n = AppLocalizations.of(context);
     switch (_status) {
       case _VoiceStatus.listening:
-        return 'Listening…';
+        return l10n.conversationListening;
       case _VoiceStatus.thinking:
-        return '$employeeName is thinking…';
+        return l10n.voiceModeEmployeeThinking(employeeName);
       case _VoiceStatus.speaking:
-        return '$employeeName is speaking…';
+        return l10n.voiceModeEmployeeSpeaking(employeeName);
       case _VoiceStatus.muted:
-        return 'Mic muted';
+        return l10n.voiceModeMicMuted;
     }
   }
 
@@ -218,7 +220,7 @@ class _VoiceModeViewState extends ConsumerState<VoiceModeView>
               const SizedBox(height: 4),
               Text(
                 _status == _VoiceStatus.listening
-                    ? '${scenario.employeeRole} · Round ${state.roundNumber}'
+                    ? '${scenario.employeeRole} · ${AppLocalizations.of(context).conversationRoundNumber(state.roundNumber)}'
                     : _statusLabel(scenario.employeeName),
                 style: theme.textTheme.bodyMedium
                     ?.copyWith(color: AppColors.textSecondaryLight),
@@ -227,7 +229,7 @@ class _VoiceModeViewState extends ConsumerState<VoiceModeView>
               if (_status == _VoiceStatus.listening) ...[
                 const SizedBox(height: 4),
                 Text(
-                  'Listening…',
+                  AppLocalizations.of(context).conversationListening,
                   style: theme.textTheme.titleSmall,
                 ),
               ],
@@ -260,12 +262,12 @@ class _VoiceModeViewState extends ConsumerState<VoiceModeView>
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     side: const BorderSide(color: AppColors.borderLight),
                   ),
-                  child: const Text('Transcript'),
+                  child: Text(AppLocalizations.of(context).voiceModeTranscriptButton),
                 ),
               ],
               if (showInterruptHint)
                 Text(
-                  'Tap the orb to interrupt',
+                  AppLocalizations.of(context).voiceModeTapToInterrupt,
                   style: theme.textTheme.bodyMedium
                       ?.copyWith(color: AppColors.textSecondaryLight),
                 ),

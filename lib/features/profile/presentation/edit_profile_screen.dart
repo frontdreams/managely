@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../models/user_profile.dart';
 import '../../../shared/widgets/app_snackbar.dart';
 import '../../../shared/widgets/profile_avatar.dart';
@@ -80,7 +81,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       });
     } catch (e) {
       if (!mounted) return;
-      AppSnackBar.show(context, "Couldn't open camera or photos: $e");
+      AppSnackBar.show(
+          context, AppLocalizations.of(context).editProfilePhotoError(e.toString()));
     }
   }
 
@@ -106,8 +108,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     final displayPhoto =
         _removePhoto ? null : (_stagedPhoto ?? profile.photoUrl);
 
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Edit Profile')),
+      appBar: AppBar(title: Text(l10n.editProfileTitle)),
       body: SafeArea(
         top: false,
         child: ListView(
@@ -131,8 +134,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         decoration: BoxDecoration(
                           color: AppColors.accent,
                           shape: BoxShape.circle,
-                          border:
-                              Border.all(color: AppColors.bgLight, width: 3),
+                          border: Border.all(
+                              color: Theme.of(context).scaffoldBackgroundColor,
+                              width: 3),
                         ),
                         child: const Icon(
                           Icons.camera_alt_rounded,
@@ -149,12 +153,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             Center(
               child: TextButton(
                 onPressed: _choosePhoto,
-                child: const Text('Change photo'),
+                child: Text(l10n.editProfileChangePhoto),
               ),
             ),
             const SizedBox(height: 24),
             Text(
-              'Full name',
+              l10n.authFullNameHint,
               style: theme.textTheme.labelLarge
                   ?.copyWith(color: context.textOnBrand),
             ),
@@ -163,14 +167,14 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               controller: _nameController,
               textInputAction: TextInputAction.done,
               onChanged: (_) => setState(() {}),
-              decoration: const InputDecoration(
-                hintText: 'Your name',
-                prefixIcon: Icon(Icons.person_outline_rounded),
+              decoration: InputDecoration(
+                hintText: l10n.editProfileNameHint,
+                prefixIcon: const Icon(Icons.person_outline_rounded),
               ),
             ),
             const SizedBox(height: 24),
             Text(
-              'Manager level',
+              l10n.editProfileManagerLevel,
               style: theme.textTheme.labelLarge
                   ?.copyWith(color: context.textOnBrand),
             ),
@@ -190,10 +194,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       color: selected
                           ? Color.alphaBlend(
                               AppColors.accent.withOpacity(0.22), Colors.white)
-                          : AppColors.surfaceLight,
+                          : context.surfaceOnBrand,
                       border: Border.all(
                         color:
-                            selected ? AppColors.accent : AppColors.borderLight,
+                            selected ? AppColors.accent : context.borderOnBrand,
                         width: selected ? 1.5 : 1,
                       ),
                       borderRadius: BorderRadius.circular(AppTheme.radiusPill),
@@ -222,7 +226,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         color: Colors.white,
                       ),
                     )
-                  : const Text('Save Changes'),
+                  : Text(l10n.editProfileSaveButton),
             ),
           ],
         ),
@@ -255,28 +259,28 @@ class _PhotoActionSheet extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child:
-                    Text('Update Photo', style: theme.textTheme.headlineSmall),
+                child: Text(AppLocalizations.of(context).editProfileUpdatePhoto,
+                    style: theme.textTheme.headlineSmall),
               ),
             ),
             ListTile(
               leading: const Icon(Icons.photo_camera_outlined,
                   color: AppColors.primary),
-              title: const Text('Take Photo'),
+              title: Text(AppLocalizations.of(context).editProfileTakePhoto),
               onTap: () => Navigator.of(context).pop(_PhotoAction.camera),
             ),
             ListTile(
               leading: const Icon(Icons.photo_library_outlined,
                   color: AppColors.primary),
-              title: const Text('Choose from Gallery'),
+              title: Text(AppLocalizations.of(context).editProfileChooseFromGallery),
               onTap: () => Navigator.of(context).pop(_PhotoAction.gallery),
             ),
             if (showRemove)
               ListTile(
                 leading: const Icon(Icons.delete_outline_rounded,
                     color: AppColors.danger),
-                title: const Text('Remove Photo',
-                    style: TextStyle(color: AppColors.danger)),
+                title: Text(AppLocalizations.of(context).editProfileRemovePhoto,
+                    style: const TextStyle(color: AppColors.danger)),
                 onTap: () => Navigator.of(context).pop(_PhotoAction.remove),
               ),
           ],

@@ -49,6 +49,7 @@ class StoriesRepository {
     DateTime? expiresAt,
     required String postedByUid,
     String? postedByName,
+    String? language,
   }) async {
     await _collection.add({
       'category': category.name,
@@ -59,6 +60,7 @@ class StoriesRepository {
       'background': background.name,
       'postedByUid': postedByUid,
       'postedByName': postedByName,
+      'language': language,
       'createdAt': FieldValue.serverTimestamp(),
       'expiresAt': expiresAt != null ? Timestamp.fromDate(expiresAt) : null,
     });

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../core/constants/app_constants.dart';
+import '../../../l10n/app_localizations.dart';
 
 class PrivacyScreen extends StatelessWidget {
   const PrivacyScreen({super.key});
@@ -9,44 +9,41 @@ class PrivacyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Privacy & Responsible AI')),
+      appBar: AppBar(title: Text(l10n.privacyTitle)),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
         children: [
-          const _Section(
+          _Section(
             icon: Icons.theater_comedy_outlined,
-            title: 'Use fictional scenarios whenever possible',
-            body:
-                'Managely works best with fictional or composite situations. You don\'t need real names, real details, or real outcomes to get useful practice.',
+            title: l10n.privacySection1Title,
+            body: l10n.privacySection1Body,
           ),
-          const _Section(
+          _Section(
             icon: Icons.no_accounts_outlined,
-            title: 'Avoid personal information',
-            body:
-                'Avoid entering real employees\' names, medical information, family details, or anything you wouldn\'t want stored or reviewed.',
+            title: l10n.privacySection2Title,
+            body: l10n.privacySection2Body,
           ),
-          const _Section(
+          _Section(
             icon: Icons.psychology_alt_outlined,
-            title: 'AI feedback is coaching, not HR advice',
-            body:
-                'Evaluations describe your communication patterns in this conversation only. They are not professional, legal, medical, or HR guidance.',
+            title: l10n.privacySection3Title,
+            body: l10n.privacySection3Body,
           ),
-          const _Section(
+          _Section(
             icon: Icons.gavel_outlined,
-            title: 'Managely does not make employment decisions',
-            body:
-                'Managely will never recommend firing, disciplining, promoting, or making salary or legal decisions about any real person. Those decisions belong to you, your manager, and your HR team.',
+            title: l10n.privacySection4Title,
+            body: l10n.privacySection4Body,
           ),
           const SizedBox(height: 12),
           Container(
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
-              color: AppColors.primaryLight,
+              color: context.surfaceOnBrand,
               borderRadius: BorderRadius.circular(AppTheme.radiusMd),
             ),
             child: Text(
-              AppConstants.responsibleAiStatement,
+              l10n.responsibleAiStatement,
               style: theme.textTheme.bodyMedium,
             ),
           ),

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/skill_color.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../models/scenario.dart';
 import '../../../shared/widgets/animated_score_counter.dart';
 import '../../../shared/widgets/recent_practice_list.dart';
@@ -25,8 +26,10 @@ class ProgressScreen extends ConsumerWidget {
             ? AppColors.warning
             : AppColors.danger;
 
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Your Progress')),
+      appBar: AppBar(title: Text(l10n.progressTitle)),
       body: RefreshIndicator(
         onRefresh: () => Future.wait<void>([
           ref.read(userProfileProvider.notifier).refresh(),
@@ -52,25 +55,25 @@ class ProgressScreen extends ConsumerWidget {
               childAspectRatio: 1.7,
               children: [
                 _StatCard(
-                  label: 'Total Sessions',
+                  label: l10n.progressTotalSessions,
                   value: '${profile.totalConversations}',
                   icon: Icons.forum_outlined,
                   color: AppColors.primary,
                 ),
                 _StatCard(
-                  label: 'Completed Scenarios',
+                  label: l10n.progressCompletedScenarios,
                   value: '${profile.completedScenarios}',
                   icon: Icons.check_circle_outline_rounded,
                   color: AppColors.accent,
                 ),
                 _StatCard(
-                  label: 'Average Score',
+                  label: l10n.progressAverageScore,
                   value: '${profile.averageScore}',
                   icon: Icons.trending_up_rounded,
                   color: AppColors.warning,
                 ),
                 _StatCard(
-                  label: 'Current Streak',
+                  label: l10n.progressCurrentStreak,
                   value: '${profile.currentStreak} 🔥',
                   icon: Icons.local_fire_department_outlined,
                   color: AppColors.danger,
@@ -78,7 +81,7 @@ class ProgressScreen extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 24),
-            const SectionHeader(title: 'Skill Development'),
+            SectionHeader(title: l10n.progressSkillDevelopment),
             const SizedBox(height: 12),
             Card(
               child: Padding(
@@ -101,7 +104,7 @@ class ProgressScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 24),
-            const SectionHeader(title: 'Recent Practice'),
+            SectionHeader(title: l10n.homeRecentPracticeSection),
             const SizedBox(height: 12),
             RecentPracticeList(
               sessions: sessions,
@@ -163,15 +166,16 @@ class _ProgressHeroCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Overall Score',
+                  AppLocalizations.of(context).progressOverallScore,
                   style: theme.textTheme.titleMedium
                       ?.copyWith(color: Colors.white),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   totalConversations > 0
-                      ? 'Averaged across $totalConversations conversations.'
-                      : 'Complete a scenario to start tracking your score.',
+                      ? AppLocalizations.of(context)
+                          .progressAveragedAcross(totalConversations)
+                      : AppLocalizations.of(context).progressNoScoreYet,
                   style: theme.textTheme.bodySmall
                       ?.copyWith(color: Colors.white70),
                 ),
@@ -190,7 +194,7 @@ class _ProgressHeroCard extends StatelessWidget {
                         const Text('🔥', style: TextStyle(fontSize: 12)),
                         const SizedBox(width: 5),
                         Text(
-                          '$currentStreak day streak',
+                          AppLocalizations.of(context).progressDayStreak(currentStreak),
                           style: theme.textTheme.labelSmall
                               ?.copyWith(color: Colors.white),
                         ),

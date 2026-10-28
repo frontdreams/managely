@@ -5,6 +5,7 @@ import '../../../core/services/service_providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/skill_color.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../models/scenario.dart';
 
 /// Full explanation of what Managely does and — most importantly — how the
@@ -16,51 +17,45 @@ import '../../../models/scenario.dart';
 class AboutScreen extends ConsumerWidget {
   const AboutScreen({super.key});
 
-  static const _frameworkNotes = <ManagerSkill, _FrameworkNote>{
-    ManagerSkill.empathy: _FrameworkNote(
-      description:
-          'Recognizing and responding to what someone else is feeling before reacting to what they said.',
-      framework: "Grounded in Goleman's Emotional Intelligence framework.",
-    ),
-    ManagerSkill.clarity: _FrameworkNote(
-      description:
-          'Stating a specific, observable expectation instead of a vague impression.',
-      framework:
-          "Grounded in the Center for Creative Leadership's SBI model (Situation-Behavior-Impact).",
-    ),
-    ManagerSkill.assertiveness: _FrameworkNote(
-      description:
-          'Saying what you need clearly and directly, without either backing down or steamrolling.',
-      framework:
-          'Grounded in DESC scripting (Bower & Bower assertiveness training).',
-    ),
-    ManagerSkill.activeListening: _FrameworkNote(
-      description:
-          'Actually hearing someone out — reflecting back what they said before responding.',
-      framework:
-          "Grounded in Motivational Interviewing's OARS model (Open questions, Affirmations, Reflective listening, Summarizing).",
-    ),
-    ManagerSkill.conflictManagement: _FrameworkNote(
-      description:
-          'Handling disagreement in a way that resolves it, rather than avoiding or escalating it.',
-      framework:
-          'Grounded in the Thomas-Kilmann Conflict Mode Instrument (TKI).',
-    ),
-    ManagerSkill.boundarySetting: _FrameworkNote(
-      description:
-          'Holding a fair line — for yourself or your team — without being harsh about it.',
-      framework:
-          'Grounded in the Crucial Conversations framework (Patterson, Grenny, McMillan, Switzler).',
-    ),
-  };
+  Map<ManagerSkill, _FrameworkNote> _frameworkNotes(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return {
+      ManagerSkill.empathy: _FrameworkNote(
+        description: l10n.aboutFrameworkEmpathyDescription,
+        framework: l10n.aboutFrameworkEmpathyFramework,
+      ),
+      ManagerSkill.clarity: _FrameworkNote(
+        description: l10n.aboutFrameworkClarityDescription,
+        framework: l10n.aboutFrameworkClarityFramework,
+      ),
+      ManagerSkill.assertiveness: _FrameworkNote(
+        description: l10n.aboutFrameworkAssertivenessDescription,
+        framework: l10n.aboutFrameworkAssertivenessFramework,
+      ),
+      ManagerSkill.activeListening: _FrameworkNote(
+        description: l10n.aboutFrameworkActiveListeningDescription,
+        framework: l10n.aboutFrameworkActiveListeningFramework,
+      ),
+      ManagerSkill.conflictManagement: _FrameworkNote(
+        description: l10n.aboutFrameworkConflictDescription,
+        framework: l10n.aboutFrameworkConflictFramework,
+      ),
+      ManagerSkill.boundarySetting: _FrameworkNote(
+        description: l10n.aboutFrameworkBoundaryDescription,
+        framework: l10n.aboutFrameworkBoundaryFramework,
+      ),
+    };
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final packageInfo = ref.watch(packageInfoProvider);
+    final l10n = AppLocalizations.of(context);
+    final frameworkNotes = _frameworkNotes(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('About Managely')),
+      appBar: AppBar(title: Text(l10n.aboutTitle)),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
         children: [
@@ -83,7 +78,7 @@ class AboutScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                AppConstants.tagline,
+                l10n.aboutTagline,
                 style: theme.textTheme.bodyMedium
                     ?.copyWith(color: context.textOnBrandMuted),
                 textAlign: TextAlign.center,
@@ -91,21 +86,19 @@ class AboutScreen extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 28),
-          const _Section(
-            title: 'What Managely Does',
-            body:
-                'Managely is a practice space for the conversations new managers dread most — difficult feedback, saying no, setting boundaries, handling conflict. You roleplay with an AI "employee" that responds the way a real person would, then get a clear read on how you communicated. Nothing here evaluates or makes decisions about real employees — only your side of the conversation.',
+          _Section(
+            title: l10n.aboutWhatManagelyDoesTitle,
+            body: l10n.aboutWhatManagelyDoesBody,
           ),
-          const _Section(
-            title: 'How Scoring Works',
-            body:
-                'Your starting scores come from a short situational-judgment assessment — realistic workplace scenarios with answer choices that vary in quality, not a self-rating you fill in yourself (self-ratings are notoriously unreliable; people tend to overrate themselves). From there, every practice conversation nudges your scores based on the same signals: specificity, tone, whether you listened before responding, and how you handled pushback.',
+          _Section(
+            title: l10n.aboutHowScoringWorksTitle,
+            body: l10n.aboutHowScoringWorksBody,
           ),
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: AppColors.accentLight,
+              color: context.surfaceOnBrand,
               borderRadius: BorderRadius.circular(AppTheme.radiusMd),
             ),
             child: Row(
@@ -116,7 +109,7 @@ class AboutScreen extends ConsumerWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'These scores are research-informed, not a certified clinical or psychometric instrument (like a licensed EQ-i or TKI assessment). Treat them as a useful signal for practice, not a formal evaluation.',
+                    l10n.aboutScoresDisclaimer,
                     style: theme.textTheme.bodySmall,
                   ),
                 ),
@@ -125,13 +118,13 @@ class AboutScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 28),
           Text(
-            'The Six Skills We Measure',
+            l10n.aboutSixSkillsTitle,
             style: theme.textTheme.titleLarge
                 ?.copyWith(color: context.textOnBrand),
           ),
           const SizedBox(height: 4),
           Text(
-            'Each is drawn from a different, well-established framework used in real leadership and coaching training.',
+            l10n.aboutSixSkillsSubtitle,
             style: theme.textTheme.bodyMedium
                 ?.copyWith(color: context.textOnBrandMuted),
           ),
@@ -142,7 +135,7 @@ class AboutScreen extends ConsumerWidget {
               children: [
                 for (final skill in ManagerSkill.values) ...[
                   _SkillFrameworkTile(
-                      skill: skill, note: _frameworkNotes[skill]!),
+                      skill: skill, note: frameworkNotes[skill]!),
                   if (skill != ManagerSkill.values.last)
                     Divider(
                       height: 1,
@@ -158,7 +151,7 @@ class AboutScreen extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
-              color: AppColors.primaryLight,
+              color: context.surfaceOnBrand,
               borderRadius: BorderRadius.circular(AppTheme.radiusMd),
             ),
             child: Column(
@@ -169,11 +162,11 @@ class AboutScreen extends ConsumerWidget {
                     const Icon(Icons.verified_user_outlined,
                         color: AppColors.primary),
                     const SizedBox(width: 8),
-                    Text('Responsible AI', style: theme.textTheme.titleSmall),
+                    Text(l10n.aboutResponsibleAiTitle, style: theme.textTheme.titleSmall),
                   ],
                 ),
                 const SizedBox(height: 8),
-                Text(AppConstants.responsibleAiStatement,
+                Text(l10n.responsibleAiStatement,
                     style: theme.textTheme.bodyMedium),
               ],
             ),
@@ -182,10 +175,9 @@ class AboutScreen extends ConsumerWidget {
           Center(
             child: Text(
               packageInfo.when(
-                data: (info) =>
-                    'Managely · Version ${info.version} (${info.buildNumber})',
-                loading: () => 'Managely',
-                error: (_, __) => 'Managely',
+                data: (info) => l10n.aboutVersionLine(info.version, info.buildNumber),
+                loading: () => AppConstants.appName,
+                error: (_, __) => AppConstants.appName,
               ),
               style: theme.textTheme.labelMedium
                   ?.copyWith(color: context.textOnBrandMuted),

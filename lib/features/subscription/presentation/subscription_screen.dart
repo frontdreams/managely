@@ -8,6 +8,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/services/purchase_products.dart';
 import '../../../core/services/purchase_service.dart';
 import '../../../core/services/service_providers.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../models/user_profile.dart';
 import '../../profile/providers/profile_providers.dart';
 
@@ -45,12 +46,15 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
   StreamSubscription<List<PurchaseDetails>>? _purchaseSub;
   Completer<bool>? _restoreFoundSomething;
 
-  static const _benefits = [
-    'Unlimited practice conversations',
-    'Every scenario, including advanced ones',
-    'Deeper AI feedback after each session',
-    'New scenarios as soon as they launch',
-  ];
+  List<String> _benefits(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return [
+      l10n.subscriptionBenefitUnlimited,
+      l10n.subscriptionBenefitEveryScenario,
+      l10n.subscriptionBenefitDeeperFeedback,
+      l10n.subscriptionBenefitNewScenarios,
+    ];
+  }
 
   @override
   void initState() {
@@ -71,8 +75,8 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
           setState(() {
             _isPurchasing = false;
             _isRestoring = false;
-            _errorMessage =
-                purchase.error?.message ?? 'Purchase failed. Please try again.';
+            _errorMessage = purchase.error?.message ??
+                AppLocalizations.of(context).subscriptionPurchaseFailed;
           });
         } else if (purchase.status == PurchaseStatus.canceled) {
           if (!mounted) continue;
@@ -145,7 +149,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
       if (!found) {
         setState(() {
           _isRestoring = false;
-          _errorMessage = 'No previous purchase found to restore.';
+          _errorMessage = AppLocalizations.of(context).subscriptionNoPurchaseFound;
         });
       }
       // If found, leave _isRestoring as-is — the tier ref.listen below
@@ -154,7 +158,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
       if (!mounted) return;
       setState(() {
         _isRestoring = false;
-        _errorMessage = 'Restore failed. Please try again.';
+        _errorMessage = AppLocalizations.of(context).subscriptionRestoreFailed;
       });
     } finally {
       _restoreFoundSomething = null;
@@ -202,10 +206,11 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
 
     final isAnnual = _billingPeriod == _BillingPeriod.annual;
     final isBusy = _isPurchasing || _isRestoring;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: widget.isUpgradeFlow
-          ? AppBar(title: const Text('Manage Subscription'))
+          ? AppBar(title: Text(l10n.subscriptionManageTitle))
           : null,
       body: SafeArea(
         child: Padding(
@@ -229,16 +234,17 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
               ],
               Text(
                 profile.isOrgOwner
-                    ? 'Company Subscription'
-                    : 'Get the most out of Managely',
+                    ? l10n.subscriptionCompanyTitle
+                    : l10n.subscriptionIndividualTitle,
                 style: theme.textTheme.headlineMedium
                     ?.copyWith(color: context.textOnBrand),
               ),
               const SizedBox(height: 8),
               Text(
                 profile.isOrgOwner
-                    ? 'Pick the seat band that fits your team — everyone on ${profile.orgName ?? 'your company'}\'s domain gets Professional access once you upgrade.'
-                    : 'Start with Premium, or continue for free — you can change this anytime in your profile.',
+                    ? l10n.subscriptionCompanySubtitle(
+                        profile.orgName ?? l10n.subscriptionYourCompanyFallback)
+                    : l10n.subscriptionIndividualSubtitle,
                 style: theme.textTheme.bodyMedium
                     ?.copyWith(color: context.textOnBrandMuted),
               ),
@@ -260,13 +266,13 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
                         isPurchasing: _isPurchasing,
                         isRestoring: _isRestoring,
                         errorMessage: _errorMessage,
-                        benefits: _benefits,
+                        benefits: _benefits(context),
                         onPurchase: _purchase,
                         onRestore: _restore,
                         onContinueFree: _continueFree,
                         continueFreeLabel: widget.isUpgradeFlow
-                            ? 'Cancel'
-                            : 'Continue for Free',
+                            ? l10n.commonCancel
+                            : l10n.subscriptionContinueForFree,
                       ),
               ),
             ],
@@ -310,10 +316,11 @@ class _IndividualPlanPicker extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final productsAsync = ref.watch(productDetailsProvider);
 
+    final l10n = AppLocalizations.of(context);
     return productsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (err, _) => _OfferingsErrorState(
-        message: 'Couldn\'t load pricing right now.',
+        message: l10n.subscriptionPricingLoadError,
         onRetry: () => ref.invalidate(productDetailsProvider),
       ),
       data: (products) {
@@ -330,7 +337,7 @@ class _IndividualPlanPicker extends ConsumerWidget {
 
         if (selected == null) {
           return _OfferingsErrorState(
-            message: 'No subscription plans are configured yet.',
+            message: l10n.subscriptionNoPlansConfigured,
             onRetry: () => ref.invalidate(productDetailsProvider),
           );
         }
@@ -344,10 +351,10 @@ class _IndividualPlanPicker extends ConsumerWidget {
                     period: billingPeriod, onChanged: onBillingPeriodChanged),
               const SizedBox(height: 20),
               _PlanCard(
-                title: 'Premium',
+                title: l10n.tierPremium,
                 price: selected.price,
-                period: isAnnual ? ' / year' : ' / month',
-                badge: isAnnual ? 'SAVE MORE' : 'BEST VALUE',
+                period: isAnnual ? l10n.subscriptionPerYear : l10n.subscriptionPerMonth,
+                badge: isAnnual ? l10n.subscriptionSaveMoreBadge : l10n.subscriptionBestValueBadge,
                 benefits: benefits,
               ),
               if (errorMessage != null) ...[
@@ -365,8 +372,9 @@ class _IndividualPlanPicker extends ConsumerWidget {
                         child: CircularProgressIndicator(
                             strokeWidth: 2.5, color: AppColors.primary),
                       )
-                    : Text(
-                        isAnnual ? 'Start Premium — Annual' : 'Start Premium'),
+                    : Text(isAnnual
+                        ? l10n.subscriptionStartPremiumAnnual
+                        : l10n.subscriptionStartPremium),
               ),
               const SizedBox(height: 10),
               Center(
@@ -380,7 +388,7 @@ class _IndividualPlanPicker extends ConsumerWidget {
                           height: 16,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Restore Purchases'),
+                      : Text(l10n.subscriptionRestorePurchases),
                 ),
               ),
               Center(
@@ -421,10 +429,11 @@ class _OrgSeatBandPicker extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final productsAsync = ref.watch(productDetailsProvider);
 
+    final l10n = AppLocalizations.of(context);
     return productsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (err, _) => _OfferingsErrorState(
-        message: 'Couldn\'t load pricing right now.',
+        message: l10n.subscriptionPricingLoadError,
         onRetry: () => ref.invalidate(productDetailsProvider),
       ),
       data: (products) {
@@ -443,7 +452,7 @@ class _OrgSeatBandPicker extends ConsumerWidget {
 
         if (bands.isEmpty) {
           return _OfferingsErrorState(
-            message: 'No company plans are configured yet.',
+            message: l10n.subscriptionNoCompanyPlansConfigured,
             onRetry: () => ref.invalidate(productDetailsProvider),
           );
         }
@@ -493,8 +502,8 @@ class _SeatBandCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppColors.surfaceLight,
-        border: Border.all(color: AppColors.borderLight),
+        color: context.surfaceOnBrand,
+        border: Border.all(color: context.borderOnBrand),
         borderRadius: BorderRadius.circular(AppTheme.radiusMd),
       ),
       child: Row(
@@ -503,12 +512,12 @@ class _SeatBandCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Up to $seats seats',
+                Text(AppLocalizations.of(context).subscriptionUpToSeats(seats),
                     style: theme.textTheme.titleMedium
                         ?.copyWith(color: context.textOnBrand)),
                 const SizedBox(height: 2),
                 Text(
-                  '$price / month',
+                  AppLocalizations.of(context).subscriptionPricePerMonth(price),
                   style: theme.textTheme.bodyMedium
                       ?.copyWith(color: context.textOnBrandMuted),
                 ),
@@ -530,7 +539,7 @@ class _SeatBandCard extends StatelessWidget {
                     child: CircularProgressIndicator(
                         strokeWidth: 2, color: Colors.white),
                   )
-                : const Text('Choose'),
+                : Text(AppLocalizations.of(context).subscriptionChooseButton),
           ),
         ],
       ),
@@ -553,28 +562,28 @@ class _OrgMemberStatusView extends StatelessWidget {
     final isPending = profile.orgMemberStatus == OrgMemberStatus.pending;
     final hasAccess = profile.isPremiumTier;
 
+    final l10n = AppLocalizations.of(context);
+    final orgName = profile.orgName ?? l10n.subscriptionYourOrganizationFallback;
     final String title;
     final String body;
     final IconData icon;
     if (hasAccess && isApproved) {
-      title = 'You have Professional access';
-      body = 'Granted through ${profile.orgName ?? 'your organization'}.';
+      title = l10n.subscriptionHasProfessionalAccess;
+      body = l10n.subscriptionGrantedThrough(orgName);
       icon = Icons.workspace_premium_rounded;
     } else if (isPending) {
-      title = 'Waiting for approval';
-      body =
-          'An admin at ${profile.orgName ?? 'your organization'} needs to approve your account before you get Professional access.';
+      title = l10n.subscriptionWaitingForApproval;
+      body = l10n.subscriptionWaitingForApprovalBody(orgName);
       icon = Icons.hourglass_top_rounded;
     } else {
-      title = "Your organization hasn't upgraded yet";
-      body =
-          'Ask your admin to subscribe ${profile.orgName ?? 'your organization'} to Professional.';
+      title = l10n.subscriptionOrgNotUpgradedYet;
+      body = l10n.subscriptionAskAdminToSubscribe(orgName);
       icon = Icons.apartment_outlined;
     }
 
     return Scaffold(
       appBar: isUpgradeFlow
-          ? AppBar(title: const Text('Company Subscription'))
+          ? AppBar(title: Text(l10n.subscriptionCompanyTitle))
           : null,
       body: SafeArea(
         child: Center(
@@ -586,8 +595,8 @@ class _OrgMemberStatusView extends StatelessWidget {
                 Container(
                   width: 64,
                   height: 64,
-                  decoration: const BoxDecoration(
-                      color: AppColors.primaryLight, shape: BoxShape.circle),
+                  decoration: BoxDecoration(
+                      color: context.surfaceOnBrand, shape: BoxShape.circle),
                   child: Icon(icon, color: AppColors.primary, size: 30),
                 ),
                 const SizedBox(height: 20),
@@ -605,7 +614,7 @@ class _OrgMemberStatusView extends StatelessWidget {
                   const SizedBox(height: 24),
                   OutlinedButton(
                     onPressed: () => context.pop(),
-                    child: const Text('Close'),
+                    child: Text(l10n.commonClose),
                   ),
                 ],
               ],
@@ -675,9 +684,9 @@ class _OfferingsErrorState extends StatelessWidget {
             onPressed: onRetry,
             style: OutlinedButton.styleFrom(
               foregroundColor: context.textOnBrand,
-              side: const BorderSide(color: AppColors.borderLight),
+              side: BorderSide(color: context.borderOnBrand),
             ),
-            child: const Text('Try Again'),
+            child: Text(AppLocalizations.of(context).commonRetry),
           ),
         ],
       ),
@@ -799,22 +808,22 @@ class _BillingToggle extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: AppColors.surfaceLight,
+        color: context.surfaceOnBrand,
         borderRadius: BorderRadius.circular(AppTheme.radiusPill),
-        border: Border.all(color: AppColors.borderLight),
+        border: Border.all(color: context.borderOnBrand),
       ),
       child: Row(
         children: [
           Expanded(
             child: _BillingOption(
-              label: 'Monthly',
+              label: AppLocalizations.of(context).subscriptionMonthly,
               selected: period == _BillingPeriod.monthly,
               onTap: () => onChanged(_BillingPeriod.monthly),
             ),
           ),
           Expanded(
             child: _BillingOption(
-              label: 'Annual',
+              label: AppLocalizations.of(context).subscriptionAnnual,
               selected: period == _BillingPeriod.annual,
               onTap: () => onChanged(_BillingPeriod.annual),
             ),

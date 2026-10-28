@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/services/service_providers.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../models/user_profile.dart';
 import '../../../shared/widgets/profile_avatar.dart';
 import '../providers/profile_providers.dart';
@@ -11,26 +12,28 @@ import '../providers/profile_providers.dart';
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
-  String _planSubtitle(UserProfile profile) {
-    if (!profile.isPremiumTier) return 'Free plan';
-    if (profile.isOrgMember) return 'Professional';
-    return 'Premium';
+  String _planSubtitle(BuildContext context, UserProfile profile) {
+    final l10n = AppLocalizations.of(context);
+    if (!profile.isPremiumTier) return l10n.profileFreePlan;
+    if (profile.isOrgMember) return l10n.tierProfessional;
+    return l10n.tierPremium;
   }
 
   Future<void> _confirmSignOut(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Log Out?'),
-        content: const Text("You'll need to sign back in to keep practising."),
+        title: Text(l10n.profileLogOutDialogTitle),
+        content: Text(l10n.profileLogOutDialogBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.commonCancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Log Out'),
+            child: Text(l10n.profileLogOutButton),
           ),
         ],
       ),
@@ -46,9 +49,10 @@ class ProfileScreen extends ConsumerWidget {
     final profile = ref.watch(userProfileProvider);
     final skillsImproving =
         profile.skillScores.values.where((v) => v >= 60).length;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
+      appBar: AppBar(title: Text(l10n.navProfile)),
       body: RefreshIndicator(
         onRefresh: () => ref.read(userProfileProvider.notifier).refresh(),
         child: ListView(
@@ -67,97 +71,97 @@ class ProfileScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 28),
             Text(
-              'Settings',
+              l10n.profileSettingsHeader,
               style: theme.textTheme.titleLarge
                   ?.copyWith(color: context.textOnBrand),
             ),
             const SizedBox(height: 14),
             if (profile.isAdmin) ...[
-              const _SettingsGroupLabel(label: 'ADMIN'),
+              _SettingsGroupLabel(label: l10n.profileGroupAdmin),
               _SettingsGroup(
                 children: [
                   _SettingsRow(
                     icon: Icons.people_outline_rounded,
                     iconColor: AppColors.primary,
-                    title: 'User Management',
-                    subtitle: 'View users, subscriptions, renewals',
+                    title: l10n.profileUserManagement,
+                    subtitle: l10n.profileUserManagementSubtitle,
                     onTap: () => context.push('/admin/users'),
                   ),
                   _SettingsRow(
                     icon: Icons.bar_chart_rounded,
                     iconColor: AppColors.success,
-                    title: 'Revenue',
-                    subtitle: 'Charted revenue, filterable by range',
+                    title: l10n.profileRevenue,
+                    subtitle: l10n.profileRevenueSubtitle,
                     onTap: () => context.push('/admin/revenue'),
                   ),
                   _SettingsRow(
                     icon: Icons.auto_stories_outlined,
                     iconColor: AppColors.iconTeal,
-                    title: 'Post Story',
-                    subtitle: 'News, Trends, Insights, Offers',
+                    title: l10n.profilePostStory,
+                    subtitle: l10n.profilePostStorySubtitle,
                     onTap: () => context.push('/admin/post-story'),
                   ),
                 ],
               ),
               const SizedBox(height: 20),
             ],
-            const _SettingsGroupLabel(label: 'PLAN'),
+            _SettingsGroupLabel(label: l10n.profileGroupPlan),
             _SettingsGroup(
               children: [
                 _SettingsRow(
                   icon: Icons.workspace_premium_outlined,
                   iconColor: AppColors.iconAmber,
                   title: profile.isOrgMember
-                      ? 'Company Subscription'
-                      : 'Manage Subscription',
-                  subtitle: _planSubtitle(profile),
+                      ? l10n.profileCompanySubscription
+                      : l10n.profileManageSubscription,
+                  subtitle: _planSubtitle(context, profile),
                   onTap: () => context.push('/upgrade'),
                 ),
               ],
             ),
             if (profile.isOrgMember) ...[
               const SizedBox(height: 20),
-              const _SettingsGroupLabel(label: 'ORGANIZATION'),
+              _SettingsGroupLabel(label: l10n.profileGroupOrganization),
               _SettingsGroup(
                 children: [
                   if (profile.isOrgOwner)
                     _SettingsRow(
                       icon: Icons.groups_outlined,
                       iconColor: AppColors.primary,
-                      title: 'Manage Team',
-                      subtitle: 'Approve or remove members',
+                      title: l10n.profileManageTeam,
+                      subtitle: l10n.profileManageTeamSubtitle,
                       onTap: () => context.push('/organization'),
                     )
                   else
                     _SettingsRow(
                       icon: Icons.apartment_outlined,
                       iconColor: AppColors.primary,
-                      title: profile.orgName ?? 'Your organization',
+                      title: profile.orgName ?? l10n.profileYourOrganization,
                       subtitle: profile.orgMemberStatus ==
                               OrgMemberStatus.pending
-                          ? 'Waiting for your admin to approve you'
+                          ? l10n.profileWaitingForApproval
                           : profile.orgMemberStatus == OrgMemberStatus.removed
-                              ? 'Your access was removed'
-                              : 'Member',
+                              ? l10n.profileAccessRemoved
+                              : l10n.profileMember,
                       onTap: null,
                     ),
                 ],
               ),
             ],
             const SizedBox(height: 20),
-            const _SettingsGroupLabel(label: 'PREFERENCES'),
+            _SettingsGroupLabel(label: l10n.profileGroupPreferences),
             _SettingsGroup(
               children: [
                 _SettingsRow(
                   icon: Icons.edit_outlined,
                   iconColor: AppColors.iconBlue,
-                  title: 'Edit Profile',
+                  title: l10n.profileEditProfile,
                   onTap: () => context.push('/profile/edit'),
                 ),
                 _SettingsSwitchRow(
                   icon: Icons.notifications_outlined,
                   iconColor: AppColors.iconPink,
-                  title: 'Notifications',
+                  title: l10n.profileNotifications,
                   value: profile.notificationsEnabled,
                   onChanged: (v) => ref
                       .read(userProfileProvider.notifier)
@@ -166,42 +170,28 @@ class ProfileScreen extends ConsumerWidget {
                 _SettingsRow(
                   icon: Icons.tune_rounded,
                   iconColor: AppColors.iconPurple,
-                  title: 'Preferences',
-                  subtitle: 'Language, theme',
+                  title: l10n.preferencesTitle,
+                  subtitle: l10n.preferencesRowSubtitle,
                   onTap: () => context.push('/profile/preferences'),
                 ),
               ],
             ),
 
-            /*  const SizedBox(height: 20),
-            _SettingsGroupLabel(label: 'SKILLS'),
-            _SettingsGroup(
-              children: [
-                _SettingsRow(
-                  icon: Icons.fact_check_outlined,
-                  iconColor: AppColors.skillConflict,
-                  title: 'Retake Skills Assessment',
-                  subtitle: 'Re-measure your baseline scores',
-                  onTap: () => context.push('/skills-assessment'),
-                ),
-              ],
-            ), */
-
             const SizedBox(height: 20),
-            const _SettingsGroupLabel(label: 'PRIVACY & SUPPORT'),
+            _SettingsGroupLabel(label: l10n.profileGroupPrivacySupport),
             _SettingsGroup(
               children: [
                 _SettingsRow(
                   icon: Icons.privacy_tip_outlined,
                   iconColor: AppColors.iconBlue,
-                  title: 'Privacy',
+                  title: l10n.profilePrivacy,
                   onTap: () => context.push('/profile/privacy'),
                 ),
                 _SettingsRow(
                   icon: Icons.info_outline_rounded,
                   iconColor: AppColors.iconGreen,
-                  title: 'About Managely',
-                  subtitle: 'How scoring works, and the app\'s mission',
+                  title: l10n.profileAboutManagely,
+                  subtitle: l10n.profileAboutManagelySubtitle,
                   onTap: () => context.push('/profile/about'),
                 ),
               ],
@@ -213,7 +203,7 @@ class ProfileScreen extends ConsumerWidget {
                 icon: Icon(Icons.logout_rounded,
                     color: AppColors.danger.withValues(alpha: 0.7), size: 18),
                 label: Text(
-                  'Log Out',
+                  l10n.profileLogOutButton,
                   style:
                       TextStyle(color: AppColors.danger.withValues(alpha: 0.7)),
                 ),
@@ -344,21 +334,21 @@ class _ProfileHeaderCard extends StatelessWidget {
               Expanded(
                 child: _StatBlock(
                   value: '$conversations',
-                  label: 'Sessions',
+                  label: AppLocalizations.of(context).profileStatSessions,
                 ),
               ),
               const _StatDivider(),
               Expanded(
                 child: _StatBlock(
                   value: '$avgScore',
-                  label: 'Avg Score',
+                  label: AppLocalizations.of(context).profileStatAvgScore,
                 ),
               ),
               const _StatDivider(),
               Expanded(
                 child: _StatBlock(
                   value: '$skillsImproving',
-                  label: 'Improving',
+                  label: AppLocalizations.of(context).profileStatImproving,
                 ),
               ),
             ],

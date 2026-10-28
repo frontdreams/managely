@@ -5,6 +5,7 @@ import 'package:speech_to_text/speech_to_text.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/skill_color.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../models/message.dart';
 import '../../../models/scenario.dart';
 import '../../../shared/widgets/app_snackbar.dart';
@@ -79,7 +80,7 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
       if (mounted) {
         AppSnackBar.show(
           context,
-          'Voice input isn\'t available — check your microphone permission.',
+          AppLocalizations.of(context).conversationVoiceUnavailable,
         );
       }
       return;
@@ -156,20 +157,20 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
   }
 
   Future<void> _endConversation() async {
+    final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('End Conversation?'),
-        content:
-            const Text('You\'ll get feedback on how you communicated so far.'),
+        title: Text(l10n.conversationEndDialogTitle),
+        content: Text(l10n.conversationEndDialogBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Keep Talking'),
+            child: Text(l10n.conversationKeepTalking),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('End & Get Feedback'),
+            child: Text(l10n.conversationEndAndGetFeedback),
           ),
         ],
       ),
@@ -182,19 +183,20 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
   }
 
   Future<void> _confirmExit() async {
+    final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Exit Practice?'),
-        content: const Text('Your progress in this conversation will be lost.'),
+        title: Text(l10n.conversationExitDialogTitle),
+        content: Text(l10n.conversationExitDialogBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.commonCancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Exit'),
+            child: Text(l10n.conversationExitButton),
           ),
         ],
       ),
@@ -265,7 +267,7 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.graphic_eq_rounded),
-            tooltip: 'Voice Mode',
+            tooltip: AppLocalizations.of(context).conversationVoiceModeTooltip,
             onPressed: _enterVoiceMode,
           ),
         ],
@@ -285,7 +287,7 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
                 const SizedBox(width: 6),
                 Text(
                   state.roundNumber > 1
-                      ? 'Round ${state.roundNumber}'
+                      ? AppLocalizations.of(context).conversationRoundNumber(state.roundNumber)
                       : scenario.difficulty.label,
                   style: Theme.of(context)
                       .textTheme
@@ -322,7 +324,7 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
                           ?.copyWith(color: context.textOnBrand),
                     ),
                     Text(
-                      'Employee',
+                      AppLocalizations.of(context).conversationEmployeeLabel,
                       style: Theme.of(context)
                           .textTheme
                           .labelMedium
@@ -423,8 +425,8 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
                                     TextCapitalization.sentences,
                                 decoration: InputDecoration(
                                   hintText: _isListening
-                                      ? 'Listening…'
-                                      : 'Type your response...',
+                                      ? AppLocalizations.of(context).conversationListening
+                                      : AppLocalizations.of(context).conversationTypeResponse,
                                   filled: false,
                                   border: InputBorder.none,
                                   enabledBorder: InputBorder.none,
@@ -465,7 +467,7 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
                     onPressed:
                         state.messages.length > 1 ? _endConversation : null,
                     icon: const Icon(Icons.flag_outlined, size: 18),
-                    label: const Text('End Conversation'),
+                    label: Text(AppLocalizations.of(context).conversationEndButton),
                     style: TextButton.styleFrom(
                         foregroundColor: context.textOnBrandMuted),
                   ),
