@@ -29,6 +29,7 @@ class VerificationEmailService {
     required String email,
     required String name,
     required String code,
+    required String languageCode,
   }) async {
     final http.Response response;
     try {
@@ -39,7 +40,12 @@ class VerificationEmailService {
               'Content-Type': 'application/json',
               'Authorization': 'Bearer $appSharedSecret',
             },
-            body: jsonEncode({'email': email, 'name': name, 'code': code}),
+            body: jsonEncode({
+              'email': email,
+              'name': name,
+              'code': code,
+              'language': languageCode,
+            }),
           )
           .timeout(const Duration(seconds: 20));
     } on TimeoutException {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../features/auth/presentation/email_verification_screen.dart';
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/register_screen.dart';
 import '../../features/organization/presentation/organization_register_screen.dart';
@@ -118,6 +119,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return loc == '/splash' ? null : '/splash';
       }
 
+      // Email/password accounts must enter the 6-digit code sent to their
+      // inbox before doing anything else in the app — Google sign-ins
+      // skip this entirely since Google already confirmed the address
+      // (see UserProfileNotifier's seeding: emailVerified starts true for
+      // them). Checked before the onboarding gate below, since picking a
+      // plan or focus skills with an unverified email defeats the point.
+      if (!profile.emailVerified) {
+        return loc == '/email-verification' ? null : '/email-verification';
+      }
+
       // Brand-new (or otherwise not-yet-onboarded) accounts pick a plan,
       // then their focus skills, before reaching the rest of the app.
       if (!profile.onboardingComplete) {
@@ -143,6 +154,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       // the gate in ScenarioDetailsScreen and CustomScenarioConfirmScreen.
       if (_authRoutes.contains(loc) ||
           loc == '/welcome' ||
+          loc == '/email-verification' ||
           loc == '/subscription' ||
           loc == '/onboarding' ||
           loc == '/splash' ||
@@ -191,6 +203,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/forgot-password',
         builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+      GoRoute(
+        path: '/email-verification',
+        builder: (context, state) => const EmailVerificationScreen(),
       ),
       GoRoute(
         path: '/welcome',

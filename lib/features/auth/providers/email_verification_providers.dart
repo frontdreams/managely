@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/providers/locale_providers.dart';
 import '../../../core/services/service_providers.dart';
 import '../../profile/providers/profile_providers.dart';
 
@@ -38,6 +39,7 @@ class EmailVerificationController extends StateNotifier<AsyncValue<void>> {
               email: email,
               name: _ref.read(userProfileProvider).name,
               code: code,
+              languageCode: _ref.read(resolvedLanguageCodeProvider),
             );
       });
 
