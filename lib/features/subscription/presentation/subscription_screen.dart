@@ -9,7 +9,9 @@ import '../../../core/services/purchase_products.dart';
 import '../../../core/services/purchase_service.dart';
 import '../../../core/services/service_providers.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../models/organization.dart';
 import '../../../models/user_profile.dart';
+import '../../organization/providers/organization_providers.dart';
 import '../../profile/providers/profile_providers.dart';
 
 /// Shown once, right after a brand-new account is created — before the
@@ -252,6 +254,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
               Expanded(
                 child: profile.isOrgOwner
                     ? _OrgSeatBandPicker(
+                        currentOrg: ref.watch(currentOrganizationProvider).valueOrNull,
                         isBusy: isBusy,
                         isPurchasing: _isPurchasing,
                         errorMessage: _errorMessage,
@@ -413,12 +416,14 @@ class _IndividualPlanPicker extends ConsumerWidget {
 /// subscriptions support, so this is the closest equivalent: a small
 /// catalog of "up to N seats" tiers, each its own fixed-price product.
 class _OrgSeatBandPicker extends ConsumerWidget {
+  final Organization? currentOrg;
   final bool isBusy;
   final bool isPurchasing;
   final String? errorMessage;
   final ValueChanged<ProductDetails> onPurchase;
 
   const _OrgSeatBandPicker({
+    required this.currentOrg,
     required this.isBusy,
     required this.isPurchasing,
     required this.errorMessage,
@@ -430,6 +435,9 @@ class _OrgSeatBandPicker extends ConsumerWidget {
     final productsAsync = ref.watch(productDetailsProvider);
 
     final l10n = AppLocalizations.of(context);
+    final org = currentOrg;
+    final isAlreadyProfessional = org != null && org.isProfessional;
+
     return productsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (err, _) => _OfferingsErrorState(
@@ -461,10 +469,23 @@ class _OrgSeatBandPicker extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              if (isAlreadyProfessional) ...[
+                _OrgOwnerCurrentPlanCard(org: org),
+                const SizedBox(height: 20),
+                Text(
+                  l10n.subscriptionChangePlanSectionTitle,
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelLarge
+                      ?.copyWith(color: context.textOnBrandMuted),
+                ),
+                const SizedBox(height: 10),
+              ],
               for (final band in bands) ...[
                 _SeatBandCard(
                   seats: band.seats,
                   price: band.product.price,
+                  isCurrent: isAlreadyProfessional && org.seatBand == band.product.id,
                   isBusy: isBusy,
                   isPurchasing: isPurchasing,
                   onPurchase: () => onPurchase(band.product),
@@ -480,9 +501,72 @@ class _OrgSeatBandPicker extends ConsumerWidget {
   }
 }
 
+/// Shown above the seat-band list when the signed-in org owner's company
+/// is already on Professional — without this, the owner had no way to
+/// ever see their own company's current plan on this screen; it always
+/// jumped straight to "pick a seat band" as if nothing had been purchased
+/// yet (see the subscription screen's top-level doc comment for how a
+/// purchase actually lands on `Organization.tier`).
+class _OrgOwnerCurrentPlanCard extends StatelessWidget {
+  final Organization org;
+  const _OrgOwnerCurrentPlanCard({required this.org});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: context.heroGradient,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.16),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.workspace_premium_rounded,
+                color: Colors.white, size: 22),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.subscriptionOwnerCurrentPlanTitle,
+                  style: theme.textTheme.titleMedium
+                      ?.copyWith(color: Colors.white),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  l10n.subscriptionOwnerCurrentPlanBody(org.seatLimit, org.name),
+                  style: theme.textTheme.bodySmall
+                      ?.copyWith(color: Colors.white.withValues(alpha: 0.85)),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _SeatBandCard extends StatelessWidget {
   final int seats;
   final String price;
+  final bool isCurrent;
   final bool isBusy;
   final bool isPurchasing;
   final VoidCallback onPurchase;
@@ -490,6 +574,7 @@ class _SeatBandCard extends StatelessWidget {
   const _SeatBandCard({
     required this.seats,
     required this.price,
+    this.isCurrent = false,
     required this.isBusy,
     required this.isPurchasing,
     required this.onPurchase,
@@ -503,7 +588,9 @@ class _SeatBandCard extends StatelessWidget {
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: context.surfaceOnBrand,
-        border: Border.all(color: context.borderOnBrand),
+        border: Border.all(
+            color: isCurrent ? AppColors.primary : context.borderOnBrand,
+            width: isCurrent ? 2 : 1),
         borderRadius: BorderRadius.circular(AppTheme.radiusMd),
       ),
       child: Row(
@@ -525,10 +612,12 @@ class _SeatBandCard extends StatelessWidget {
             ),
           ),
           ElevatedButton(
-            onPressed: isBusy ? null : onPurchase,
+            onPressed: (isBusy || isCurrent) ? null : onPurchase,
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
+              disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.4),
+              disabledForegroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppTheme.radiusPill)),
             ),
@@ -539,7 +628,9 @@ class _SeatBandCard extends StatelessWidget {
                     child: CircularProgressIndicator(
                         strokeWidth: 2, color: Colors.white),
                   )
-                : Text(AppLocalizations.of(context).subscriptionChooseButton),
+                : Text(isCurrent
+                    ? AppLocalizations.of(context).subscriptionCurrentPlanButton
+                    : AppLocalizations.of(context).subscriptionChooseButton),
           ),
         ],
       ),

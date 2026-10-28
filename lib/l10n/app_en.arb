@@ -325,6 +325,9 @@
   "editProfileTitle": "Edit Profile",
   "editProfileChangePhoto": "Change photo",
   "editProfileNameHint": "Your name",
+  "editProfileEmailLabel": "Email address",
+  "editProfileEmailLockedHint": "Your email address can't be changed",
+  "editProfileCompanyLabel": "Company",
   "editProfileManagerLevel": "Manager level",
   "editProfileSaveButton": "Save Changes",
   "editProfileUpdatePhoto": "Update Photo",
@@ -412,6 +415,13 @@
     "placeholders": { "price": {"type": "String"} }
   },
   "subscriptionChooseButton": "Choose",
+  "subscriptionCurrentPlanButton": "Current plan",
+  "subscriptionOwnerCurrentPlanTitle": "You're on the Professional plan",
+  "subscriptionOwnerCurrentPlanBody": "Up to {seats} seats for {orgName}.",
+  "@subscriptionOwnerCurrentPlanBody": {
+    "placeholders": { "seats": {"type": "int"}, "orgName": {"type": "String"} }
+  },
+  "subscriptionChangePlanSectionTitle": "Change seat band",
   "subscriptionYourOrganizationFallback": "your organization",
   "subscriptionHasProfessionalAccess": "You have Professional access",
   "subscriptionGrantedThrough": "Granted through {orgName}.",

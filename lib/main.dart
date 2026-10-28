@@ -7,6 +7,7 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'core/constants/app_constants.dart';
 import 'core/routing/app_router.dart';
 import 'core/services/notification_service.dart';
+import 'core/services/purchase_products.dart';
 import 'core/services/service_providers.dart';
 import 'core/theme/app_theme.dart';
 import 'features/profile/providers/profile_providers.dart';
@@ -64,7 +65,18 @@ class _ManagelyAppState extends ConsumerState<ManagelyApp> {
                   productId: purchase.productID,
                   serverVerificationData: purchase.verificationData.serverVerificationData,
                 );
-            await ref.read(userProfileProvider.notifier).syncSubscriptionFromEntitlement(isPremium);
+            // An org seat-band purchase grants 'professional', not
+            // 'premium' — a distinction this call's bool `isPremium` can't
+            // express. managely-backend already wrote the correct tier to
+            // Firestore as part of verifying this purchase, so for org
+            // products just let subscriptionTierStreamProvider's live watch
+            // (below) pick that up, instead of overwriting it here with a
+            // guessed 'premium'/'free'.
+            if (!PurchaseProductIds.orgSeatBands.containsKey(purchase.productID)) {
+              await ref.read(userProfileProvider.notifier).syncSubscriptionFromEntitlement(
+                    isPremium ? SubscriptionTier.premium : SubscriptionTier.free,
+                  );
+            }
           } catch (_) {
             // Verification failed (network blip, backend hiccup, etc.) —
             // don't grant Premium off an unverified client-side status.
@@ -102,9 +114,7 @@ class _ManagelyAppState extends ConsumerState<ManagelyApp> {
     // above as the other half of "what keeps subscriptionTier honest".
     ref.listen<AsyncValue<SubscriptionTier>>(subscriptionTierStreamProvider, (previous, next) {
       next.whenData((tier) {
-        ref
-            .read(userProfileProvider.notifier)
-            .syncSubscriptionFromEntitlement(tier == SubscriptionTier.premium);
+        ref.read(userProfileProvider.notifier).syncSubscriptionFromEntitlement(tier);
       });
     });
 

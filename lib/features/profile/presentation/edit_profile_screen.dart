@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../core/services/service_providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../l10n/app_localizations.dart';
@@ -172,6 +173,37 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 prefixIcon: const Icon(Icons.person_outline_rounded),
               ),
             ),
+            const SizedBox(height: 24),
+            Text(
+              l10n.editProfileEmailLabel,
+              style: theme.textTheme.labelLarge
+                  ?.copyWith(color: context.textOnBrand),
+            ),
+            const SizedBox(height: 8),
+            TextFormField(
+              initialValue: ref.read(firebaseAuthProvider).currentUser?.email ?? '',
+              enabled: false,
+              decoration: InputDecoration(
+                prefixIcon: const Icon(Icons.mail_outline_rounded),
+                helperText: l10n.editProfileEmailLockedHint,
+              ),
+            ),
+            if (profile.isOrgMember && profile.orgName != null) ...[
+              const SizedBox(height: 24),
+              Text(
+                l10n.editProfileCompanyLabel,
+                style: theme.textTheme.labelLarge
+                    ?.copyWith(color: context.textOnBrand),
+              ),
+              const SizedBox(height: 8),
+              TextFormField(
+                initialValue: profile.orgName,
+                enabled: false,
+                decoration: const InputDecoration(
+                  prefixIcon: Icon(Icons.apartment_outlined),
+                ),
+              ),
+            ],
             const SizedBox(height: 24),
             Text(
               l10n.editProfileManagerLevel,

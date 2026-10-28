@@ -112,8 +112,13 @@ class UserProfileNotifier extends StateNotifier<UserProfile> {
   /// Firestore watch picking up renewals/cancellations verified purely
   /// server-side, with no app interaction). Prefer this over calling
   /// [setSubscriptionTier] directly from UI after a purchase completes.
-  Future<void> syncSubscriptionFromEntitlement(bool isPremiumActive) async {
-    final tier = isPremiumActive ? SubscriptionTier.premium : SubscriptionTier.free;
+  ///
+  /// Takes the real [SubscriptionTier] rather than a bool — an org seat-
+  /// band purchase grants 'professional', not 'premium', and a bool can't
+  /// tell the two apart. Collapsing to a bool here once meant an org
+  /// owner's own tier got silently downgraded from 'professional' back to
+  /// 'premium'/'free' right after a successful purchase.
+  Future<void> syncSubscriptionFromEntitlement(SubscriptionTier tier) async {
     if (tier == state.subscriptionTier) return;
     state = state.copyWith(subscriptionTier: tier);
     await _persist();
