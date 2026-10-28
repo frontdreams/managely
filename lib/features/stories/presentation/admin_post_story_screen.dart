@@ -214,7 +214,7 @@ class _AdminPostStoryScreenState extends ConsumerState<AdminPostStoryScreen> {
                             color: isSelected ? Colors.white : c.color),
                         const SizedBox(width: 6),
                         Text(
-                          c.label,
+                          c.labelFor(context),
                           style: theme.textTheme.labelLarge?.copyWith(
                             color: isSelected ? Colors.white : c.color,
                           ),

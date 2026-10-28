@@ -207,6 +207,26 @@ class Scenario {
   /// Scenario(...) literal keeps compiling without listing this field.
   final bool isPremium;
 
+  /// Turkish variants of the fields a user actually sees/hears — title,
+  /// description, situation, objective, employeeRole, employeePersonality,
+  /// openingMessage. All null for a scenario with no Turkish translation
+  /// yet (e.g. one posted from managelyweb's admin dashboard, which has no
+  /// UI for authoring these). [employeeName] is deliberately NOT
+  /// translated here — it's a proper name, not UI text.
+  ///
+  /// Never read these directly; call [localizedFor] to get back a
+  /// `Scenario` with the right fields swapped in for the given language —
+  /// that's what the provider layer does once, in
+  /// `allScenariosProvider`, so every screen downstream of it already
+  /// sees localized content without needing to know this exists.
+  final String? titleTr;
+  final String? descriptionTr;
+  final String? situationTr;
+  final String? objectiveTr;
+  final String? employeeRoleTr;
+  final String? employeePersonalityTr;
+  final String? openingMessageTr;
+
   const Scenario({
     required this.id,
     required this.title,
@@ -225,7 +245,41 @@ class Scenario {
     required this.possibleResponses,
     required this.learningPoints,
     this.isPremium = false,
+    this.titleTr,
+    this.descriptionTr,
+    this.situationTr,
+    this.objectiveTr,
+    this.employeeRoleTr,
+    this.employeePersonalityTr,
+    this.openingMessageTr,
   });
+
+  /// Returns this scenario with its user-facing text fields swapped for
+  /// their Turkish variant when [languageCode] is 'tr' and a variant
+  /// actually exists — otherwise returns the scenario unchanged (English).
+  /// See the *Tr fields' doc comment above.
+  Scenario localizedFor(String languageCode) {
+    if (languageCode != 'tr') return this;
+    return Scenario(
+      id: id,
+      title: titleTr ?? title,
+      description: descriptionTr ?? description,
+      category: category,
+      difficulty: difficulty,
+      primarySkill: primarySkill,
+      estimatedMinutes: estimatedMinutes,
+      skillsPractised: skillsPractised,
+      employeeName: employeeName,
+      employeeRole: employeeRoleTr ?? employeeRole,
+      employeePersonality: employeePersonalityTr ?? employeePersonality,
+      situation: situationTr ?? situation,
+      objective: objectiveTr ?? objective,
+      openingMessage: openingMessageTr ?? openingMessage,
+      possibleResponses: possibleResponses,
+      learningPoints: learningPoints,
+      isPremium: isPremium,
+    );
+  }
 
   /// Generic dialogue tree used when a Firestore scenario doc doesn't have
   /// its own `possibleResponses` — e.g. one created from managelyweb's
@@ -305,6 +359,13 @@ class Scenario {
       learningPoints:
           ((data['learningPoints'] as List?) ?? []).cast<String>(),
       isPremium: data['isPremium'] as bool? ?? false,
+      titleTr: data['titleTr'] as String?,
+      descriptionTr: data['descriptionTr'] as String?,
+      situationTr: data['situationTr'] as String?,
+      objectiveTr: data['objectiveTr'] as String?,
+      employeeRoleTr: data['employeeRoleTr'] as String?,
+      employeePersonalityTr: data['employeePersonalityTr'] as String?,
+      openingMessageTr: data['openingMessageTr'] as String?,
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/conversation.dart';
 import 'empty_state.dart';
 import 'session_tile.dart';
@@ -34,11 +35,12 @@ class _RecentPracticeListState extends State<RecentPracticeList> {
     final sessions = widget.sessions;
 
     if (sessions.isEmpty) {
+      final l10n = AppLocalizations.of(context);
       return EmptyState(
         icon: Icons.history_rounded,
-        title: 'No sessions yet',
-        message: 'Complete a scenario to see your history here.',
-        actionLabel: 'Start Practising',
+        title: l10n.recentPracticeEmptyTitle,
+        message: l10n.recentPracticeEmptyMessage,
+        actionLabel: l10n.homeHeroButton,
         onAction: widget.onStartPractice,
       );
     }

@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/providers/locale_providers.dart';
 import '../../../core/services/service_providers.dart';
 import '../../../data/mock_scenarios.dart';
 import '../../../models/scenario.dart';
@@ -20,9 +21,17 @@ final scenariosStreamProvider = StreamProvider<List<Scenario>>((ref) {
 /// [Provider] so every existing consumer of the library doesn't need to
 /// handle Firestore's loading/error states individually; it still updates
 /// live as [scenariosStreamProvider] emits new snapshots.
+///
+/// Also where scenario content gets localized — every scenario is mapped
+/// through [Scenario.localizedFor] here, once, so every screen that reads
+/// from this provider (directly or via [filteredScenariosProvider] /
+/// [scenarioByIdProvider] / Home's recommended/continue cards) already
+/// sees Turkish text without needing its own BuildContext-aware logic.
 final allScenariosProvider = Provider<List<Scenario>>((ref) {
   final remote = ref.watch(scenariosStreamProvider).valueOrNull;
-  return (remote != null && remote.isNotEmpty) ? remote : MockScenarios.all;
+  final base = (remote != null && remote.isNotEmpty) ? remote : MockScenarios.all;
+  final language = ref.watch(resolvedLanguageCodeProvider);
+  return base.map((s) => s.localizedFor(language)).toList();
 });
 
 /// Currently selected category filter on the Practice screen. `null` means

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/theme/app_colors.dart';
+import '../l10n/app_localizations.dart';
 
 /// The four content categories admins can post under. Purely a content
 /// classification — not related to [SkillCategory] (which classifies
@@ -7,6 +8,8 @@ import '../core/theme/app_colors.dart';
 enum StoryCategory { announcements, trends, insights, offers }
 
 extension StoryCategoryX on StoryCategory {
+  /// English-only — kept for non-UI uses (logging, debug output). Any
+  /// widget showing this to the user should use [labelFor] instead.
   String get label {
     switch (this) {
       case StoryCategory.announcements:
@@ -17,6 +20,20 @@ extension StoryCategoryX on StoryCategory {
         return 'Insights';
       case StoryCategory.offers:
         return 'Offers';
+    }
+  }
+
+  String labelFor(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    switch (this) {
+      case StoryCategory.announcements:
+        return l10n.storyCategoryNews;
+      case StoryCategory.trends:
+        return l10n.storyCategoryTrends;
+      case StoryCategory.insights:
+        return l10n.storyCategoryInsights;
+      case StoryCategory.offers:
+        return l10n.storyCategoryOffers;
     }
   }
 

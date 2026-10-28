@@ -338,7 +338,7 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              widget.category.label,
+                              widget.category.labelFor(context),
                               style: theme.textTheme.titleSmall?.copyWith(
                                   color: chromeColor,
                                   fontWeight: FontWeight.w700),

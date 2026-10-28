@@ -26,6 +26,17 @@ class MockScenarios {
           'Deliver honest, specific feedback about the quality gap while keeping Jordan motivated and clear on what "good" looks like.',
       openingMessage:
           'Hey! Thanks for grabbing time. I feel like things have been going pretty well on my end — what did you want to chat about?',
+      titleTr: 'Zor Geri Bildirim Verme',
+      descriptionTr:
+          'Bir çalışanın son zamanlardaki işi beklentilerin altına düştü ve bunun farkında değil gibi görünüyor.',
+      employeeRoleTr: 'Pazarlama Uzmanı',
+      employeePersonalityTr: 'Hassas, çalışkan, aradaki farkın bilincinde değil',
+      situationTr:
+          'Jordan uzun saatler çalışıyor, ama son üç teslimat briefi karşılamadı ve ciddi şekilde yeniden yapılması gerekti. Jordan işlerin iyi gittiğini düşünüyor gibi görünüyor.',
+      objectiveTr:
+          'Jordan\'ın motivasyonunu koruyarak ve "iyi"nin neye benzediğini anlamasını sağlayarak kalite farkı hakkında dürüst ve net geri bildirim ver.',
+      openingMessageTr:
+          'Selam! Vakit ayırdığın için sağ ol. Bana göre işler oldukça iyi gidiyor — neyi konuşmak istemiştin?',
       possibleResponses: [
         PossibleResponse(triggerTone: 'empathetic', replies: [
           'Oh... okay. I didn\'t realize it wasn\'t landing well. Can you show me what "on brief" actually looks like?',
@@ -73,6 +84,17 @@ class MockScenarios {
           'Address the performance issue clearly while maintaining empathy and trust.',
       openingMessage:
           'Honestly, I don\'t think the missed deadlines are entirely my fault. I\'ve had a lot on my plate lately.',
+      titleTr: 'Kaçırılan Teslim Tarihlerini Ele Alma',
+      descriptionTr:
+          'Bir çalışan birkaç teslim tarihini kaçırdı ve konuyu gündeme getirdiğinde savunmaya geçiyor.',
+      employeeRoleTr: 'Yazılım Mühendisi',
+      employeePersonalityTr: 'Savunmacı',
+      situationTr:
+          'Geçtiğimiz ay içinde üç proje teslim tarihini kaçıran Alex\'in yöneticisisin.',
+      objectiveTr:
+          'Empati ve güveni koruyarak performans sorununu açık bir şekilde ele al.',
+      openingMessageTr:
+          'Açıkçası, kaçırılan teslim tarihlerinin tamamen benim hatam olduğunu düşünmüyorum. Son zamanlarda üstümde çok iş vardı.',
       possibleResponses: [
         PossibleResponse(triggerTone: 'empathetic', replies: [
           'I appreciate you recognizing that I\'ve been under pressure. But I\'m still not sure how I can realistically meet these deadlines.',
@@ -121,6 +143,17 @@ class MockScenarios {
           'Say no clearly and kindly, while offering an alternative and keeping Priya\'s trust.',
       openingMessage:
           'Hey! So I was hoping to take that week off for my sister\'s wedding — I already told her I\'d try to make it work. Is that okay?',
+      titleTr: 'İzin Talebine Hayır Deme',
+      descriptionTr:
+          'Bir çalışan ekibinizin en yoğun döneminde izin istiyor ve güveni zedelemeden hayır demeniz gerekiyor.',
+      employeeRoleTr: 'Müşteri Başarısı Lideri',
+      employeePersonalityTr: 'Umutlu, kolayca hayal kırıklığına uğrayabilen',
+      situationTr:
+          'Priya, tüm ekibinizin hazırlandığı lansman haftasında bir hafta izin almak istiyor ve bu konuda şimdiden heyecanlı.',
+      objectiveTr:
+          'Bir alternatif sunarak ve Priya\'nın güvenini koruyarak net ve nazik bir şekilde hayır de.',
+      openingMessageTr:
+          'Selam! Kardeşimin düğünü için o hafta izin almayı umuyordum — ona ayarlamaya çalışacağımı söyledim bile. Uygun mu?',
       possibleResponses: [
         PossibleResponse(triggerTone: 'empathetic', replies: [
           'I get that it\'s launch week, that makes sense. Is there any part of that week I could still take, even a couple of days?',
@@ -169,6 +202,18 @@ class MockScenarios {
           'Set a clear working-hours boundary without making Sam feel discouraged from being proactive.',
       openingMessage:
           'Hey, sorry to bring this up, but did you see my message from last night? I wanted to get ahead of tomorrow\'s review.',
+      titleTr: 'Çalışma Saatleri Dışında Sınır Koyma',
+      descriptionTr:
+          'Bir çalışan gece geç saatlerde sana ve ekibe mesaj göndermeye devam ediyor ve bu sağlıksız bir norm oluşturmaya başlıyor.',
+      employeeRoleTr: 'Ürün Tasarımcısı',
+      employeePersonalityTr:
+          'Hevesli, kendini bağlı biri olarak görülme konusunda biraz kaygılı',
+      situationTr:
+          'Sam bu hafta üç kez gece 23:00\'te iş mesajı gönderdi ve diğer takım arkadaşları yanıt verme konusunda baskı hissetmeye başladı.',
+      objectiveTr:
+          'Sam\'in proaktif olmaktan caydırıldığını hissetmesine neden olmadan açık bir çalışma saati sınırı koy.',
+      openingMessageTr:
+          'Hey, bunu gündeme getirdiğim için kusura bakma ama dün geceki mesajımı gördün mü? Yarınki incelemeye hazırlıklı olmak istedim.',
       possibleResponses: [
         PossibleResponse(triggerTone: 'empathetic', replies: [
           'Ah, that makes sense, I just want to make sure you\'re not burning yourself out staying up late for this.',
@@ -219,6 +264,17 @@ class MockScenarios {
           'De-escalate the emotion, listen fully, and address the process concern without making commitments you can\'t keep.',
       openingMessage:
           'Honestly, this is pretty messed up. I found out from Slack that I\'m not leading the project. Nobody even talked to me first.',
+      titleTr: 'Kızgın Bir Çalışanla Baş Etme',
+      descriptionTr:
+          'Bir çalışan kendisini etkileyen bir karardan dolayı üzgün ve belirgin şekilde sinirli bir halde sana geliyor.',
+      employeeRoleTr: 'Operasyon Analisti',
+      employeePersonalityTr: 'Hayal kırıklığına uğramış, göz ardı edildiğini hissediyor',
+      situationTr:
+          'Marcus, liderlik etmeyi beklediği bir proje için seçilmediğini az önce öğrendi ve bunun kendisine nasıl iletildiğinden dolayı üzgün.',
+      objectiveTr:
+          'Duygusal yoğunluğu azalt, tam olarak dinle ve tutamayacağın taahhütlerde bulunmadan süreç kaygısını ele al.',
+      openingMessageTr:
+          'Açıkçası bu oldukça saçma. Projeyi yönetmeyeceğimi Slack\'ten öğrendim. Kimse önce benimle konuşmadı bile.',
       possibleResponses: [
         PossibleResponse(triggerTone: 'empathetic', replies: [
           'Yeah... that\'s fair, honestly. Finding out that way would frustrate me too. I just wish someone had given me a heads up.',
@@ -268,6 +324,17 @@ class MockScenarios {
           'Raise the quality concern directly and help Nina understand the standard, without shaming her.',
       openingMessage:
           'I saw your message about wanting to chat — is this about the report? I already know what you\'re going to say.',
+      titleTr: 'Düşük Kaliteli İş',
+      descriptionTr:
+          'Bir çalışanın işi son zamanlarda özensiz ve moralini bozmadan standardı yükseltmen gerekiyor.',
+      employeeRoleTr: 'Veri Analisti',
+      employeePersonalityTr: 'İşiyle gurur duyuyor, kalite eleştirisine karşı biraz savunmacı',
+      situationTr:
+          'Nina\'nın son iki raporunda, kimse fark etmeden yönetime ulaşan hesaplama hataları vardı.',
+      objectiveTr:
+          'Kalite sorununu doğrudan dile getir ve Nina\'nın utanmasına neden olmadan standardı anlamasına yardım et.',
+      openingMessageTr:
+          'Konuşmak istediğine dair mesajını gördüm — bu rapor hakkında mı? Ne söyleyeceğini zaten biliyorum.',
       possibleResponses: [
         PossibleResponse(triggerTone: 'empathetic', replies: [
           'Yeah... I know it wasn\'t great. I think I\'ve just been moving too fast between projects.',
@@ -318,6 +385,18 @@ class MockScenarios {
           'Listen to Devon\'s concern, stay neutral about the other person, and agree on a fair process rather than picking a side.',
       openingMessage:
           'Can we talk about Jamie? This is the third time they\'ve taken credit for something we did together in front of a client. I\'m done being quiet about it.',
+      titleTr: 'Takım Üyeleri Arasında Çatışma',
+      descriptionTr:
+          'Ekibindeki iki üye açık bir çatışma içinde ve biri sana içini dökmeye ve müdahale etmeni istemeye geliyor.',
+      employeeRoleTr: 'Satış Temsilcisi',
+      employeePersonalityTr:
+          'Bir meslektaşından dolayı sinirli, senden "düzeltmeni" istiyor',
+      situationTr:
+          'Devon, bir takım arkadaşının müşterilerin önünde ortak başarıların hakkını sürekli üstlendiğini düşünüyor ve hemen müdahale etmeni istiyor.',
+      objectiveTr:
+          'Devon\'ın kaygısını dinle, diğer kişi konusunda tarafsız kal ve taraf tutmak yerine adil bir süreç üzerinde anlaş.',
+      openingMessageTr:
+          'Jamie hakkında konuşabilir miyiz? Bir müşterinin önünde birlikte yaptığımız bir şeyin hakkını üstlenmesi üçüncü kez oluyor. Bu konuda sessiz kalmaktan vazgeçtim.',
       possibleResponses: [
         PossibleResponse(triggerTone: 'empathetic', replies: [
           'Yeah, exactly. It\'s frustrating because I do want to give Jamie the benefit of the doubt, but this keeps happening.',
@@ -369,6 +448,17 @@ class MockScenarios {
           'Hold the line on a fair, consistent process while acknowledging Riley\'s specific concern.',
       openingMessage:
           'I really think I should be exempt from the next on-call rotation. I always seem to get stuck with the worst weekends anyway.',
+      titleTr: 'Çalışanın Özel Muamele İstemesi',
+      descriptionTr:
+          'Bir çalışan, yalnızca kendisine uygulanması adil olmayacak bir takım normuna istisna talep ediyor.',
+      employeeRoleTr: 'Müşteri Temsilcisi Yöneticisi',
+      employeePersonalityTr: 'Israrcı, ikna edici bir savunma yapmakta iyi',
+      situationTr:
+          'Riley, her zaman en kötü hafta sonlarına denk geldiğini öne sürerek nöbetçi hafta sonu rotasyonunu atlamak istiyor.',
+      objectiveTr:
+          'Riley\'nin özel kaygısını kabul ederken adil ve tutarlı bir süreçte kararlı ol.',
+      openingMessageTr:
+          'Bir sonraki nöbet rotasyonundan muaf olmam gerektiğini gerçekten düşünüyorum. Zaten hep en kötü hafta sonlarına denk geliyorum.',
       possibleResponses: [
         PossibleResponse(triggerTone: 'empathetic', replies: [
           'Okay, I appreciate you hearing that. Could we at least look at how the rotation is scheduled going forward?',
@@ -416,6 +506,17 @@ class MockScenarios {
           'Assign the task clearly, explain the reasoning, and address the "why me" pushback without over-justifying endlessly.',
       openingMessage:
           'Wait, the data cleanup project? Isn\'t that kind of a waste of my skills? I was hoping to get on the new feature work.',
+      titleTr: 'Sevilmeyen Bir Görevi Devretme',
+      descriptionTr:
+          'Karşı çıkması muhtemel birine sıkıcı, göz alıcı olmayan bir görev atamanız gerekiyor.',
+      employeeRoleTr: 'Junior Geliştirici',
+      employeePersonalityTr: 'Hevesli, sadece "ilginç" işler istiyor',
+      situationTr:
+          'Kimsenin istemediği çok haftalık bir veri temizleme görevini birinin yapması gerekiyor ve Taylor bunun için en uygun kişi.',
+      objectiveTr:
+          'Görevi açıkça ata, gerekçeyi açıkla ve sonsuza kadar aşırı gerekçelendirmeden "neden ben" itirazını ele al.',
+      openingMessageTr:
+          'Bir dakika, veri temizleme projesi mi? Bu biraz yeteneklerimin boşa harcanması değil mi? Yeni özellik çalışmasına katılmayı umuyordum.',
       possibleResponses: [
         PossibleResponse(triggerTone: 'empathetic', replies: [
           'Okay, that helps to hear. I still don\'t love it, but I get why it matters.',
@@ -467,6 +568,18 @@ class MockScenarios {
           'Hear Casey out fully, explain your reasoning clearly, and hold the decision if it still stands — without shutting down debate.',
       openingMessage:
           'I have to be honest, I think delaying the launch is a mistake. We\'re going to lose momentum, and I don\'t think the risk justifies it.',
+      titleTr: 'Çalışanın Kararınla Aynı Fikirde Olmaması',
+      descriptionTr:
+          'Bir çalışan verdiğin bir kararla açıkça aynı fikirde değil ve yeniden değerlendirmeni istiyor.',
+      employeeRoleTr: 'Ürün Yöneticisi',
+      employeePersonalityTr:
+          'Kendine güvenen, doğrudan, otoriteden çok mantığa değer veren',
+      situationTr:
+          'Casey, lansmanı iki hafta geciktirme kararına katılmıyor ve bunun yanlış bir karar olduğunu düşünüyor.',
+      objectiveTr:
+          'Casey\'yi tam olarak dinle, mantığını açıkça anlat ve tartışmayı kapatmadan karar geçerliyse onda kal.',
+      openingMessageTr:
+          'Dürüst olmalıyım, lansmanı geciktirmenin bir hata olduğunu düşünüyorum. Momentumu kaybedeceğiz ve riskin buna değdiğini düşünmüyorum.',
       possibleResponses: [
         PossibleResponse(triggerTone: 'empathetic', replies: [
           'I appreciate you actually explaining the reasoning instead of just pulling rank. I still disagree, but I get it.',
@@ -516,6 +629,18 @@ class MockScenarios {
           'Deliver the news clearly and honestly, give Morgan room to react, and be straightforward about severance and next steps without over-promising.',
       openingMessage:
           'Hey, you wanted to grab a quick call? I\'ve got five minutes before my next thing, what\'s up?',
+      titleTr: 'Pozisyon Kaldırma Bildirimi Verme',
+      descriptionTr:
+          'Bir yeniden yapılanma bir çalışanın pozisyonunu kaldırıyor ve bu haberi doğrudan ve şefkatle vermen gerekiyor.',
+      employeeRoleTr: 'Müşteri Destek Uzmanı',
+      employeePersonalityTr:
+          'Hazırlıksız yakalanmış, finansal durumu konusunda kaygılı, sakin kalmaya çalışıyor',
+      situationTr:
+          'Şirket çapındaki bir yeniden yapılanma üç hafta içinde Morgan\'ın pozisyonunu kaldırıyor. Morgan bu toplantının geleceğinden habersiz.',
+      objectiveTr:
+          'Haberi açık ve dürüst bir şekilde ver, Morgan\'a tepki verme alanı bırak ve aşırı söz vermeden kıdem tazminatı ve sonraki adımlar konusunda açık ol.',
+      openingMessageTr:
+          'Selam, hızlı bir görüşme mi istemiştin? Bir sonraki işime kadar beş dakikam var, ne oldu?',
       possibleResponses: [
         PossibleResponse(triggerTone: 'empathetic', replies: [
           'Okay... I wasn\'t expecting that at all. Can you give me a second? ...Okay. What happens with my health insurance?',
@@ -565,6 +690,18 @@ class MockScenarios {
           'Acknowledge the loss genuinely, offer flexibility without assuming what she needs, and let her set the pace for how much she wants to talk about it.',
       openingMessage:
           'Hey. Thanks for checking in — honestly I just want to get back into things, if that\'s okay.',
+      titleTr: 'Yas Tutan Bir Çalışanın Dönüşünü Destekleme',
+      descriptionTr:
+          'Bir çalışan ailevi bir vefat sonrası işe geri dönüyor ve haddi aşmadan veya durumu görmezden gelmeden hal hatır sormalısın.',
+      employeeRoleTr: 'Proje Koordinatörü',
+      employeePersonalityTr:
+          'Mahrem, farklı muamele görmek istemiyor, hâlâ yasını işliyor',
+      situationTr:
+          'Elena bir ebeveynini kaybettiği için aldığı iki haftalık yas izninden az önce döndü. Bugün işe geri döndüğü ilk gün ve ilk toplantısından önce hal hatır soruyorsun.',
+      objectiveTr:
+          'Kaybı gerçek bir şekilde kabul et, ne istediğini varsaymadan esneklik sun ve bu konuda ne kadar konuşmak istediğine kendisinin karar vermesine izin ver.',
+      openingMessageTr:
+          'Selam. Hal hatır sorduğun için sağ ol — açıkçası sadece işlerime geri dönmek istiyorum, eğer sorun olmazsa.',
       possibleResponses: [
         PossibleResponse(triggerTone: 'empathetic', replies: [
           'That makes sense. I just want you to know the offer to adjust anything stands any time, no need to ask twice.',
@@ -617,6 +754,18 @@ class MockScenarios {
           'Hear Theo out fully, validate without minimizing, and agree on a concrete reduction in load rather than just a sympathetic word.',
       openingMessage:
           'Honestly? I\'m not okay. I\'ve been saying I\'m fine for weeks but I\'m not sure I can keep up this pace much longer.',
+      titleTr: 'Bir Çalışanın Tükenmişlik Yaşadığını Açıklaması',
+      descriptionTr:
+          'Bir çalışan proje ortasında tükenmişlik yaşadığını kabul ediyor ve bunu ne hafife alarak ne de panikleyerek karşılamalısın.',
+      employeeRoleTr: 'Backend Mühendisi',
+      employeePersonalityTr:
+          'Genelde pozitif, şu an durgun ve tükenmiş, konuyu açmaktan utanıyor',
+      situationTr:
+          'Theo altı haftadır kendi iş yüküne ek olarak ayrılan bir ekip arkadaşının işini de yürütüyor ve sonunda tamamen tükendiğini kabul ediyor.',
+      objectiveTr:
+          'Theo\'yu tam olarak dinle, önemini küçümsemeden doğrula ve sadece empatik bir söz yerine iş yükünde somut bir azalma üzerinde anlaş.',
+      openingMessageTr:
+          'Açıkçası mı? İyi değilim. Haftalardır iyiyim diyorum ama bu hızı daha uzun süre sürdürebileceğimden emin değilim.',
       possibleResponses: [
         PossibleResponse(triggerTone: 'empathetic', replies: [
           'Thank you for telling me — that actually means a lot, I know that wasn\'t easy to say.',
@@ -669,6 +818,18 @@ class MockScenarios {
           'Address the behavior directly without letting the strong numbers excuse it, and be clear that results don\'t exempt him from how he treats the team.',
       openingMessage:
           'I\'m guessing this is about the numbers? Because if so, I don\'t really get the issue — I closed more than anyone else this quarter.',
+      titleTr: 'Takımı Baltalayan Yüksek Performanslı Birini Yönetme',
+      descriptionTr:
+          'En iyi performans gösteren çalışanın harika sonuçlar alıyor ama sürekli takım arkadaşlarını baltalıyor ve sözünü kesiyor, diğerleri şikayet etmeye başladı.',
+      employeeRoleTr: 'Kıdemli Satış Yöneticisi',
+      employeePersonalityTr:
+          'Kendine güvenen, sonuç odaklı, sayılarla ilgili olmayan geri bildirimleri önemsemiyor',
+      situationTr:
+          'Harrison takımda en yüksek satış rakamlarına sahip, ama iki takım arkadaşı bağımsız olarak müşteri görüşmelerinde sözlerini kestiğini ve ortak başarıların tüm kredisini kendine aldığını söyledi.',
+      objectiveTr:
+          'Güçlü rakamların bunu mazur göstermesine izin vermeden davranışı doğrudan ele al ve sonuçların takıma davranış şeklini muaf kılmadığını açıkça belirt.',
+      openingMessageTr:
+          'Sanırım bu rakamlarla ilgili? Eğer öyleyse, sorunu tam anlamıyorum — bu çeyrekte herkesten daha fazla anlaşma kapattım.',
       possibleResponses: [
         PossibleResponse(triggerTone: 'empathetic', replies: [
           'Okay... I didn\'t realize it was landing that way. I don\'t mean to steamroll people, I just get focused.',
@@ -718,6 +879,18 @@ class MockScenarios {
           'Listen fully without getting defensive or rushing to explain it away, and commit to a concrete way of checking whether the pattern is real.',
       openingMessage:
           'I\'ve thought about whether to bring this up for a while, so I want to say it clearly: I keep getting left out of decisions that directly affect my work, and I don\'t think it\'s a coincidence anymore.',
+      titleTr: 'Bir Çalışanın Dışlanmışlık Hissini Dile Getirmesi',
+      descriptionTr:
+          'Bir çalışan, işini etkileyen önemli tartışmalardan ve kararlardan sürekli olarak dışlandığını söylüyor.',
+      employeeRoleTr: 'UX Araştırmacısı',
+      employeePersonalityTr:
+          'Ölçülü, bunu dile getirmeden önce iyice düşünmüş, biraz temkinli',
+      situationTr:
+          'Aisha, araştırmasını etkileyen kararların alındığı toplantı davetlerinden ve Slack konuşmalarından düzenli olarak dışlandığını fark ettiğini ve bunun artık tesadüf olduğunu düşünmediğini söylüyor.',
+      objectiveTr:
+          'Savunmaya geçmeden veya açıklayıp geçiştirmeye çalışmadan tam olarak dinle ve bu örüntünün gerçek olup olmadığını kontrol etmek için somut bir yol üzerinde anlaş.',
+      openingMessageTr:
+          'Bunu dile getirip getirmemeyi bir süredir düşünüyordum, o yüzden açıkça söylemek istiyorum: işimi doğrudan etkileyen kararlardan sürekli dışlanıyorum ve bunun artık bir tesadüf olduğunu düşünmüyorum.',
       possibleResponses: [
         PossibleResponse(triggerTone: 'empathetic', replies: [
           'Thank you for trusting me with this — I know that took thought to bring up. Can you walk me through a specific instance?',
@@ -767,6 +940,18 @@ class MockScenarios {
           'Say no clearly for this cycle, be specific about the gap, and give him a real path rather than a vague "maybe next time".',
       openingMessage:
           'So, have you had a chance to think about what I asked last week? About the Senior Analyst promotion?',
+      titleTr: 'Dahili Terfi Talebini Reddetme',
+      descriptionTr:
+          'Bir çalışan senden henüz hazır olmadığı bir terfi istiyor ve onu motive tutarken açıkça hayır demen gerekiyor.',
+      employeeRoleTr: 'Analist Yardımcısı',
+      employeePersonalityTr:
+          'Hevesli, biraz sabırsız, reddi kişisel olarak alıyor',
+      situationTr:
+          'Owen bu dönem Kıdemli Analist\'e terfi etmek için doğrudan senden talepte bulundu, ama rolün temel gerekliliklerinden ikisini karşılamıyor ve henüz hazır değil.',
+      objectiveTr:
+          'Bu dönem için açıkça hayır de, eksikliği somut bir şekilde açıkla ve belirsiz bir "belki bir dahaki sefere" yerine gerçek bir yol haritası ver.',
+      openingMessageTr:
+          'Peki, geçen hafta sorduğum şeyi düşünme fırsatın oldu mu? Kıdemli Analist terfisi hakkında?',
       possibleResponses: [
         PossibleResponse(triggerTone: 'empathetic', replies: [
           'Okay... that\'s disappointing, but I\'d rather know exactly what\'s missing than guess. What specifically am I short on?',

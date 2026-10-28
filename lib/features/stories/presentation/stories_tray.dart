@@ -86,7 +86,7 @@ class _StoryCategoryCircle extends ConsumerWidget {
               ),
               const SizedBox(height: 6),
               Text(
-                category.label,
+                category.labelFor(context),
                 style: theme.textTheme.labelSmall
                     ?.copyWith(color: context.textOnBrandMuted),
               ),

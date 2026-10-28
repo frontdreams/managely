@@ -324,8 +324,12 @@ class _ProfileHeaderCard extends StatelessWidget {
             ),
             child: Text(
               levelLabel,
+              // This pill is always a white chip on top of the (always
+              // dark) hero gradient, in both themes — so its text must
+              // stay dark too, unlike context.textOnBrand which flips to
+              // white in dark mode and would disappear against it.
               style: theme.textTheme.labelSmall
-                  ?.copyWith(color: context.textOnBrand),
+                  ?.copyWith(color: AppColors.textPrimaryLight),
             ),
           ),
           const SizedBox(height: 24),

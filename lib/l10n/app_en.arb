@@ -541,5 +541,13 @@
   "meetingTypeOneOnOne": "1:1",
   "meetingTypePresentation": "Presentation",
   "meetingTypeTeamMeeting": "Team Meeting",
-  "meetingTypeOther": "Other"
+  "meetingTypeOther": "Other",
+
+  "recentPracticeEmptyTitle": "No sessions yet",
+  "recentPracticeEmptyMessage": "Complete a scenario to see your history here.",
+
+  "storyCategoryNews": "News",
+  "storyCategoryTrends": "Trends",
+  "storyCategoryInsights": "Insights",
+  "storyCategoryOffers": "Offers"
 }

@@ -420,5 +420,13 @@
   "meetingTypeOneOnOne": "1:1",
   "meetingTypePresentation": "Sunum",
   "meetingTypeTeamMeeting": "Ekip Toplantısı",
-  "meetingTypeOther": "Diğer"
+  "meetingTypeOther": "Diğer",
+
+  "recentPracticeEmptyTitle": "Henüz oturum yok",
+  "recentPracticeEmptyMessage": "Geçmişinizi burada görmek için bir senaryoyu tamamlayın.",
+
+  "storyCategoryNews": "Haberler",
+  "storyCategoryTrends": "Trendler",
+  "storyCategoryInsights": "İçgörüler",
+  "storyCategoryOffers": "Teklifler"
 }
