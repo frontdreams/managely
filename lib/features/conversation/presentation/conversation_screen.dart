@@ -702,7 +702,8 @@ class _TypingBubbleState extends State<_TypingBubble>
         margin: const EdgeInsets.symmetric(vertical: 6),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: Color.alphaBlend(widget.color.withOpacity(0.1), Colors.white),
+          color: Color.alphaBlend(
+              widget.color.withOpacity(0.1), context.surfaceOnBrand),
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(18),
             topRight: Radius.circular(18),

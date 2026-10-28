@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../models/user_profile.dart';
 import '../../../models/scenario.dart';
 import '../../../models/user_role.dart';
+import '../../../core/services/local_prefs_service.dart';
 import '../../../core/services/service_providers.dart';
 
 /// Holds the signed-in user's [UserProfile], hydrated from and persisted to
@@ -10,11 +11,28 @@ import '../../../core/services/service_providers.dart';
 /// in user changes (see [userProfileProvider]).
 class UserProfileNotifier extends StateNotifier<UserProfile> {
   UserProfileNotifier(this._ref, this._uid) : super(const UserProfile()) {
-    if (_uid != null) _hydrate();
+    if (_uid != null) {
+      _hydrate();
+    } else {
+      // Signed out (or not yet signed in) — there's no Firestore doc to
+      // read, but the user's last chosen theme/language should still
+      // carry over onto Welcome/Login/Onboarding rather than resetting to
+      // the device's system defaults. See LocalPrefsService's doc comment.
+      _hydrateLocalPrefsOnly();
+    }
   }
 
   final Ref _ref;
   final String? _uid;
+
+  Future<void> _hydrateLocalPrefsOnly() async {
+    final local = await LocalPrefsService.load();
+    state = state.copyWith(
+      themeMode: local.themeMode,
+      languageOverride: local.languageOverride,
+      clearLanguageOverride: local.languageOverride == null,
+    );
+  }
 
 
   Future<void> _hydrate() async {
@@ -51,6 +69,11 @@ class UserProfileNotifier extends StateNotifier<UserProfile> {
         next = next.copyWith(photoUrl: authPhoto);
       }
       state = next;
+      // Mirror this signed-in profile's theme/language locally too, so
+      // they're still there to fall back on the next time this device has
+      // no signed-in user (see _hydrateLocalPrefsOnly).
+      await LocalPrefsService.saveThemeMode(next.themeMode);
+      await LocalPrefsService.saveLanguageOverride(next.languageOverride);
       return;
     }
 
@@ -177,6 +200,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile> {
 
   Future<void> setThemeMode(ThemeMode mode) async {
     state = state.copyWith(themeMode: mode);
+    await LocalPrefsService.saveThemeMode(mode);
     await _persist();
   }
 
@@ -186,6 +210,7 @@ class UserProfileNotifier extends StateNotifier<UserProfile> {
       languageOverride: languageCode,
       clearLanguageOverride: languageCode == null,
     );
+    await LocalPrefsService.saveLanguageOverride(languageCode);
     await _persist();
   }
 

@@ -82,7 +82,8 @@ class ScenarioDetailsScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Color.alphaBlend(color.withOpacity(0.08), Colors.white),
+                color: Color.alphaBlend(
+                    color.withOpacity(0.08), context.surfaceOnBrand),
                 borderRadius: BorderRadius.circular(AppTheme.radiusLg),
               ),
               child: Column(
