@@ -248,7 +248,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             const SizedBox(height: 32),
             ElevatedButton(
               onPressed: _saving ? null : _save,
-              style: AppTheme.accentPillButtonStyle,
+              style: AppTheme.accentPillButtonStyle(context),
               child: _saving
                   ? const SizedBox(
                       width: 22,

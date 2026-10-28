@@ -125,7 +125,7 @@ class _EmailVerificationScreenState
         const SizedBox(height: 24),
         ElevatedButton(
           onPressed: (isLoading || _code.length != 6) ? null : _verify,
-          style: AppTheme.accentPillButtonStyle,
+          style: AppTheme.accentPillButtonStyle(context),
           child: isLoading
               ? const SizedBox(
                   width: 22,
@@ -149,8 +149,8 @@ class _EmailVerificationScreenState
                 )
               : TextButton(
                   onPressed: isLoading ? null : _sendCode,
-                  style:
-                      TextButton.styleFrom(foregroundColor: AppColors.accent),
+                  style: TextButton.styleFrom(
+                      foregroundColor: context.textOnBrand),
                   child: Text(l10n.authResendCode),
                 ),
         ),

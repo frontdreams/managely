@@ -107,14 +107,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           child: TextButton(
             onPressed:
                 isLoading ? null : () => context.push('/forgot-password'),
-            style: TextButton.styleFrom(foregroundColor: AppColors.accent),
+            style: TextButton.styleFrom(foregroundColor: context.textOnBrand),
             child: Text(l10n.authForgotPasswordLink),
           ),
         ),
         const SizedBox(height: 8),
         ElevatedButton(
           onPressed: isLoading ? null : _submit,
-          style: AppTheme.accentPillButtonStyle,
+          style: AppTheme.accentPillButtonStyle(context),
           child: isLoading
               ? const SizedBox(
                   width: 22,
@@ -145,7 +145,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               TextButton(
                 onPressed: isLoading ? null : () => context.push('/register'),
                 style: TextButton.styleFrom(
-                  foregroundColor: AppColors.accent,
+                  foregroundColor: context.textOnBrand,
                   padding: EdgeInsets.zero,
                   minimumSize: const Size(0, 0),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,

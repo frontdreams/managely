@@ -367,7 +367,7 @@ class _IndividualPlanPicker extends ConsumerWidget {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: isBusy ? null : () => onPurchase(selected),
-                style: AppTheme.accentPillButtonStyle,
+                style: AppTheme.accentPillButtonStyle(context),
                 child: isPurchasing
                     ? const SizedBox(
                         width: 22,

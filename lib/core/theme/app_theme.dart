@@ -22,16 +22,28 @@ class AppTheme {
   static const double radiusPill = 100;
 
   /// Pill-shaped button used for the primary action on the onboarding,
-  /// login, sign up and forgot password screens — black fill, white label.
-  static ButtonStyle get accentPillButtonStyle => ElevatedButton.styleFrom(
-        backgroundColor: AppColors.accent,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        minimumSize: const Size.fromHeight(54),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(radiusPill),
-        ),
-      );
+  /// login, sign up and forgot password screens, and other bare-
+  /// scaffold-background buttons throughout the app.
+  ///
+  /// [AppColors.accent] and [AppColors.bgDark] are both pure black, so a
+  /// black-fill button sitting directly on a dark-mode scaffold (no card
+  /// behind it) was completely invisible — same color as the page behind
+  /// it, no edge to see at all. In dark mode this flips to a light fill
+  /// with dark text instead, the same light-button-on-dark-background
+  /// pattern already used for buttons that sit on the brand gradient
+  /// (e.g. "Start Practising" on Home).
+  static ButtonStyle accentPillButtonStyle(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return ElevatedButton.styleFrom(
+      backgroundColor: isDark ? Colors.white : AppColors.accent,
+      foregroundColor: isDark ? AppColors.primary : Colors.white,
+      elevation: 0,
+      minimumSize: const Size.fromHeight(54),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(radiusPill),
+      ),
+    );
+  }
 
   /// Unified snackbar look for the whole app — a compact, fully-rounded
   /// pill in a slightly translucent primary color, rather than Material's

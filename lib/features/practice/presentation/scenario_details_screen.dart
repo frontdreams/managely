@@ -264,7 +264,7 @@ class ScenarioDetailsScreen extends ConsumerWidget {
                 )
               : ElevatedButton(
                   onPressed: () => _start(context, ref, scenario),
-                  style: AppTheme.accentPillButtonStyle,
+                  style: AppTheme.accentPillButtonStyle(context),
                   child: Text(l10n.scenarioStartConversationButton),
                 ),
         ),

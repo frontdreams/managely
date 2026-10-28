@@ -184,7 +184,7 @@ class _OrganizationRegisterScreenState
         const SizedBox(height: 24),
         ElevatedButton(
           onPressed: isLoading ? null : _submit,
-          style: AppTheme.accentPillButtonStyle,
+          style: AppTheme.accentPillButtonStyle(context),
           child: isLoading
               ? const SizedBox(
                   width: 22,
@@ -204,7 +204,7 @@ class _OrganizationRegisterScreenState
               TextButton(
                 onPressed: isLoading ? null : () => context.pop(),
                 style: TextButton.styleFrom(
-                  foregroundColor: AppColors.accent,
+                  foregroundColor: context.textOnBrand,
                   padding: EdgeInsets.zero,
                   minimumSize: const Size(0, 0),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -229,7 +229,7 @@ class _OrganizationRegisterScreenState
               TextButton(
                 onPressed: isLoading ? null : () => context.go('/login'),
                 style: TextButton.styleFrom(
-                  foregroundColor: AppColors.accent,
+                  foregroundColor: context.textOnBrand,
                   padding: EdgeInsets.zero,
                   minimumSize: const Size(0, 0),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,

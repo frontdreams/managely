@@ -303,7 +303,7 @@ class _AdminPostStoryScreenState extends ConsumerState<AdminPostStoryScreen> {
             ],
             const SizedBox(height: 28),
             ElevatedButton(
-              style: AppTheme.accentPillButtonStyle,
+              style: AppTheme.accentPillButtonStyle(context),
               onPressed: _isPosting ? null : _post,
               child: _isPosting
                   ? const SizedBox(

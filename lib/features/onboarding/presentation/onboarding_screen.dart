@@ -130,7 +130,7 @@ class OnboardingScreen extends ConsumerWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () => _finish(context, ref),
-                  style: AppTheme.accentPillButtonStyle,
+                  style: AppTheme.accentPillButtonStyle(context),
                   child: Text(AppLocalizations.of(context).commonContinue),
                 ),
               ),

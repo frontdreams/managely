@@ -109,7 +109,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _next,
-                  style: AppTheme.accentPillButtonStyle,
+                  style: AppTheme.accentPillButtonStyle(context),
                   child: Text(_isLastPage
                       ? AppLocalizations.of(context).welcomeGetStarted
                       : AppLocalizations.of(context).commonContinue),

@@ -277,7 +277,7 @@ class _ResultsView extends ConsumerWidget {
             const SizedBox(height: 28),
             ElevatedButton(
               onPressed: onContinue,
-              style: AppTheme.accentPillButtonStyle,
+              style: AppTheme.accentPillButtonStyle(context),
               child: Text(AppLocalizations.of(context).assessmentContinueButton),
             ),
           ],

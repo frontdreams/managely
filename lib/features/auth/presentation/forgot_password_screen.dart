@@ -112,7 +112,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: isLoading ? null : _submit,
-            style: AppTheme.accentPillButtonStyle,
+            style: AppTheme.accentPillButtonStyle(context),
             child: isLoading
                 ? const SizedBox(
                     width: 22,
@@ -129,7 +129,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
         Center(
           child: TextButton(
             onPressed: () => context.pop(),
-            style: TextButton.styleFrom(foregroundColor: AppColors.accent),
+            style: TextButton.styleFrom(foregroundColor: context.textOnBrand),
             child: Text(l10n.authBackToLogIn),
           ),
         ),
