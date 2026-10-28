@@ -7,6 +7,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/services/service_providers.dart';
 import '../../../core/utils/skill_color.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../models/real_meeting_plan.dart';
 import '../../../models/evaluation.dart';
 import '../../../models/scenario.dart';
@@ -20,10 +21,10 @@ import '../providers/debrief_providers.dart';
 // Explicit, more rectangular borders here override that theme default
 // (an InputDecoration with only `border:` set still falls back to the
 // theme's enabledBorder/focusedBorder, so all three need overriding).
-const _debriefFieldBorder = OutlineInputBorder(
-  borderRadius: BorderRadius.all(Radius.circular(AppTheme.radiusSm)),
-  borderSide: BorderSide(color: AppColors.borderLight),
-);
+OutlineInputBorder _debriefFieldBorder(BuildContext context) => OutlineInputBorder(
+      borderRadius: const BorderRadius.all(Radius.circular(AppTheme.radiusSm)),
+      borderSide: BorderSide(color: context.borderOnBrand),
+    );
 const _debriefFieldFocusedBorder = OutlineInputBorder(
   borderRadius: BorderRadius.all(Radius.circular(AppTheme.radiusSm)),
   borderSide: BorderSide(color: AppColors.primary, width: 1.5),
@@ -126,7 +127,7 @@ class _PostMeetingDebriefScreenState extends ConsumerState<PostMeetingDebriefScr
       if (mounted) {
         setState(() => _submitting = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Couldn\'t analyze that — try again. ($e)')),
+          SnackBar(content: Text(AppLocalizations.of(context).debriefAnalysisFailed(e.toString()))),
         );
       }
     }
@@ -169,8 +170,8 @@ class _PostMeetingDebriefScreenState extends ConsumerState<PostMeetingDebriefScr
     }
     if (_plan == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Debrief')),
-        body: const Center(child: Text('Couldn\'t find that meeting.')),
+        appBar: AppBar(title: Text(AppLocalizations.of(context).debriefTitle)),
+        body: Center(child: Text(AppLocalizations.of(context).debriefMeetingNotFound)),
       );
     }
     if (_result != null) {
@@ -178,11 +179,12 @@ class _PostMeetingDebriefScreenState extends ConsumerState<PostMeetingDebriefScr
     }
 
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     final plan = _plan!;
     final canSubmit = _outcomeRating != null && _achievedObjective != null && !_submitting;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Post-Meeting Debrief')),
+      appBar: AppBar(title: Text(l10n.debriefAppBarTitle)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
@@ -190,7 +192,7 @@ class _PostMeetingDebriefScreenState extends ConsumerState<PostMeetingDebriefScr
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.primaryLight,
+                color: context.surfaceOnBrand,
                 borderRadius: BorderRadius.circular(AppTheme.radiusMd),
               ),
               child: Row(
@@ -213,7 +215,7 @@ class _PostMeetingDebriefScreenState extends ConsumerState<PostMeetingDebriefScr
               ),
             ),
             const SizedBox(height: 28),
-            Text('How did it actually go?', style: theme.textTheme.titleMedium),
+            Text(l10n.debriefHowDidItGoQuestion, style: theme.textTheme.titleMedium),
             const SizedBox(height: 14),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -228,7 +230,7 @@ class _PostMeetingDebriefScreenState extends ConsumerState<PostMeetingDebriefScr
                     height: 54,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: selected ? AppColors.primary : AppColors.primaryLight,
+                      color: selected ? AppColors.primary : context.surfaceOnBrand,
                     ),
                     alignment: Alignment.center,
                     child: Text(
@@ -246,31 +248,31 @@ class _PostMeetingDebriefScreenState extends ConsumerState<PostMeetingDebriefScr
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Rough', style: theme.textTheme.labelSmall),
-                  Text('Great', style: theme.textTheme.labelSmall),
+                  Text(l10n.debriefRoughLabel, style: theme.textTheme.labelSmall),
+                  Text(l10n.debriefGreatLabel, style: theme.textTheme.labelSmall),
                 ],
               ),
             ),
             const SizedBox(height: 28),
-            Text('Did you achieve what you set out to?', style: theme.textTheme.titleMedium),
+            Text(l10n.debriefAchievedObjectiveQuestion, style: theme.textTheme.titleMedium),
             const SizedBox(height: 12),
             Wrap(
               spacing: 10,
               children: [
                 _ObjectiveChip(
-                  label: 'Yes',
+                  label: AppLocalizations.of(context).notificationsObjectiveYes,
                   value: 'yes',
                   selected: _achievedObjective == 'yes',
                   onTap: () => setState(() => _achievedObjective = 'yes'),
                 ),
                 _ObjectiveChip(
-                  label: 'Partially',
+                  label: AppLocalizations.of(context).notificationsObjectivePartially,
                   value: 'partially',
                   selected: _achievedObjective == 'partially',
                   onTap: () => setState(() => _achievedObjective = 'partially'),
                 ),
                 _ObjectiveChip(
-                  label: 'No',
+                  label: AppLocalizations.of(context).notificationsObjectiveNo,
                   value: 'no',
                   selected: _achievedObjective == 'no',
                   onTap: () => setState(() => _achievedObjective = 'no'),
@@ -278,30 +280,31 @@ class _PostMeetingDebriefScreenState extends ConsumerState<PostMeetingDebriefScr
               ],
             ),
             const SizedBox(height: 28),
-            Text('What went well? (optional)', style: theme.textTheme.titleMedium),
+            Text(l10n.debriefWhatWentWellQuestion, style: theme.textTheme.titleMedium),
             const SizedBox(height: 10),
             TextField(
               controller: _wentWellController,
               minLines: 2,
               maxLines: 4,
               textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(
-                border: _debriefFieldBorder,
-                enabledBorder: _debriefFieldBorder,
+              decoration: InputDecoration(
+                border: _debriefFieldBorder(context),
+                enabledBorder: _debriefFieldBorder(context),
                 focusedBorder: _debriefFieldFocusedBorder,
               ),
             ),
             const SizedBox(height: 24),
-            Text('What was harder than expected? (optional)', style: theme.textTheme.titleMedium),
+            Text(AppLocalizations.of(context).debriefWhatWasHarderQuestion,
+                style: theme.textTheme.titleMedium),
             const SizedBox(height: 10),
             TextField(
               controller: _harderController,
               minLines: 2,
               maxLines: 4,
               textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(
-                border: _debriefFieldBorder,
-                enabledBorder: _debriefFieldBorder,
+              decoration: InputDecoration(
+                border: _debriefFieldBorder(context),
+                enabledBorder: _debriefFieldBorder(context),
                 focusedBorder: _debriefFieldFocusedBorder,
               ),
             ),
@@ -314,7 +317,7 @@ class _PostMeetingDebriefScreenState extends ConsumerState<PostMeetingDebriefScr
                       height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                     )
-                  : const Text('Compare to My Practice'),
+                  : Text(l10n.debriefCompareToPracticeButton),
             ),
           ],
         ),
@@ -361,9 +364,10 @@ class _ResultView extends ConsumerWidget {
         .where((s) => s.skillsPractised.contains(analysis.recommendedSkill))
         .toList();
     final suggestion = recommendedScenarios.isNotEmpty ? recommendedScenarios.first : null;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Debrief Complete'), automaticallyImplyLeading: false),
+      appBar: AppBar(title: Text(l10n.debriefCompleteTitle), automaticallyImplyLeading: false),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
@@ -371,7 +375,7 @@ class _ResultView extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.accentLight,
+                color: context.surfaceOnBrand,
                 borderRadius: BorderRadius.circular(AppTheme.radiusLg),
               ),
               child: Column(
@@ -381,7 +385,7 @@ class _ResultView extends ConsumerWidget {
                     children: [
                       const Icon(Icons.compare_arrows_rounded, color: AppColors.primary),
                       const SizedBox(width: 8),
-                      Text('Practice vs. Reality', style: theme.textTheme.titleMedium),
+                      Text(l10n.debriefPracticeVsReality, style: theme.textTheme.titleMedium),
                     ],
                   ),
                   const SizedBox(height: 10),
@@ -393,7 +397,7 @@ class _ResultView extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.primaryLight,
+                color: context.surfaceOnBrand,
                 borderRadius: BorderRadius.circular(AppTheme.radiusMd),
               ),
               child: Row(
@@ -407,12 +411,12 @@ class _ResultView extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 28),
-            Text('Focus on next', style: theme.textTheme.titleMedium),
+            Text(l10n.debriefFocusOnNext, style: theme.textTheme.titleMedium),
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                border: Border.all(color: AppColors.borderLight),
+                border: Border.all(color: context.borderOnBrand),
                 borderRadius: BorderRadius.circular(AppTheme.radiusMd),
               ),
               child: Row(
@@ -427,14 +431,14 @@ class _ResultView extends ConsumerWidget {
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () => GoRouter.of(context).go('/scenario/${suggestion.id}'),
-                child: Text('Practice: ${suggestion.title}'),
+                child: Text(l10n.debriefPracticeSuggestion(suggestion.title)),
               ),
               const SizedBox(height: 12),
             ] else
               const SizedBox(height: 12),
             OutlinedButton(
               onPressed: () => GoRouter.of(context).go('/home'),
-              child: const Text('Back to Home'),
+              child: Text(l10n.evaluationBackToHomeButton),
             ),
           ],
         ),

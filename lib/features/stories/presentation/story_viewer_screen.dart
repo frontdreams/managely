@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:video_player/video_player.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../models/story.dart';
 import '../../profile/providers/profile_providers.dart';
 import '../providers/stories_providers.dart';
@@ -136,33 +137,34 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen>
       final response = await http.get(Uri.parse(imageUrl));
       if (response.statusCode != 200) throw Exception('Download failed');
       await Gal.putImageBytes(response.bodyBytes, album: 'Managely');
-      if (mounted)
-        messenger
-            .showSnackBar(const SnackBar(content: Text('Saved to gallery.')));
+      if (mounted) {
+        messenger.showSnackBar(
+            SnackBar(content: Text(AppLocalizations.of(context).storySavedToGallery)));
+      }
     } catch (_) {
       if (mounted) {
         messenger.showSnackBar(
-            const SnackBar(content: Text('Couldn\'t save the image.')));
+            SnackBar(content: Text(AppLocalizations.of(context).storySaveFailed)));
       }
     }
   }
 
   Future<void> _confirmDelete(String storyId) async {
+    final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete story?'),
-        content:
-            const Text('This removes it for everyone. This can\'t be undone.'),
+        title: Text(l10n.storyDeleteDialogTitle),
+        content: Text(l10n.storyDeleteDialogBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.commonCancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.danger),
-            child: const Text('Delete'),
+            child: Text(l10n.storyDeleteButton),
           ),
         ],
       ),
@@ -174,8 +176,8 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen>
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Couldn\'t delete: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(AppLocalizations.of(context).storyDeleteFailed(e.toString()))));
       }
     }
   }
@@ -449,21 +451,22 @@ class _StoryMenuButton extends StatelessWidget {
         }
       },
       itemBuilder: (context) => [
-        const PopupMenuItem(
+        PopupMenuItem(
           value: _StoryMenuAction.close,
-          child: _MenuRow(icon: Icons.close_rounded, label: 'Close'),
+          child: _MenuRow(icon: Icons.close_rounded, label: AppLocalizations.of(context).commonClose),
         ),
         if (canSave)
-          const PopupMenuItem(
+          PopupMenuItem(
             value: _StoryMenuAction.save,
-            child: _MenuRow(icon: Icons.download_outlined, label: 'Save'),
+            child: _MenuRow(
+                icon: Icons.download_outlined, label: AppLocalizations.of(context).storySaveAction),
           ),
         if (canDelete)
-          const PopupMenuItem(
+          PopupMenuItem(
             value: _StoryMenuAction.delete,
             child: _MenuRow(
               icon: Icons.delete_outline_rounded,
-              label: 'Delete',
+              label: AppLocalizations.of(context).storyDeleteButton,
               color: AppColors.danger,
             ),
           ),

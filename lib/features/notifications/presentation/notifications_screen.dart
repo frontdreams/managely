@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../models/real_meeting_plan.dart';
 import '../../debrief/providers/debrief_providers.dart';
 
@@ -21,8 +22,9 @@ class NotificationsScreen extends ConsumerWidget {
     final unread = notifications.where((p) => p.isDebriefDue).toList();
     final read = notifications.where((p) => !p.isDebriefDue).toList();
 
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Notifications')),
+      appBar: AppBar(title: Text(l10n.notificationsTitle)),
       body: SafeArea(
         child: notifications.isEmpty
             ? const _EmptyNotifications()
@@ -30,13 +32,13 @@ class NotificationsScreen extends ConsumerWidget {
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
                 children: [
                   if (unread.isNotEmpty) ...[
-                    const _SectionLabel('NEEDS ACTION'),
+                    _SectionLabel(l10n.notificationsNeedsAction),
                     const SizedBox(height: 10),
                     _NotificationGroup(plans: unread),
                     const SizedBox(height: 24),
                   ],
                   if (read.isNotEmpty) ...[
-                    const _SectionLabel('EARLIER'),
+                    _SectionLabel(l10n.notificationsEarlier),
                     const SizedBox(height: 10),
                     _NotificationGroup(plans: read),
                   ],
@@ -81,8 +83,8 @@ class _EmptyNotifications extends StatelessWidget {
             Container(
               width: 64,
               height: 64,
-              decoration: const BoxDecoration(
-                color: AppColors.primaryLight,
+              decoration: BoxDecoration(
+                color: context.surfaceOnBrand,
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.notifications_none_rounded,
@@ -90,12 +92,12 @@ class _EmptyNotifications extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'You\'re all caught up',
+              AppLocalizations.of(context).notificationsAllCaughtUp,
               style: theme.textTheme.titleMedium,
             ),
             const SizedBox(height: 4),
             Text(
-              'Debrief reminders for your real meetings will show up here.',
+              AppLocalizations.of(context).notificationsEmptyBody,
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium
                   ?.copyWith(color: context.textOnBrandMuted),
@@ -162,7 +164,7 @@ class _NotificationTile extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: _isUnread
                     ? AppColors.danger.withValues(alpha: 0.12)
-                    : AppColors.primaryLight,
+                    : context.surfaceOnBrand,
               ),
               child: Icon(
                 plan.meetingType.icon,
@@ -177,8 +179,10 @@ class _NotificationTile extends StatelessWidget {
                 children: [
                   Text(
                     _isUnread
-                        ? 'Time to debrief your ${plan.meetingType.label}'
-                        : 'You debriefed your ${plan.meetingType.label}',
+                        ? AppLocalizations.of(context)
+                            .notificationsTimeToDebrief(plan.meetingType.label)
+                        : AppLocalizations.of(context)
+                            .notificationsDebriefed(plan.meetingType.label),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: _isUnread ? FontWeight.w700 : FontWeight.w500,
                       color: context.textOnBrand,
@@ -241,7 +245,7 @@ class _NotificationTile extends StatelessWidget {
                 margin: const EdgeInsets.only(bottom: 18),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: AppColors.borderLight,
+                  color: sheetContext.borderOnBrand,
                   borderRadius: BorderRadius.circular(AppTheme.radiusPill),
                 ),
               ),
@@ -253,18 +257,22 @@ class _NotificationTile extends StatelessWidget {
                 style: Theme.of(sheetContext)
                     .textTheme
                     .bodySmall
-                    ?.copyWith(color: context.textOnBrandMuted),
+                    ?.copyWith(color: sheetContext.textOnBrandMuted),
               ),
               const Divider(height: 28),
               if (plan.outcomeRating != null)
-                _SummaryRow('Outcome', '${plan.outcomeRating}/5'),
+                _SummaryRow(AppLocalizations.of(sheetContext).notificationsOutcomeLabel,
+                    '${plan.outcomeRating}/5'),
               if (plan.achievedObjective != null)
-                _SummaryRow('Achieved objective',
-                    _prettyObjective(plan.achievedObjective!)),
+                _SummaryRow(
+                    AppLocalizations.of(sheetContext).notificationsAchievedObjectiveLabel,
+                    _prettyObjective(sheetContext, plan.achievedObjective!)),
               if (plan.whatWentWell != null && plan.whatWentWell!.isNotEmpty)
-                _SummaryRow('What went well', plan.whatWentWell!),
+                _SummaryRow(AppLocalizations.of(sheetContext).notificationsWhatWentWellLabel,
+                    plan.whatWentWell!),
               if (plan.whatWasHarder != null && plan.whatWasHarder!.isNotEmpty)
-                _SummaryRow('What was harder', plan.whatWasHarder!),
+                _SummaryRow(AppLocalizations.of(sheetContext).notificationsWhatWasHarderLabel,
+                    plan.whatWasHarder!),
               if (plan.aiComparisonSummary != null) ...[
                 const SizedBox(height: 8),
                 Text(plan.aiComparisonSummary!,
@@ -277,14 +285,15 @@ class _NotificationTile extends StatelessWidget {
     );
   }
 
-  String _prettyObjective(String value) {
+  String _prettyObjective(BuildContext context, String value) {
+    final l10n = AppLocalizations.of(context);
     switch (value) {
       case 'yes':
-        return 'Yes, fully';
+        return l10n.notificationsObjectiveYes;
       case 'partially':
-        return 'Partially';
+        return l10n.notificationsObjectivePartially;
       case 'no':
-        return 'No';
+        return l10n.notificationsObjectiveNo;
       default:
         return value;
     }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../models/organization.dart';
 import '../../../models/user_profile.dart';
 import '../../../shared/widgets/app_snackbar.dart';
@@ -20,7 +21,9 @@ class OrganizationSettingsScreen extends ConsumerWidget {
       await ref
           .read(organizationRepositoryProvider)
           .approveMember(domain: domain, uid: uid);
-      if (context.mounted) AppSnackBar.show(context, 'Member approved');
+      if (context.mounted) {
+        AppSnackBar.show(context, AppLocalizations.of(context).orgMemberApproved);
+      }
     } catch (e) {
       if (context.mounted) AppSnackBar.show(context, e.toString());
     }
@@ -28,18 +31,19 @@ class OrganizationSettingsScreen extends ConsumerWidget {
 
   Future<void> _remove(
       BuildContext context, WidgetRef ref, String domain, String uid) async {
+    final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Remove member?'),
-        content: const Text("They'll lose Professional access immediately."),
+        title: Text(l10n.orgRemoveMemberTitle),
+        content: Text(l10n.orgRemoveMemberBody),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel')),
+              child: Text(l10n.commonCancel)),
           ElevatedButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text('Remove')),
+              child: Text(l10n.orgRemoveMemberConfirm)),
         ],
       ),
     );
@@ -48,7 +52,9 @@ class OrganizationSettingsScreen extends ConsumerWidget {
       await ref
           .read(organizationRepositoryProvider)
           .removeMember(domain: domain, uid: uid);
-      if (context.mounted) AppSnackBar.show(context, 'Member removed');
+      if (context.mounted) {
+        AppSnackBar.show(context, AppLocalizations.of(context).orgMemberRemoved);
+      }
     } catch (e) {
       if (context.mounted) AppSnackBar.show(context, e.toString());
     }
@@ -59,8 +65,9 @@ class OrganizationSettingsScreen extends ConsumerWidget {
     final org = ref.watch(currentOrganizationProvider).valueOrNull;
     final membersAsync = ref.watch(orgMembersProvider);
 
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Manage Team')),
+      appBar: AppBar(title: Text(l10n.orgManageTeamTitle)),
       body: SafeArea(
         child: org == null
             ? const Center(child: CircularProgressIndicator())
@@ -72,7 +79,7 @@ class OrganizationSettingsScreen extends ConsumerWidget {
                   membersAsync.when(
                     loading: () =>
                         const Center(child: CircularProgressIndicator()),
-                    error: (e, _) => Text('Couldn\'t load members: $e'),
+                    error: (e, _) => Text(l10n.orgMembersLoadError(e.toString())),
                     data: (members) {
                       final pending = members
                           .where((m) => m.status == OrgMemberStatus.pending)
@@ -86,7 +93,7 @@ class OrganizationSettingsScreen extends ConsumerWidget {
                         children: [
                           if (pending.isNotEmpty) ...[
                             _SectionLabel(
-                                'PENDING APPROVAL (${pending.length})'),
+                                l10n.orgPendingApprovalSection(pending.length)),
                             const SizedBox(height: 10),
                             Card(
                               clipBehavior: Clip.antiAlias,
@@ -102,7 +109,7 @@ class OrganizationSettingsScreen extends ConsumerWidget {
                                             icon: const Icon(
                                                 Icons.close_rounded,
                                                 color: AppColors.danger),
-                                            tooltip: 'Remove',
+                                            tooltip: l10n.orgRemoveTooltip,
                                             onPressed: () => _remove(
                                                 context,
                                                 ref,
@@ -113,7 +120,7 @@ class OrganizationSettingsScreen extends ConsumerWidget {
                                             icon: const Icon(
                                                 Icons.check_rounded,
                                                 color: AppColors.success),
-                                            tooltip: 'Approve',
+                                            tooltip: l10n.orgApproveTooltip,
                                             onPressed: () => _approve(
                                                 context,
                                                 ref,
@@ -135,12 +142,13 @@ class OrganizationSettingsScreen extends ConsumerWidget {
                             ),
                             const SizedBox(height: 24),
                           ],
-                          _SectionLabel(
-                              'TEAM (${approved.length}${org.seatLimit > 0 ? ' / ${org.seatLimit}' : ''})'),
+                          _SectionLabel(org.seatLimit > 0
+                              ? l10n.orgTeamSectionWithLimit(approved.length, org.seatLimit)
+                              : l10n.orgTeamSection(approved.length)),
                           const SizedBox(height: 10),
                           if (approved.isEmpty)
                             Text(
-                              'No approved members yet.',
+                              l10n.orgNoApprovedMembersYet,
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyMedium
@@ -156,16 +164,16 @@ class OrganizationSettingsScreen extends ConsumerWidget {
                                       member: approved[i],
                                       trailing: approved[i].role ==
                                               OrgRole.owner
-                                          ? const Padding(
+                                          ? Padding(
                                               padding:
-                                                  EdgeInsets.only(right: 12),
-                                              child: Text('Owner'),
+                                                  const EdgeInsets.only(right: 12),
+                                              child: Text(l10n.orgOwnerLabel),
                                             )
                                           : IconButton(
                                               icon: const Icon(
                                                   Icons.person_remove_outlined,
                                                   color: AppColors.danger),
-                                              tooltip: 'Remove',
+                                              tooltip: l10n.orgRemoveTooltip,
                                               onPressed: () => _remove(
                                                   context,
                                                   ref,
@@ -246,8 +254,8 @@ class _OrgSummaryCard extends StatelessWidget {
             ),
             child: Text(
               org.isProfessional
-                  ? 'Professional · ${org.seatLimit} seats'
-                  : 'Free plan',
+                  ? AppLocalizations.of(context).orgProfessionalSeats(org.seatLimit)
+                  : AppLocalizations.of(context).profileFreePlan,
               style: theme.textTheme.labelMedium?.copyWith(color: Colors.white),
             ),
           ),
@@ -270,7 +278,7 @@ class _MemberTile extends StatelessWidget {
       child: Row(
         children: [
           CircleAvatar(
-            backgroundColor: AppColors.primaryLight,
+            backgroundColor: context.surfaceOnBrand,
             child: Text(
               member.name.isNotEmpty ? member.name[0].toUpperCase() : '?',
               style: const TextStyle(

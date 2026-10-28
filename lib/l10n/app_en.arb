@@ -429,5 +429,90 @@
     "placeholders": { "orgName": {"type": "String"} }
   },
   "subscriptionMonthly": "Monthly",
-  "subscriptionAnnual": "Annual"
+  "subscriptionAnnual": "Annual",
+
+  "notificationsTitle": "Notifications",
+  "notificationsNeedsAction": "NEEDS ACTION",
+  "notificationsEarlier": "EARLIER",
+  "notificationsAllCaughtUp": "You're all caught up",
+  "notificationsEmptyBody": "Debrief reminders for your real meetings will show up here.",
+  "notificationsTimeToDebrief": "Time to debrief your {meetingType}",
+  "@notificationsTimeToDebrief": {
+    "placeholders": { "meetingType": {"type": "String"} }
+  },
+  "notificationsDebriefed": "You debriefed your {meetingType}",
+  "@notificationsDebriefed": {
+    "placeholders": { "meetingType": {"type": "String"} }
+  },
+  "notificationsOutcomeLabel": "Outcome",
+  "notificationsAchievedObjectiveLabel": "Achieved objective",
+  "notificationsWhatWentWellLabel": "What went well",
+  "notificationsWhatWasHarderLabel": "What was harder",
+  "notificationsObjectiveYes": "Yes, fully",
+  "notificationsObjectivePartially": "Partially",
+  "notificationsObjectiveNo": "No",
+
+  "orgMemberApproved": "Member approved",
+  "orgMemberRemoved": "Member removed",
+  "orgRemoveMemberTitle": "Remove member?",
+  "orgRemoveMemberBody": "They'll lose Professional access immediately.",
+  "orgRemoveMemberConfirm": "Remove",
+  "orgManageTeamTitle": "Manage Team",
+  "orgMembersLoadError": "Couldn't load members: {error}",
+  "@orgMembersLoadError": {
+    "placeholders": { "error": {"type": "String"} }
+  },
+  "orgPendingApprovalSection": "PENDING APPROVAL ({count})",
+  "@orgPendingApprovalSection": {
+    "placeholders": { "count": {"type": "int"} }
+  },
+  "orgRemoveTooltip": "Remove",
+  "orgApproveTooltip": "Approve",
+  "orgTeamSectionWithLimit": "TEAM ({count} / {limit})",
+  "@orgTeamSectionWithLimit": {
+    "placeholders": { "count": {"type": "int"}, "limit": {"type": "int"} }
+  },
+  "orgTeamSection": "TEAM ({count})",
+  "@orgTeamSection": {
+    "placeholders": { "count": {"type": "int"} }
+  },
+  "orgNoApprovedMembersYet": "No approved members yet.",
+  "orgOwnerLabel": "Owner",
+  "orgProfessionalSeats": "Professional · {seats} seats",
+  "@orgProfessionalSeats": {
+    "placeholders": { "seats": {"type": "int"} }
+  },
+
+  "debriefWhatWasHarderQuestion": "What was harder than expected? (optional)",
+  "debriefAnalysisFailed": "Couldn't analyze that — try again. ({error})",
+  "@debriefAnalysisFailed": {
+    "placeholders": { "error": {"type": "String"} }
+  },
+  "debriefTitle": "Debrief",
+  "debriefMeetingNotFound": "Couldn't find that meeting.",
+  "debriefAppBarTitle": "Post-Meeting Debrief",
+  "debriefHowDidItGoQuestion": "How did it actually go?",
+  "debriefRoughLabel": "Rough",
+  "debriefGreatLabel": "Great",
+  "debriefAchievedObjectiveQuestion": "Did you achieve what you set out to?",
+  "debriefWhatWentWellQuestion": "What went well? (optional)",
+  "debriefCompareToPracticeButton": "Compare to My Practice",
+  "debriefCompleteTitle": "Debrief Complete",
+  "debriefPracticeVsReality": "Practice vs. Reality",
+  "debriefFocusOnNext": "Focus on next",
+  "debriefPracticeSuggestion": "Practice: {title}",
+  "@debriefPracticeSuggestion": {
+    "placeholders": { "title": {"type": "String"} }
+  },
+
+  "storySavedToGallery": "Saved to gallery.",
+  "storySaveFailed": "Couldn't save the image.",
+  "storyDeleteDialogTitle": "Delete story?",
+  "storyDeleteDialogBody": "This removes it for everyone. This can't be undone.",
+  "storyDeleteButton": "Delete",
+  "storyDeleteFailed": "Couldn't delete: {error}",
+  "@storyDeleteFailed": {
+    "placeholders": { "error": {"type": "String"} }
+  },
+  "storySaveAction": "Save"
 }
