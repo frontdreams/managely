@@ -180,6 +180,7 @@
   "conversationEndButton": "Konuşmayı Sonlandır",
 
   "voiceModeUnavailableOnDevice": "Bu cihazda sesli giriş kullanılamıyor.",
+  "voiceModeSpeechFailed": "Sesli yanıt yüklenemedi — dinlemeye geri dönülüyor.",
   "voiceModeEmployeeThinking": "{name} düşünüyor…",
   "voiceModeEmployeeSpeaking": "{name} konuşuyor…",
   "voiceModeMicMuted": "Mikrofon kapalı",

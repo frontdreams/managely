@@ -222,6 +222,7 @@
   "conversationEndButton": "End Conversation",
 
   "voiceModeUnavailableOnDevice": "Voice input isn't available on this device.",
+  "voiceModeSpeechFailed": "Couldn't load the voice reply — switching back to listening.",
   "voiceModeEmployeeThinking": "{name} is thinking…",
   "@voiceModeEmployeeThinking": {
     "placeholders": { "name": {"type": "String"} }

@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import '../../../core/providers/locale_providers.dart';
 import '../../../core/services/tts_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../l10n/app_localizations.dart';
@@ -55,8 +56,14 @@ class _VoiceModeViewState extends ConsumerState<VoiceModeView>
     };
     _tts.onError = (_) {
       if (!mounted || _status != _VoiceStatus.speaking) return;
+      AppSnackBar.show(context, AppLocalizations.of(context).voiceModeSpeechFailed);
       _startListening();
     };
+
+    // Kicks off the backend's cold start (if it's idled and gone to
+    // sleep) in parallel with speech recognizer setup below, instead of
+    // only discovering it's cold once the first `speak()` call needs it.
+    _tts.warmUp();
 
     _init();
   }
@@ -94,7 +101,7 @@ class _VoiceModeViewState extends ConsumerState<VoiceModeView>
     final messages = ref.read(conversationProvider).messages;
     if (messages.isNotEmpty && messages.last.sender == MessageSender.employee) {
       setState(() => _status = _VoiceStatus.speaking);
-      await _tts.speak(messages.last.text);
+      await _tts.speak(messages.last.text, languageCode: ref.read(resolvedLanguageCodeProvider));
     } else {
       _startListening();
     }
@@ -118,12 +125,14 @@ class _VoiceModeViewState extends ConsumerState<VoiceModeView>
         setState(() => _soundLevel = level);
       },
       listenOptions: SpeechListenOptions(
-        // Generous caps: pauseFor is "how long a silence means you're
-        // done talking" — 2s was cutting people off mid-thought during a
-        // normal conversational pause. listenFor is the hard ceiling on a
-        // single turn's length; 30s was too short for a longer answer.
+        // pauseFor is "how long a silence means you're done talking" —
+        // 6s made the AI's turn feel slow to start even once you'd
+        // clearly finished. 2.5s is long enough to breathe mid-sentence
+        // without feeling like a hard cutoff. listenFor is the hard
+        // ceiling on a single turn's length; 30s was too short for a
+        // longer answer.
         listenFor: const Duration(minutes: 2),
-        pauseFor: const Duration(seconds: 6),
+        pauseFor: const Duration(milliseconds: 2500),
       ),
     );
   }
@@ -147,7 +156,7 @@ class _VoiceModeViewState extends ConsumerState<VoiceModeView>
 
     if (replied) {
       setState(() => _status = _VoiceStatus.speaking);
-      await _tts.speak(messages.last.text);
+      await _tts.speak(messages.last.text, languageCode: ref.read(resolvedLanguageCodeProvider));
     } else {
       // The AI call failed — conversationProvider already surfaces the
       // error banner in the text view; just pick listening back up.

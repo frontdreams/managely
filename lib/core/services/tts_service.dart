@@ -41,16 +41,29 @@ class TtsService {
   /// network, backend/providers both down, decode failure, etc).
   void Function(Object error)? onError;
 
-  Future<void> speak(String text) async {
+  /// Fire-and-forget ping to wake up the backend (it's on Render's free
+  /// tier, which spins the server down after idling and takes 10-50s to
+  /// cold-start the next request) before the real [speak] call needs it —
+  /// called as soon as Voice Mode opens, in parallel with the speech
+  /// recognizer's own setup, so the cold start happens a little earlier
+  /// instead of adding its full delay on top of the first line of dialog.
+  void warmUp() {
+    // ignore: discarded_futures
+    _client.get(Uri.parse('$baseUrl/health')).then((_) {}, onError: (_) {});
+  }
+
+  Future<void> speak(String text, {required String languageCode}) async {
     try {
-      final response = await _client.post(
-        Uri.parse('$baseUrl/v1/tts'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $appSharedSecret',
-        },
-        body: jsonEncode({'text': text}),
-      );
+      final response = await _client
+          .post(
+            Uri.parse('$baseUrl/v1/tts'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $appSharedSecret',
+            },
+            body: jsonEncode({'text': text, 'language': languageCode}),
+          )
+          .timeout(const Duration(seconds: 45));
 
       if (response.statusCode != 200) {
         throw Exception('TTS request failed (${response.statusCode}): ${response.body}');
