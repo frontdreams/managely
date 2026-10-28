@@ -65,7 +65,7 @@ class _StoryCategoryCircle extends ConsumerWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: hasUnseen ? category.color : AppColors.borderLight,
+                    color: hasUnseen ? category.color : context.borderOnBrand,
                     width: hasUnseen ? 2.2 : 1.5,
                   ),
                 ),
@@ -76,8 +76,10 @@ class _StoryCategoryCircle extends ConsumerWidget {
                   ),
                   child: Center(
                     child: ColorFiltered(
-                      colorFilter: ColorFilter.mode(category.color, BlendMode.srcIn),
-                      child: Image.asset(category.imagePath, width: 30, height: 30),
+                      colorFilter:
+                          ColorFilter.mode(category.color, BlendMode.srcIn),
+                      child: Image.asset(category.imagePath,
+                          width: 30, height: 30),
                     ),
                   ),
                 ),
@@ -85,7 +87,8 @@ class _StoryCategoryCircle extends ConsumerWidget {
               const SizedBox(height: 6),
               Text(
                 category.label,
-                style: theme.textTheme.labelSmall?.copyWith(color: AppColors.textOnBrandMuted),
+                style: theme.textTheme.labelSmall
+                    ?.copyWith(color: context.textOnBrandMuted),
               ),
             ],
           ),
@@ -113,15 +116,17 @@ class _PostStoryCircle extends StatelessWidget {
               height: 62,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.primaryLight,
-                border: Border.all(color: AppColors.borderLight, width: 1.5),
+                color: context.surfaceOnBrand,
+                border: Border.all(color: context.borderOnBrand, width: 1.5),
               ),
-              child: const Icon(Icons.add_rounded, color: AppColors.primary, size: 26),
+              child:
+                  Icon(Icons.add_rounded, color: context.textOnBrand, size: 26),
             ),
             const SizedBox(height: 6),
             Text(
               'Post',
-              style: theme.textTheme.labelSmall?.copyWith(color: AppColors.textOnBrandMuted),
+              style: theme.textTheme.labelSmall
+                  ?.copyWith(color: context.textOnBrandMuted),
             ),
           ],
         ),

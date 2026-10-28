@@ -56,7 +56,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           style: Theme.of(context)
               .textTheme
               .headlineMedium
-              ?.copyWith(color: AppColors.textOnBrand),
+              ?.copyWith(color: context.textOnBrand),
         ),
         const SizedBox(height: 6),
         Text(
@@ -64,7 +64,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           style: Theme.of(context)
               .textTheme
               .bodyMedium
-              ?.copyWith(color: AppColors.textOnBrandMuted),
+              ?.copyWith(color: context.textOnBrandMuted),
         ),
         const SizedBox(height: 28),
         if (authState.hasError)
@@ -144,8 +144,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 isLoading ? null : () => context.push('/register/organization'),
             icon: const Icon(Icons.apartment_outlined, size: 18),
             label: const Text('Create company account'),
-            style: TextButton.styleFrom(
-                foregroundColor: AppColors.textOnBrandMuted),
+            style:
+                TextButton.styleFrom(foregroundColor: context.textOnBrandMuted),
           ),
         ),
         const SizedBox(height: 8),
@@ -158,7 +158,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 style: Theme.of(context)
                     .textTheme
                     .bodyMedium
-                    ?.copyWith(color: AppColors.textOnBrandMuted),
+                    ?.copyWith(color: context.textOnBrandMuted),
               ),
               TextButton(
                 onPressed: isLoading ? null : () => context.pop(),

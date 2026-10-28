@@ -67,13 +67,12 @@ class ProfileScreen extends ConsumerWidget {
               skillsImproving: skillsImproving,
             ),
             const SizedBox(height: 28),
-
             Text(
               'Settings',
-              style: theme.textTheme.titleLarge?.copyWith(color: AppColors.textOnBrand),
+              style: theme.textTheme.titleLarge
+                  ?.copyWith(color: context.textOnBrand),
             ),
             const SizedBox(height: 14),
-
             if (profile.isAdmin) ...[
               const _SettingsGroupLabel(label: 'ADMIN'),
               _SettingsGroup(
@@ -103,20 +102,20 @@ class ProfileScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 20),
             ],
-
             const _SettingsGroupLabel(label: 'PLAN'),
             _SettingsGroup(
               children: [
                 _SettingsRow(
                   icon: Icons.workspace_premium_outlined,
                   iconColor: AppColors.iconAmber,
-                  title: profile.isOrgMember ? 'Company Subscription' : 'Manage Subscription',
+                  title: profile.isOrgMember
+                      ? 'Company Subscription'
+                      : 'Manage Subscription',
                   subtitle: _planSubtitle(profile),
                   onTap: () => context.push('/upgrade'),
                 ),
               ],
             ),
-
             if (profile.isOrgMember) ...[
               const SizedBox(height: 20),
               const _SettingsGroupLabel(label: 'ORGANIZATION'),
@@ -135,7 +134,8 @@ class ProfileScreen extends ConsumerWidget {
                       icon: Icons.apartment_outlined,
                       iconColor: AppColors.primary,
                       title: profile.orgName ?? 'Your organization',
-                      subtitle: profile.orgMemberStatus == OrgMemberStatus.pending
+                      subtitle: profile.orgMemberStatus ==
+                              OrgMemberStatus.pending
                           ? 'Waiting for your admin to approve you'
                           : profile.orgMemberStatus == OrgMemberStatus.removed
                               ? 'Your access was removed'
@@ -145,7 +145,6 @@ class ProfileScreen extends ConsumerWidget {
                 ],
               ),
             ],
-
             const SizedBox(height: 20),
             const _SettingsGroupLabel(label: 'PREFERENCES'),
             _SettingsGroup(
@@ -161,26 +160,29 @@ class ProfileScreen extends ConsumerWidget {
                   iconColor: AppColors.iconPink,
                   title: 'Notifications',
                   value: profile.notificationsEnabled,
-                  onChanged: (v) =>
-                      ref.read(userProfileProvider.notifier).toggleNotifications(v),
+                  onChanged: (v) => ref
+                      .read(userProfileProvider.notifier)
+                      .toggleNotifications(v),
                 ),
                 _SettingsSwitchRow(
                   icon: Icons.dark_mode_outlined,
                   iconColor: AppColors.iconPurple,
                   title: 'Dark Theme',
                   value: profile.themeIsDark,
-                  onChanged: (v) => ref.read(userProfileProvider.notifier).toggleTheme(v),
+                  onChanged: (v) =>
+                      ref.read(userProfileProvider.notifier).toggleTheme(v),
                 ),
                 _SettingsRow(
                   icon: Icons.smart_toy_outlined,
                   iconColor: AppColors.iconTeal,
                   title: 'AI Preferences',
-                  onTap: () => AppSnackBar.show(context, 'AI preferences coming soon.'),
+                  onTap: () =>
+                      AppSnackBar.show(context, 'AI preferences coming soon.'),
                 ),
               ],
             ),
 
-          /*  const SizedBox(height: 20),
+            /*  const SizedBox(height: 20),
             _SettingsGroupLabel(label: 'SKILLS'),
             _SettingsGroup(
               children: [
@@ -213,15 +215,16 @@ class ProfileScreen extends ConsumerWidget {
                 ),
               ],
             ),
-
             const SizedBox(height: 24),
             Center(
               child: TextButton.icon(
                 onPressed: () => _confirmSignOut(context, ref),
-                icon: Icon(Icons.logout_rounded, color: AppColors.danger.withValues(alpha: 0.7), size: 18),
+                icon: Icon(Icons.logout_rounded,
+                    color: AppColors.danger.withValues(alpha: 0.7), size: 18),
                 label: Text(
                   'Log Out',
-                  style: TextStyle(color: AppColors.danger.withValues(alpha: 0.7)),
+                  style:
+                      TextStyle(color: AppColors.danger.withValues(alpha: 0.7)),
                 ),
               ),
             ),
@@ -264,8 +267,8 @@ class _ProfileHeaderCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: AppColors.heroGradient,
+        gradient: LinearGradient(
+          colors: context.heroGradient,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -289,7 +292,8 @@ class _ProfileHeaderCard extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: Colors.white24,
                 ),
-                child: ProfileAvatar(photoUrl: photoUrl, name: name, radius: 40),
+                child:
+                    ProfileAvatar(photoUrl: photoUrl, name: name, radius: 40),
               ),
               Positioned(
                 bottom: -2,
@@ -302,7 +306,8 @@ class _ProfileHeaderCard extends StatelessWidget {
                     onTap: onEdit,
                     child: const Padding(
                       padding: EdgeInsets.all(7),
-                      child: Icon(Icons.edit_outlined, color: Colors.white, size: 16),
+                      child: Icon(Icons.edit_outlined,
+                          color: Colors.white, size: 16),
                     ),
                   ),
                 ),
@@ -316,7 +321,8 @@ class _ProfileHeaderCard extends StatelessWidget {
               Flexible(
                 child: Text(
                   name,
-                  style: theme.textTheme.headlineSmall?.copyWith(color: Colors.white),
+                  style: theme.textTheme.headlineSmall
+                      ?.copyWith(color: Colors.white),
                   textAlign: TextAlign.center,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -337,7 +343,8 @@ class _ProfileHeaderCard extends StatelessWidget {
             ),
             child: Text(
               levelLabel,
-              style: theme.textTheme.labelSmall?.copyWith(color: AppColors.textOnBrand),
+              style: theme.textTheme.labelSmall
+                  ?.copyWith(color: context.textOnBrand),
             ),
           ),
           const SizedBox(height: 24),
@@ -420,7 +427,8 @@ class _StatBlock extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           label,
-          style: theme.textTheme.labelMedium?.copyWith(color: AppColors.textOnBrandMuted),
+          style: theme.textTheme.labelMedium
+              ?.copyWith(color: context.textOnBrandMuted),
           textAlign: TextAlign.center,
         ),
       ],
@@ -442,7 +450,7 @@ class _SettingsGroupLabel extends StatelessWidget {
         label,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
               letterSpacing: 0.8,
-              color: AppColors.textOnBrandMuted,
+              color: context.textOnBrandMuted,
               fontWeight: FontWeight.w700,
             ),
       ),
@@ -515,7 +523,7 @@ class _SettingsRow extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondaryLight),
+            Icon(Icons.chevron_right_rounded, color: context.textOnBrandMuted),
           ],
         ),
       ),

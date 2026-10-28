@@ -20,12 +20,15 @@ class SectionHeader extends StatelessWidget {
       children: [
         Text(
           title,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(color: AppColors.textOnBrand),
+          style: Theme.of(context)
+              .textTheme
+              .titleLarge
+              ?.copyWith(color: context.textOnBrand),
         ),
         if (actionLabel != null)
           TextButton(
             onPressed: onAction,
-            style: TextButton.styleFrom(foregroundColor: AppColors.textOnBrand),
+            style: TextButton.styleFrom(foregroundColor: context.textOnBrand),
             child: Text(actionLabel!),
           ),
       ],

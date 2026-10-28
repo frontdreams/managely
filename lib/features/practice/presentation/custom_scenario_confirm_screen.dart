@@ -67,12 +67,14 @@ class _CustomScenarioConfirmScreenState
 
     final time = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.fromDateTime(_scheduledAt ?? now.add(const Duration(hours: 1))),
+      initialTime: TimeOfDay.fromDateTime(
+          _scheduledAt ?? now.add(const Duration(hours: 1))),
     );
     if (time == null) return;
 
     setState(() {
-      _scheduledAt = DateTime(date.year, date.month, date.day, time.hour, time.minute);
+      _scheduledAt =
+          DateTime(date.year, date.month, date.day, time.hour, time.minute);
     });
   }
 
@@ -93,7 +95,9 @@ class _CustomScenarioConfirmScreenState
 
     if (_isRealLife && _scheduledAt == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pick a date and time for the real conversation first.')),
+        const SnackBar(
+            content:
+                Text('Pick a date and time for the real conversation first.')),
       );
       return;
     }
@@ -109,7 +113,8 @@ class _CustomScenarioConfirmScreenState
     if (!context.mounted) return;
 
     if (_isRealLife) {
-      ref.read(pendingRealMeetingProvider.notifier).state = PendingRealMeetingDraft(
+      ref.read(pendingRealMeetingProvider.notifier).state =
+          PendingRealMeetingDraft(
         meetingType: _meetingType,
         scheduledAt: _scheduledAt!,
         durationMinutes: _durationMinutes,
@@ -147,7 +152,8 @@ class _CustomScenarioConfirmScreenState
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.auto_awesome_rounded, color: AppColors.primary, size: 18),
+                  const Icon(Icons.auto_awesome_rounded,
+                      color: AppColors.primary, size: 18),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -173,7 +179,8 @@ class _CustomScenarioConfirmScreenState
                       Icon(scenario.category.icon, color: color, size: 18),
                       const SizedBox(width: 8),
                       Text(scenario.category.label,
-                          style: theme.textTheme.labelMedium?.copyWith(color: color)),
+                          style: theme.textTheme.labelMedium
+                              ?.copyWith(color: color)),
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -183,11 +190,14 @@ class _CustomScenarioConfirmScreenState
                     children: [
                       DifficultyStars(filled: scenario.difficulty.stars),
                       const SizedBox(width: 8),
-                      Text(scenario.difficulty.label, style: theme.textTheme.labelMedium),
+                      Text(scenario.difficulty.label,
+                          style: theme.textTheme.labelMedium),
                       const SizedBox(width: 16),
-                      const Icon(Icons.schedule, size: 14, color: AppColors.textSecondaryLight),
+                      Icon(Icons.schedule,
+                          size: 14, color: context.textOnBrandMuted),
                       const SizedBox(width: 4),
-                      Text('${scenario.estimatedMinutes} min', style: theme.textTheme.labelMedium),
+                      Text('${scenario.estimatedMinutes} min',
+                          style: theme.textTheme.labelMedium),
                     ],
                   ),
                   const SizedBox(height: 14),
@@ -196,7 +206,8 @@ class _CustomScenarioConfirmScreenState
                     runSpacing: 8,
                     children: scenario.skillsPractised
                         .map((s) => Chip(
-                              avatar: Icon(s.icon, size: 14, color: skillColor(s)),
+                              avatar:
+                                  Icon(s.icon, size: 14, color: skillColor(s)),
                               label: Text(s.label),
                               backgroundColor: skillColor(s).withOpacity(0.12),
                               labelStyle: theme.textTheme.labelMedium
@@ -222,7 +233,8 @@ class _CustomScenarioConfirmScreenState
             const SizedBox(height: 16),
             _InfoBlock(
               title: 'Employee Style',
-              body: '${scenario.employeeName} · ${scenario.employeeRole}\n${scenario.employeePersonality}',
+              body:
+                  '${scenario.employeeName} · ${scenario.employeeRole}\n${scenario.employeePersonality}',
               icon: Icons.person_outline_rounded,
             ),
             const SizedBox(height: 24),
@@ -236,7 +248,8 @@ class _CustomScenarioConfirmScreenState
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.event_available_outlined, size: 20, color: AppColors.primary),
+                        Icon(Icons.event_available_outlined,
+                            size: 20, color: AppColors.primary),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Column(
@@ -256,7 +269,8 @@ class _CustomScenarioConfirmScreenState
                           value: _isRealLife,
                           onChanged: (v) {
                             setState(() => _isRealLife = v);
-                            if (v) NotificationService.instance.requestPermissions();
+                            if (v)
+                              NotificationService.instance.requestPermissions();
                           },
                         ),
                       ],
@@ -274,10 +288,14 @@ class _CustomScenarioConfirmScreenState
                             selected: selected,
                             onSelected: (_) => setState(() => _meetingType = t),
                             avatar: Icon(t.icon,
-                                size: 16, color: selected ? Colors.white : AppColors.primary),
+                                size: 16,
+                                color: selected
+                                    ? Colors.white
+                                    : AppColors.primary),
                             label: Text(t.label),
                             selectedColor: AppColors.primary,
-                            labelStyle: TextStyle(color: selected ? Colors.white : null),
+                            labelStyle: TextStyle(
+                                color: selected ? Colors.white : null),
                           );
                         }).toList(),
                       ),
@@ -288,20 +306,23 @@ class _CustomScenarioConfirmScreenState
                         onTap: _pickDateTime,
                         borderRadius: BorderRadius.circular(AppTheme.radiusMd),
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 14),
                           decoration: BoxDecoration(
                             border: Border.all(color: AppColors.borderLight),
-                            borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                            borderRadius:
+                                BorderRadius.circular(AppTheme.radiusMd),
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.calendar_today_outlined,
-                                  size: 18, color: AppColors.textSecondaryLight),
+                              Icon(Icons.calendar_today_outlined,
+                                  size: 18, color: context.textOnBrandMuted),
                               const SizedBox(width: 10),
                               Text(
                                 _scheduledAt == null
                                     ? 'Choose date & time'
-                                    : DateFormat('EEE, MMM d · h:mm a').format(_scheduledAt!),
+                                    : DateFormat('EEE, MMM d · h:mm a')
+                                        .format(_scheduledAt!),
                                 style: theme.textTheme.bodyMedium,
                               ),
                             ],
@@ -317,10 +338,12 @@ class _CustomScenarioConfirmScreenState
                           final selected = mins == _durationMinutes;
                           return ChoiceChip(
                             selected: selected,
-                            onSelected: (_) => setState(() => _durationMinutes = mins),
+                            onSelected: (_) =>
+                                setState(() => _durationMinutes = mins),
                             label: Text('$mins min'),
                             selectedColor: AppColors.primary,
-                            labelStyle: TextStyle(color: selected ? Colors.white : null),
+                            labelStyle: TextStyle(
+                                color: selected ? Colors.white : null),
                           );
                         }).toList(),
                       ),
@@ -334,7 +357,8 @@ class _CustomScenarioConfirmScreenState
                         maxLines: 4,
                         textCapitalization: TextCapitalization.sentences,
                         decoration: const InputDecoration(
-                          hintText: 'History, context, what you\'re nervous about...',
+                          hintText:
+                              'History, context, what you\'re nervous about...',
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -357,18 +381,21 @@ class _CustomScenarioConfirmScreenState
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(colors: AppColors.goldGradient),
+                  gradient:
+                      const LinearGradient(colors: AppColors.goldGradient),
                   borderRadius: BorderRadius.circular(AppTheme.radiusMd),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.lock_outline_rounded, color: AppColors.primary, size: 20),
+                    const Icon(Icons.lock_outline_rounded,
+                        color: AppColors.primary, size: 20),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
                         'You\'ve used your ${UserProfile.freeConversationLimitPerCycle} free conversations this month. Upgrade for unlimited practice.',
-                        style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.primary),
+                        style: theme.textTheme.bodyMedium
+                            ?.copyWith(color: AppColors.primary),
                       ),
                     ),
                   ],
@@ -384,7 +411,8 @@ class _CustomScenarioConfirmScreenState
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.shield_outlined, color: AppColors.primary, size: 20),
+                    const Icon(Icons.shield_outlined,
+                        color: AppColors.primary, size: 20),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
@@ -403,7 +431,9 @@ class _CustomScenarioConfirmScreenState
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
           child: ElevatedButton.icon(
             onPressed: () => _start(context, ref),
-            icon: isLocked ? const Icon(Icons.workspace_premium_rounded) : const SizedBox.shrink(),
+            icon: isLocked
+                ? const Icon(Icons.workspace_premium_rounded)
+                : const SizedBox.shrink(),
             label: Text(isLocked ? 'Upgrade to Start' : 'Start Conversation'),
           ),
         ),
@@ -416,7 +446,8 @@ class _InfoBlock extends StatelessWidget {
   final String title;
   final String body;
   final IconData icon;
-  const _InfoBlock({required this.title, required this.body, required this.icon});
+  const _InfoBlock(
+      {required this.title, required this.body, required this.icon});
 
   @override
   Widget build(BuildContext context) {

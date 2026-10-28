@@ -14,7 +14,7 @@ class AuthLogo extends StatelessWidget {
       'assets/icon.png',
       width: size,
       height: size,
-      color: AppColors.textOnBrand,
+      color: context.textOnBrand,
     );
   }
 }
@@ -111,7 +111,7 @@ class AuthTermsNotice extends StatelessWidget {
       style: Theme.of(context)
           .textTheme
           .bodySmall
-          ?.copyWith(color: AppColors.textOnBrandMuted),
+          ?.copyWith(color: context.textOnBrandMuted),
     );
   }
 }
@@ -133,7 +133,7 @@ class AuthOrDivider extends StatelessWidget {
             style: Theme.of(context)
                 .textTheme
                 .labelMedium
-                ?.copyWith(color: AppColors.textOnBrandMuted),
+                ?.copyWith(color: context.textOnBrandMuted),
           ),
         ),
         const Expanded(child: Divider(color: AppColors.borderLight)),

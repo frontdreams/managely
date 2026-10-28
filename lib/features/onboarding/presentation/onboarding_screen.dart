@@ -53,12 +53,14 @@ class OnboardingScreen extends ConsumerWidget {
                 children: [
                   Text(
                     'What matters most to you?',
-                    style: theme.textTheme.headlineSmall?.copyWith(color: AppColors.textOnBrand),
+                    style: theme.textTheme.headlineSmall
+                        ?.copyWith(color: context.textOnBrand),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Drag to rank these in the order you\'d most like to improve. Managely will prioritize scenarios around the top of your list.',
-                    style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.textOnBrandMuted),
+                    style: theme.textTheme.bodyMedium
+                        ?.copyWith(color: context.textOnBrandMuted),
                   ),
                 ],
               ),
@@ -77,7 +79,8 @@ class OnboardingScreen extends ConsumerWidget {
                   return Container(
                     key: ValueKey(skill),
                     margin: const EdgeInsets.only(bottom: 10),
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 12),
                     decoration: BoxDecoration(
                       color: AppColors.surfaceLight,
                       border: Border.all(color: AppColors.borderLight),
@@ -95,7 +98,8 @@ class OnboardingScreen extends ConsumerWidget {
                           ),
                           child: Text(
                             '${index + 1}',
-                            style: theme.textTheme.labelLarge?.copyWith(color: Colors.white),
+                            style: theme.textTheme.labelLarge
+                                ?.copyWith(color: Colors.white),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -104,10 +108,12 @@ class OnboardingScreen extends ConsumerWidget {
                         Expanded(
                           child: Text(
                             _labels[skill] ?? skill.label,
-                            style: theme.textTheme.titleSmall?.copyWith(color: AppColors.textOnBrand),
+                            style: theme.textTheme.titleSmall
+                                ?.copyWith(color: context.textOnBrand),
                           ),
                         ),
-                        const Icon(Icons.drag_handle_rounded, color: AppColors.textSecondaryLight),
+                        Icon(Icons.drag_handle_rounded,
+                            color: context.textOnBrandMuted),
                       ],
                     ),
                   );

@@ -87,7 +87,8 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                       right: 12,
                       child: TextButton(
                         onPressed: _finish,
-                        style: TextButton.styleFrom(foregroundColor: AppColors.textOnBrandMuted),
+                        style: TextButton.styleFrom(
+                            foregroundColor: context.textOnBrandMuted),
                         child: const Text('Skip'),
                       ),
                     ),
@@ -123,7 +124,8 @@ class _IntroContent {
   final Widget illustration;
   final String headline;
   final String body;
-  const _IntroContent({required this.illustration, required this.headline, required this.body});
+  const _IntroContent(
+      {required this.illustration, required this.headline, required this.body});
 }
 
 class _IntroPage extends StatelessWidget {
@@ -142,13 +144,15 @@ class _IntroPage extends StatelessWidget {
           const SizedBox(height: 36),
           Text(
             content.headline,
-            style: theme.textTheme.headlineMedium?.copyWith(color: AppColors.textOnBrand),
+            style: theme.textTheme.headlineMedium
+                ?.copyWith(color: context.textOnBrand),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 14),
           Text(
             content.body,
-            style: theme.textTheme.bodyLarge?.copyWith(color: AppColors.textOnBrandMuted),
+            style: theme.textTheme.bodyLarge
+                ?.copyWith(color: context.textOnBrandMuted),
             textAlign: TextAlign.center,
           ),
         ],

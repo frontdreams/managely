@@ -20,7 +20,8 @@ class EmailVerificationScreen extends ConsumerStatefulWidget {
       _EmailVerificationScreenState();
 }
 
-class _EmailVerificationScreenState extends ConsumerState<EmailVerificationScreen> {
+class _EmailVerificationScreenState
+    extends ConsumerState<EmailVerificationScreen> {
   static const _resendCooldown = Duration(seconds: 60);
 
   final _formKey = GlobalKey<FormState>();
@@ -56,21 +57,24 @@ class _EmailVerificationScreenState extends ConsumerState<EmailVerificationScree
 
   Future<void> _sendCode() async {
     setState(() => _error = null);
-    final ok = await ref.read(emailVerificationControllerProvider.notifier).sendCode();
+    final ok =
+        await ref.read(emailVerificationControllerProvider.notifier).sendCode();
     if (!mounted) return;
     if (ok) {
       _startCooldown();
     } else {
       final error = ref.read(emailVerificationControllerProvider).error;
-      setState(() => _error = error?.toString() ?? 'Couldn\'t send the code. Try again.');
+      setState(() =>
+          _error = error?.toString() ?? 'Couldn\'t send the code. Try again.');
     }
   }
 
   Future<void> _verify() async {
     if (_code.length != 6) return;
     setState(() => _error = null);
-    final ok =
-        await ref.read(emailVerificationControllerProvider.notifier).verifyCode(_code);
+    final ok = await ref
+        .read(emailVerificationControllerProvider.notifier)
+        .verifyCode(_code);
     if (!mounted) return;
     if (!ok) {
       setState(() => _error = 'That code is incorrect or has expired.');
@@ -86,7 +90,8 @@ class _EmailVerificationScreenState extends ConsumerState<EmailVerificationScree
   Widget build(BuildContext context) {
     final state = ref.watch(emailVerificationControllerProvider);
     final isLoading = state.isLoading;
-    final email = ref.watch(firebaseAuthProvider).currentUser?.email ?? 'your email';
+    final email =
+        ref.watch(firebaseAuthProvider).currentUser?.email ?? 'your email';
 
     return AuthScaffold(
       formKey: _formKey,
@@ -96,7 +101,7 @@ class _EmailVerificationScreenState extends ConsumerState<EmailVerificationScree
           style: Theme.of(context)
               .textTheme
               .headlineMedium
-              ?.copyWith(color: AppColors.textOnBrand),
+              ?.copyWith(color: context.textOnBrand),
         ),
         const SizedBox(height: 6),
         Text(
@@ -104,7 +109,7 @@ class _EmailVerificationScreenState extends ConsumerState<EmailVerificationScree
           style: Theme.of(context)
               .textTheme
               .bodyMedium
-              ?.copyWith(color: AppColors.textOnBrandMuted),
+              ?.copyWith(color: context.textOnBrandMuted),
         ),
         const SizedBox(height: 28),
         if (_error != null) AuthErrorBanner(message: _error!),
@@ -138,11 +143,12 @@ class _EmailVerificationScreenState extends ConsumerState<EmailVerificationScree
                   style: Theme.of(context)
                       .textTheme
                       .bodyMedium
-                      ?.copyWith(color: AppColors.textOnBrandMuted),
+                      ?.copyWith(color: context.textOnBrandMuted),
                 )
               : TextButton(
                   onPressed: isLoading ? null : _sendCode,
-                  style: TextButton.styleFrom(foregroundColor: AppColors.accent),
+                  style:
+                      TextButton.styleFrom(foregroundColor: AppColors.accent),
                   child: const Text('Resend code'),
                 ),
         ),
@@ -150,7 +156,8 @@ class _EmailVerificationScreenState extends ConsumerState<EmailVerificationScree
         Center(
           child: TextButton(
             onPressed: isLoading ? null : _logOut,
-            style: TextButton.styleFrom(foregroundColor: AppColors.textOnBrandMuted),
+            style:
+                TextButton.styleFrom(foregroundColor: context.textOnBrandMuted),
             child: const Text('Wrong email? Log out'),
           ),
         ),
@@ -254,7 +261,8 @@ class _OtpBoxesState extends State<_OtpBoxes> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(AppTheme.radiusSm),
-                  borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+                  borderSide:
+                      const BorderSide(color: AppColors.primary, width: 1.5),
                 ),
               ),
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],

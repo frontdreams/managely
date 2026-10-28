@@ -42,15 +42,18 @@ class ScenarioCard extends StatelessWidget {
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: color.withOpacity(0.12),
-                          borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+                          borderRadius:
+                              BorderRadius.circular(AppTheme.radiusSm),
                         ),
-                        child: Icon(scenario.category.icon, color: color, size: 18),
+                        child: Icon(scenario.category.icon,
+                            color: color, size: 18),
                       ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           scenario.category.label,
-                          style: theme.textTheme.labelMedium?.copyWith(color: color),
+                          style: theme.textTheme.labelMedium
+                              ?.copyWith(color: color),
                         ),
                       ),
                     ],
@@ -67,20 +70,23 @@ class ScenarioCard extends StatelessWidget {
                   const SizedBox(height: 14),
                   Row(
                     children: [
-                      const Icon(Icons.schedule, size: 14, color: AppColors.textSecondaryLight),
+                      Icon(Icons.schedule,
+                          size: 14, color: context.textOnBrandMuted),
                       const SizedBox(width: 4),
                       Text('${scenario.estimatedMinutes} min',
                           style: theme.textTheme.labelMedium),
                       const SizedBox(width: 14),
                       Icon(scenario.primarySkill.icon,
-                          size: 14, color: AppColors.textSecondaryLight),
+                          size: 14, color: context.textOnBrandMuted),
                       const SizedBox(width: 4),
-                      Text(scenario.primarySkill.label, style: theme.textTheme.labelMedium),
+                      Text(scenario.primarySkill.label,
+                          style: theme.textTheme.labelMedium),
                       const SizedBox(width: 14),
-                      const Icon(Icons.bar_chart_rounded,
-                          size: 14, color: AppColors.textSecondaryLight),
+                      Icon(Icons.bar_chart_rounded,
+                          size: 14, color: context.textOnBrandMuted),
                       const SizedBox(width: 4),
-                      Text(scenario.difficulty.label, style: theme.textTheme.labelMedium),
+                      Text(scenario.difficulty.label,
+                          style: theme.textTheme.labelMedium),
                       const Spacer(),
                       Icon(Icons.arrow_forward_rounded, size: 18, color: color),
                     ],
@@ -94,7 +100,8 @@ class ScenarioCard extends StatelessWidget {
           Positioned(
             top: 20,
             right: 20,
-            child: Image.asset('assets/icons/premium.png', width: 20, height: 20),
+            child:
+                Image.asset('assets/icons/premium.png', width: 20, height: 20),
           ),
       ],
     );

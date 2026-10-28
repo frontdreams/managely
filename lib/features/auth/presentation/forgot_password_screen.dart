@@ -11,7 +11,8 @@ class ForgotPasswordScreen extends ConsumerStatefulWidget {
   const ForgotPasswordScreen({super.key});
 
   @override
-  ConsumerState<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+  ConsumerState<ForgotPasswordScreen> createState() =>
+      _ForgotPasswordScreenState();
 }
 
 class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
@@ -47,7 +48,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           style: Theme.of(context)
               .textTheme
               .headlineMedium
-              ?.copyWith(color: AppColors.textOnBrand),
+              ?.copyWith(color: context.textOnBrand),
         ),
         const SizedBox(height: 6),
         Text(
@@ -55,10 +56,11 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           style: Theme.of(context)
               .textTheme
               .bodyMedium
-              ?.copyWith(color: AppColors.textOnBrandMuted),
+              ?.copyWith(color: context.textOnBrandMuted),
         ),
         const SizedBox(height: 28),
-        if (authState.hasError) AuthErrorBanner(message: authState.error.toString()),
+        if (authState.hasError)
+          AuthErrorBanner(message: authState.error.toString()),
         if (_sent)
           Container(
             width: double.infinity,
@@ -79,7 +81,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                     style: Theme.of(context)
                         .textTheme
                         .bodyMedium
-                        ?.copyWith(color: AppColors.textPrimaryLight),
+                        ?.copyWith(color: context.textOnBrand),
                   ),
                 ),
               ],

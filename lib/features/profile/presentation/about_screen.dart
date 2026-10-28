@@ -31,7 +31,8 @@ class AboutScreen extends ConsumerWidget {
     ManagerSkill.assertiveness: _FrameworkNote(
       description:
           'Saying what you need clearly and directly, without either backing down or steamrolling.',
-      framework: 'Grounded in DESC scripting (Bower & Bower assertiveness training).',
+      framework:
+          'Grounded in DESC scripting (Bower & Bower assertiveness training).',
     ),
     ManagerSkill.activeListening: _FrameworkNote(
       description:
@@ -42,7 +43,8 @@ class AboutScreen extends ConsumerWidget {
     ManagerSkill.conflictManagement: _FrameworkNote(
       description:
           'Handling disagreement in a way that resolves it, rather than avoiding or escalating it.',
-      framework: 'Grounded in the Thomas-Kilmann Conflict Mode Instrument (TKI).',
+      framework:
+          'Grounded in the Thomas-Kilmann Conflict Mode Instrument (TKI).',
     ),
     ManagerSkill.boundarySetting: _FrameworkNote(
       description:
@@ -76,30 +78,29 @@ class AboutScreen extends ConsumerWidget {
               const SizedBox(height: 14),
               Text(
                 AppConstants.appName,
-                style: theme.textTheme.headlineSmall?.copyWith(color: AppColors.textOnBrand),
+                style: theme.textTheme.headlineSmall
+                    ?.copyWith(color: context.textOnBrand),
               ),
               const SizedBox(height: 4),
               Text(
                 AppConstants.tagline,
-                style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.textOnBrandMuted),
+                style: theme.textTheme.bodyMedium
+                    ?.copyWith(color: context.textOnBrandMuted),
                 textAlign: TextAlign.center,
               ),
             ],
           ),
           const SizedBox(height: 28),
-
           const _Section(
             title: 'What Managely Does',
             body:
                 'Managely is a practice space for the conversations new managers dread most — difficult feedback, saying no, setting boundaries, handling conflict. You roleplay with an AI "employee" that responds the way a real person would, then get a clear read on how you communicated. Nothing here evaluates or makes decisions about real employees — only your side of the conversation.',
           ),
-
           const _Section(
             title: 'How Scoring Works',
             body:
                 'Your starting scores come from a short situational-judgment assessment — realistic workplace scenarios with answer choices that vary in quality, not a self-rating you fill in yourself (self-ratings are notoriously unreliable; people tend to overrate themselves). From there, every practice conversation nudges your scores based on the same signals: specificity, tone, whether you listened before responding, and how you handled pushback.',
           ),
-
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.all(14),
@@ -110,7 +111,8 @@ class AboutScreen extends ConsumerWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.info_outline_rounded, color: AppColors.accent, size: 18),
+                const Icon(Icons.info_outline_rounded,
+                    color: AppColors.accent, size: 18),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -121,25 +123,26 @@ class AboutScreen extends ConsumerWidget {
               ],
             ),
           ),
-
           const SizedBox(height: 28),
           Text(
             'The Six Skills We Measure',
-            style: theme.textTheme.titleLarge?.copyWith(color: AppColors.textOnBrand),
+            style: theme.textTheme.titleLarge
+                ?.copyWith(color: context.textOnBrand),
           ),
           const SizedBox(height: 4),
           Text(
             'Each is drawn from a different, well-established framework used in real leadership and coaching training.',
-            style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.textOnBrandMuted),
+            style: theme.textTheme.bodyMedium
+                ?.copyWith(color: context.textOnBrandMuted),
           ),
           const SizedBox(height: 16),
-
           Card(
             clipBehavior: Clip.antiAlias,
             child: Column(
               children: [
                 for (final skill in ManagerSkill.values) ...[
-                  _SkillFrameworkTile(skill: skill, note: _frameworkNotes[skill]!),
+                  _SkillFrameworkTile(
+                      skill: skill, note: _frameworkNotes[skill]!),
                   if (skill != ManagerSkill.values.last)
                     Divider(
                       height: 1,
@@ -151,7 +154,6 @@ class AboutScreen extends ConsumerWidget {
               ],
             ),
           ),
-
           const SizedBox(height: 28),
           Container(
             padding: const EdgeInsets.all(18),
@@ -164,26 +166,29 @@ class AboutScreen extends ConsumerWidget {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.verified_user_outlined, color: AppColors.primary),
+                    const Icon(Icons.verified_user_outlined,
+                        color: AppColors.primary),
                     const SizedBox(width: 8),
                     Text('Responsible AI', style: theme.textTheme.titleSmall),
                   ],
                 ),
                 const SizedBox(height: 8),
-                Text(AppConstants.responsibleAiStatement, style: theme.textTheme.bodyMedium),
+                Text(AppConstants.responsibleAiStatement,
+                    style: theme.textTheme.bodyMedium),
               ],
             ),
           ),
-
           const SizedBox(height: 24),
           Center(
             child: Text(
               packageInfo.when(
-                data: (info) => 'Managely · Version ${info.version} (${info.buildNumber})',
+                data: (info) =>
+                    'Managely · Version ${info.version} (${info.buildNumber})',
                 loading: () => 'Managely',
                 error: (_, __) => 'Managely',
               ),
-              style: theme.textTheme.labelMedium?.copyWith(color: AppColors.textOnBrandMuted),
+              style: theme.textTheme.labelMedium
+                  ?.copyWith(color: context.textOnBrandMuted),
             ),
           ),
           const SizedBox(height: 100),
@@ -214,12 +219,14 @@ class _Section extends StatelessWidget {
         children: [
           Text(
             title,
-            style: theme.textTheme.titleLarge?.copyWith(color: AppColors.textOnBrand),
+            style: theme.textTheme.titleLarge
+                ?.copyWith(color: context.textOnBrand),
           ),
           const SizedBox(height: 8),
           Text(
             body,
-            style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.textOnBrandMuted),
+            style: theme.textTheme.bodyMedium
+                ?.copyWith(color: context.textOnBrandMuted),
           ),
         ],
       ),

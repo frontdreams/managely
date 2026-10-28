@@ -28,20 +28,22 @@ class EmptyState extends StatelessWidget {
           Container(
             width: 72,
             height: 72,
-            decoration: const BoxDecoration(
-              color: AppColors.surfaceLight,
+            decoration: BoxDecoration(
+              color: context.surfaceOnBrand,
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: AppColors.textOnBrand, size: 32),
+            child: Icon(icon, color: context.textOnBrand, size: 32),
           ),
           const SizedBox(height: 20),
           Text(title,
-              style: theme.textTheme.titleLarge?.copyWith(color: AppColors.textOnBrand),
+              style: theme.textTheme.titleLarge
+                  ?.copyWith(color: context.textOnBrand),
               textAlign: TextAlign.center),
           const SizedBox(height: 8),
           Text(
             message,
-            style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.textOnBrandMuted),
+            style: theme.textTheme.bodyMedium
+                ?.copyWith(color: context.textOnBrandMuted),
             textAlign: TextAlign.center,
           ),
           if (actionLabel != null) ...[
@@ -49,8 +51,8 @@ class EmptyState extends StatelessWidget {
             OutlinedButton(
               onPressed: onAction,
               style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.textOnBrand,
-                side: const BorderSide(color: AppColors.borderLight),
+                foregroundColor: context.textOnBrand,
+                side: BorderSide(color: context.borderOnBrand),
               ),
               child: Text(actionLabel!),
             ),

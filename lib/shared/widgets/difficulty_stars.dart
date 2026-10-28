@@ -16,7 +16,7 @@ class DifficultyStars extends StatelessWidget {
         return Icon(
           isFilled ? Icons.star_rounded : Icons.star_border_rounded,
           size: size,
-          color: isFilled ? AppColors.warning : AppColors.textSecondaryLight,
+          color: isFilled ? AppColors.warning : context.textOnBrandMuted,
         );
       }),
     );

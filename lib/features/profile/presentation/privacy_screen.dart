@@ -86,12 +86,14 @@ class _Section extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: theme.textTheme.titleSmall?.copyWith(color: AppColors.textOnBrand),
+                  style: theme.textTheme.titleSmall
+                      ?.copyWith(color: context.textOnBrand),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   body,
-                  style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.textOnBrandMuted),
+                  style: theme.textTheme.bodyMedium
+                      ?.copyWith(color: context.textOnBrandMuted),
                 ),
               ],
             ),

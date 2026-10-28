@@ -18,7 +18,8 @@ class AdminPostStoryScreen extends ConsumerStatefulWidget {
   const AdminPostStoryScreen({super.key});
 
   @override
-  ConsumerState<AdminPostStoryScreen> createState() => _AdminPostStoryScreenState();
+  ConsumerState<AdminPostStoryScreen> createState() =>
+      _AdminPostStoryScreenState();
 }
 
 class _AdminPostStoryScreenState extends ConsumerState<AdminPostStoryScreen> {
@@ -88,7 +89,8 @@ class _AdminPostStoryScreenState extends ConsumerState<AdminPostStoryScreen> {
     // empty.
     if (title.isEmpty && body.isEmpty && !hasMedia) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Add a title, description, photo, or video first.')),
+        const SnackBar(
+            content: Text('Add a title, description, photo, or video first.')),
       );
       return;
     }
@@ -151,7 +153,8 @@ class _AdminPostStoryScreenState extends ConsumerState<AdminPostStoryScreen> {
   /// Unlike most of the app's text fields (which use the fully-pill global
   /// input theme), these ones stay a modest rounded-rect so the "Post
   /// Story" button below is the only fully-pill element on this screen.
-  InputDecoration _fieldDecoration({required String labelText, bool alignLabelWithHint = false}) {
+  InputDecoration _fieldDecoration(
+      {required String labelText, bool alignLabelWithHint = false}) {
     final border = OutlineInputBorder(
       borderRadius: BorderRadius.circular(AppTheme.radiusMd),
       borderSide: const BorderSide(color: AppColors.borderLight),
@@ -188,16 +191,20 @@ class _AdminPostStoryScreenState extends ConsumerState<AdminPostStoryScreen> {
                   onTap: () => setState(() => _category = c),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 150),
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 10),
                     decoration: BoxDecoration(
                       color: isSelected ? c.color : c.color.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(AppTheme.radiusPill),
-                      border: Border.all(color: c.color, width: isSelected ? 0 : 1),
+                      border:
+                          Border.all(color: c.color, width: isSelected ? 0 : 1),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(c.icon, size: 16, color: isSelected ? Colors.white : c.color),
+                        Icon(c.icon,
+                            size: 16,
+                            color: isSelected ? Colors.white : c.color),
                         const SizedBox(width: 6),
                         Text(
                           c.label,
@@ -265,13 +272,14 @@ class _AdminPostStoryScreenState extends ConsumerState<AdminPostStoryScreen> {
               const SizedBox(height: 16),
               ClipRRect(
                 borderRadius: BorderRadius.circular(AppTheme.radiusPill),
-                child: LinearProgressIndicator(value: _uploadProgress, minHeight: 6),
+                child: LinearProgressIndicator(
+                    value: _uploadProgress, minHeight: 6),
               ),
               const SizedBox(height: 4),
               Text(
                 'Uploading… ${(_uploadProgress! * 100).round()}%',
                 style: theme.textTheme.labelSmall
-                    ?.copyWith(color: AppColors.textSecondaryLight),
+                    ?.copyWith(color: context.textOnBrandMuted),
               ),
             ],
             const SizedBox(height: 28),
@@ -282,7 +290,8 @@ class _AdminPostStoryScreenState extends ConsumerState<AdminPostStoryScreen> {
                   ? const SizedBox(
                       width: 20,
                       height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.white),
                     )
                   : const Text('Post Story'),
             ),
@@ -319,7 +328,9 @@ class _BackgroundPicker extends StatelessWidget {
                     shape: BoxShape.circle,
                     color: b.color,
                     border: Border.all(
-                      color: isSelected ? AppColors.primary : AppColors.borderLight,
+                      color: isSelected
+                          ? AppColors.primary
+                          : AppColors.borderLight,
                       width: isSelected ? 2.5 : 1,
                     ),
                   ),
@@ -390,7 +401,8 @@ class _MediaPicker extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.videocam_rounded, size: 32, color: AppColors.primary),
+              const Icon(Icons.videocam_rounded,
+                  size: 32, color: AppColors.primary),
               const SizedBox(height: 8),
               Text(
                 pickedVideo!.name,
@@ -483,9 +495,11 @@ class _SettingsTileButton extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, size: 20, color: AppColors.textSecondaryLight),
+            Icon(icon, size: 20, color: context.textOnBrandMuted),
             const SizedBox(width: 12),
-            Expanded(child: Text(label, style: Theme.of(context).textTheme.bodyMedium)),
+            Expanded(
+                child:
+                    Text(label, style: Theme.of(context).textTheme.bodyMedium)),
             if (trailing != null) trailing!,
           ],
         ),

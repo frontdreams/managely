@@ -14,30 +14,40 @@ import '../providers/organization_providers.dart';
 class OrganizationSettingsScreen extends ConsumerWidget {
   const OrganizationSettingsScreen({super.key});
 
-  Future<void> _approve(BuildContext context, WidgetRef ref, String domain, String uid) async {
+  Future<void> _approve(
+      BuildContext context, WidgetRef ref, String domain, String uid) async {
     try {
-      await ref.read(organizationRepositoryProvider).approveMember(domain: domain, uid: uid);
+      await ref
+          .read(organizationRepositoryProvider)
+          .approveMember(domain: domain, uid: uid);
       if (context.mounted) AppSnackBar.show(context, 'Member approved');
     } catch (e) {
       if (context.mounted) AppSnackBar.show(context, e.toString());
     }
   }
 
-  Future<void> _remove(BuildContext context, WidgetRef ref, String domain, String uid) async {
+  Future<void> _remove(
+      BuildContext context, WidgetRef ref, String domain, String uid) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Remove member?'),
         content: const Text("They'll lose Professional access immediately."),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-          ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('Remove')),
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel')),
+          ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Remove')),
         ],
       ),
     );
     if (confirmed != true) return;
     try {
-      await ref.read(organizationRepositoryProvider).removeMember(domain: domain, uid: uid);
+      await ref
+          .read(organizationRepositoryProvider)
+          .removeMember(domain: domain, uid: uid);
       if (context.mounted) AppSnackBar.show(context, 'Member removed');
     } catch (e) {
       if (context.mounted) AppSnackBar.show(context, e.toString());
@@ -60,18 +70,23 @@ class OrganizationSettingsScreen extends ConsumerWidget {
                   _OrgSummaryCard(org: org),
                   const SizedBox(height: 24),
                   membersAsync.when(
-                    loading: () => const Center(child: CircularProgressIndicator()),
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
                     error: (e, _) => Text('Couldn\'t load members: $e'),
                     data: (members) {
-                      final pending = members.where((m) => m.status == OrgMemberStatus.pending).toList();
-                      final approved =
-                          members.where((m) => m.status == OrgMemberStatus.approved).toList();
+                      final pending = members
+                          .where((m) => m.status == OrgMemberStatus.pending)
+                          .toList();
+                      final approved = members
+                          .where((m) => m.status == OrgMemberStatus.approved)
+                          .toList();
 
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           if (pending.isNotEmpty) ...[
-                            _SectionLabel('PENDING APPROVAL (${pending.length})'),
+                            _SectionLabel(
+                                'PENDING APPROVAL (${pending.length})'),
                             const SizedBox(height: 10),
                             Card(
                               clipBehavior: Clip.antiAlias,
@@ -84,16 +99,26 @@ class OrganizationSettingsScreen extends ConsumerWidget {
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           IconButton(
-                                            icon: const Icon(Icons.close_rounded, color: AppColors.danger),
+                                            icon: const Icon(
+                                                Icons.close_rounded,
+                                                color: AppColors.danger),
                                             tooltip: 'Remove',
-                                            onPressed: () =>
-                                                _remove(context, ref, org.domain, pending[i].uid),
+                                            onPressed: () => _remove(
+                                                context,
+                                                ref,
+                                                org.domain,
+                                                pending[i].uid),
                                           ),
                                           IconButton(
-                                            icon: const Icon(Icons.check_rounded, color: AppColors.success),
+                                            icon: const Icon(
+                                                Icons.check_rounded,
+                                                color: AppColors.success),
                                             tooltip: 'Approve',
-                                            onPressed: () =>
-                                                _approve(context, ref, org.domain, pending[i].uid),
+                                            onPressed: () => _approve(
+                                                context,
+                                                ref,
+                                                org.domain,
+                                                pending[i].uid),
                                           ),
                                         ],
                                       ),
@@ -101,14 +126,17 @@ class OrganizationSettingsScreen extends ConsumerWidget {
                                     if (i != pending.length - 1)
                                       Divider(
                                           height: 1,
-                                          color: Theme.of(context).dividerColor.withValues(alpha: 0.6)),
+                                          color: Theme.of(context)
+                                              .dividerColor
+                                              .withValues(alpha: 0.6)),
                                   ],
                                 ],
                               ),
                             ),
                             const SizedBox(height: 24),
                           ],
-                          _SectionLabel('TEAM (${approved.length}${org.seatLimit > 0 ? ' / ${org.seatLimit}' : ''})'),
+                          _SectionLabel(
+                              'TEAM (${approved.length}${org.seatLimit > 0 ? ' / ${org.seatLimit}' : ''})'),
                           const SizedBox(height: 10),
                           if (approved.isEmpty)
                             Text(
@@ -116,7 +144,7 @@ class OrganizationSettingsScreen extends ConsumerWidget {
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyMedium
-                                  ?.copyWith(color: AppColors.textSecondaryLight),
+                                  ?.copyWith(color: context.textOnBrandMuted),
                             )
                           else
                             Card(
@@ -126,23 +154,31 @@ class OrganizationSettingsScreen extends ConsumerWidget {
                                   for (var i = 0; i < approved.length; i++) ...[
                                     _MemberTile(
                                       member: approved[i],
-                                      trailing: approved[i].role == OrgRole.owner
+                                      trailing: approved[i].role ==
+                                              OrgRole.owner
                                           ? const Padding(
-                                              padding: EdgeInsets.only(right: 12),
+                                              padding:
+                                                  EdgeInsets.only(right: 12),
                                               child: Text('Owner'),
                                             )
                                           : IconButton(
-                                              icon: const Icon(Icons.person_remove_outlined,
+                                              icon: const Icon(
+                                                  Icons.person_remove_outlined,
                                                   color: AppColors.danger),
                                               tooltip: 'Remove',
-                                              onPressed: () =>
-                                                  _remove(context, ref, org.domain, approved[i].uid),
+                                              onPressed: () => _remove(
+                                                  context,
+                                                  ref,
+                                                  org.domain,
+                                                  approved[i].uid),
                                             ),
                                     ),
                                     if (i != approved.length - 1)
                                       Divider(
                                           height: 1,
-                                          color: Theme.of(context).dividerColor.withValues(alpha: 0.6)),
+                                          color: Theme.of(context)
+                                              .dividerColor
+                                              .withValues(alpha: 0.6)),
                                   ],
                                 ],
                               ),
@@ -169,7 +205,7 @@ class _SectionLabel extends StatelessWidget {
       style: Theme.of(context)
           .textTheme
           .labelSmall
-          ?.copyWith(color: AppColors.textSecondaryLight, letterSpacing: 0.6),
+          ?.copyWith(color: context.textOnBrandMuted, letterSpacing: 0.6),
     );
   }
 }
@@ -185,8 +221,8 @@ class _OrgSummaryCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: AppColors.heroGradient,
+        gradient: LinearGradient(
+          colors: context.heroGradient,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -195,9 +231,12 @@ class _OrgSummaryCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(org.name, style: theme.textTheme.titleLarge?.copyWith(color: Colors.white)),
+          Text(org.name,
+              style: theme.textTheme.titleLarge?.copyWith(color: Colors.white)),
           const SizedBox(height: 2),
-          Text(org.domain, style: theme.textTheme.bodySmall?.copyWith(color: Colors.white70)),
+          Text(org.domain,
+              style:
+                  theme.textTheme.bodySmall?.copyWith(color: Colors.white70)),
           const SizedBox(height: 14),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
@@ -206,7 +245,9 @@ class _OrgSummaryCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppTheme.radiusPill),
             ),
             child: Text(
-              org.isProfessional ? 'Professional · ${org.seatLimit} seats' : 'Free plan',
+              org.isProfessional
+                  ? 'Professional · ${org.seatLimit} seats'
+                  : 'Free plan',
               style: theme.textTheme.labelMedium?.copyWith(color: Colors.white),
             ),
           ),
@@ -232,7 +273,8 @@ class _MemberTile extends StatelessWidget {
             backgroundColor: AppColors.primaryLight,
             child: Text(
               member.name.isNotEmpty ? member.name[0].toUpperCase() : '?',
-              style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700),
+              style: const TextStyle(
+                  color: AppColors.primary, fontWeight: FontWeight.w700),
             ),
           ),
           const SizedBox(width: 14),
@@ -240,11 +282,14 @@ class _MemberTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(member.name, style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
+                Text(member.name,
+                    style: theme.textTheme.bodyMedium
+                        ?.copyWith(fontWeight: FontWeight.w600)),
                 if (member.email != null)
                   Text(
                     member.email!,
-                    style: theme.textTheme.bodySmall?.copyWith(color: AppColors.textSecondaryLight),
+                    style: theme.textTheme.bodySmall
+                        ?.copyWith(color: context.textOnBrandMuted),
                   ),
               ],
             ),

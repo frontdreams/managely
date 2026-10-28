@@ -139,8 +139,8 @@ class _ProgressHeroCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: AppColors.heroGradient,
+        gradient: LinearGradient(
+          colors: context.heroGradient,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -155,7 +155,8 @@ class _ProgressHeroCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          AnimatedScoreCounter(score: averageScore, color: Colors.white, size: 92),
+          AnimatedScoreCounter(
+              score: averageScore, color: Colors.white, size: 92),
           const SizedBox(width: 20),
           Expanded(
             child: Column(
@@ -163,19 +164,22 @@ class _ProgressHeroCard extends StatelessWidget {
               children: [
                 Text(
                   'Overall Score',
-                  style: theme.textTheme.titleMedium?.copyWith(color: Colors.white),
+                  style: theme.textTheme.titleMedium
+                      ?.copyWith(color: Colors.white),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   totalConversations > 0
                       ? 'Averaged across $totalConversations conversations.'
                       : 'Complete a scenario to start tracking your score.',
-                  style: theme.textTheme.bodySmall?.copyWith(color: Colors.white70),
+                  style: theme.textTheme.bodySmall
+                      ?.copyWith(color: Colors.white70),
                 ),
                 if (currentStreak > 0) ...[
                   const SizedBox(height: 10),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.16),
                       borderRadius: BorderRadius.circular(AppTheme.radiusPill),
@@ -187,7 +191,8 @@ class _ProgressHeroCard extends StatelessWidget {
                         const SizedBox(width: 5),
                         Text(
                           '$currentStreak day streak',
-                          style: theme.textTheme.labelSmall?.copyWith(color: Colors.white),
+                          style: theme.textTheme.labelSmall
+                              ?.copyWith(color: Colors.white),
                         ),
                       ],
                     ),
@@ -236,7 +241,10 @@ class _StatCard extends StatelessWidget {
             ),
             const Spacer(),
             Text(value, style: theme.textTheme.headlineSmall),
-            Text(label, style: theme.textTheme.labelMedium, maxLines: 1, overflow: TextOverflow.ellipsis),
+            Text(label,
+                style: theme.textTheme.labelMedium,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis),
           ],
         ),
       ),

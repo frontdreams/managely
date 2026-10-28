@@ -146,7 +146,8 @@ class _EvaluationScreenState extends ConsumerState<EvaluationScreen> {
 
     final state = ref.watch(conversationProvider);
 
-    if (state.status == ConversationStatus.evaluating || state.evaluation == null) {
+    if (state.status == ConversationStatus.evaluating ||
+        state.evaluation == null) {
       return Scaffold(
         body: SafeArea(
           child: Center(
@@ -157,7 +158,8 @@ class _EvaluationScreenState extends ConsumerState<EvaluationScreen> {
                 const SizedBox(height: 20),
                 Text(
                   'Evaluating your conversation…',
-                  style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.textOnBrandMuted),
+                  style: theme.textTheme.bodyMedium
+                      ?.copyWith(color: context.textOnBrandMuted),
                 ),
               ],
             ),
@@ -230,11 +232,13 @@ class _EvaluationBody extends StatelessWidget {
             Center(
               child: Column(
                 children: [
-                  AnimatedScoreCounter(score: evaluation.overallScore, color: scoreColor),
+                  AnimatedScoreCounter(
+                      score: evaluation.overallScore, color: scoreColor),
                   const SizedBox(height: 10),
                   Text(
                     title,
-                    style: theme.textTheme.titleMedium?.copyWith(color: AppColors.textOnBrand),
+                    style: theme.textTheme.titleMedium
+                        ?.copyWith(color: context.textOnBrand),
                   ),
                   if (evaluation.improvement != null) ...[
                     const SizedBox(height: 10),
@@ -264,7 +268,8 @@ class _EvaluationBody extends StatelessWidget {
                         color: skillColor(s.skill),
                         icon: s.skill.icon,
                       ),
-                      if (s != evaluation.skillScores.last) const SizedBox(height: 16),
+                      if (s != evaluation.skillScores.last)
+                        const SizedBox(height: 16),
                     ],
                   ],
                 ),
@@ -308,7 +313,7 @@ class _EvaluationBody extends StatelessWidget {
             OutlinedButton(
               onPressed: onDone,
               style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.textOnBrand,
+                foregroundColor: context.textOnBrand,
                 side: const BorderSide(color: Colors.white54),
               ),
               child: Text(showLeading ? 'Close' : 'Back to Home'),
@@ -336,7 +341,7 @@ class _GoodLuckCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: AppColors.heroGradient),
+        gradient: LinearGradient(colors: context.heroGradient),
         borderRadius: BorderRadius.circular(AppTheme.radiusLg),
       ),
       child: Column(
@@ -349,7 +354,8 @@ class _GoodLuckCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   'You\'re ready.',
-                  style: theme.textTheme.titleMedium?.copyWith(color: Colors.white),
+                  style: theme.textTheme.titleMedium
+                      ?.copyWith(color: Colors.white),
                 ),
               ),
             ],
@@ -357,7 +363,8 @@ class _GoodLuckCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             'Good luck with your ${draft.meetingType.label.toLowerCase()} on $when. We\'ll check in an hour after so you can log how it actually went.',
-            style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white.withOpacity(0.85)),
+            style: theme.textTheme.bodyMedium
+                ?.copyWith(color: Colors.white.withOpacity(0.85)),
           ),
         ],
       ),
@@ -377,7 +384,8 @@ class _PremiumFeedbackUpsell extends ConsumerWidget {
     final theme = Theme.of(context);
     final profile = ref.watch(userProfileProvider);
     final isOrgMember = profile.isOrgMember;
-    final isPendingOrgMember = isOrgMember && profile.orgMemberStatus == OrgMemberStatus.pending;
+    final isPendingOrgMember =
+        isOrgMember && profile.orgMemberStatus == OrgMemberStatus.pending;
     final tierName = isOrgMember ? 'Professional' : 'Premium';
 
     return Container(
@@ -391,11 +399,13 @@ class _PremiumFeedbackUpsell extends ConsumerWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.workspace_premium_rounded, color: AppColors.primary),
+              const Icon(Icons.workspace_premium_rounded,
+                  color: AppColors.primary),
               const SizedBox(width: 8),
               Text(
                 'Unlock Deeper Feedback',
-                style: theme.textTheme.titleMedium?.copyWith(color: AppColors.primary),
+                style: theme.textTheme.titleMedium
+                    ?.copyWith(color: AppColors.primary),
               ),
             ],
           ),
@@ -408,7 +418,8 @@ class _PremiumFeedbackUpsell extends ConsumerWidget {
                 : 'See exactly what you did well, where the gap was, and what to '
                     'try next time — $tierName members get the full skill-by-skill '
                     'breakdown after every conversation.',
-            style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.primary),
+            style:
+                theme.textTheme.bodyMedium?.copyWith(color: AppColors.primary),
           ),
           const SizedBox(height: 16),
           ElevatedButton(
@@ -417,7 +428,8 @@ class _PremiumFeedbackUpsell extends ConsumerWidget {
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
             ),
-            child: Text(isOrgMember ? 'View Company Plan' : 'Upgrade to Premium'),
+            child:
+                Text(isOrgMember ? 'View Company Plan' : 'Upgrade to Premium'),
           ),
         ],
       ),
@@ -449,12 +461,17 @@ class _ImprovementPill extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(isPositive ? Icons.trending_up_rounded : Icons.trending_down_rounded,
-              size: 16, color: color),
+          Icon(
+              isPositive
+                  ? Icons.trending_up_rounded
+                  : Icons.trending_down_rounded,
+              size: 16,
+              color: color),
           const SizedBox(width: 6),
           Text(
             'Previous $previous → New $current  (${isPositive ? '+' : ''}$improvement)',
-            style: Theme.of(context).textTheme.labelLarge?.copyWith(color: color),
+            style:
+                Theme.of(context).textTheme.labelLarge?.copyWith(color: color),
           ),
         ],
       ),
@@ -502,11 +519,13 @@ class _FeedbackSection extends StatelessWidget {
                         child: Container(
                           width: 5,
                           height: 5,
-                          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+                          decoration: BoxDecoration(
+                              color: color, shape: BoxShape.circle),
                         ),
                       ),
                       const SizedBox(width: 10),
-                      Expanded(child: Text(p, style: theme.textTheme.bodyMedium)),
+                      Expanded(
+                          child: Text(p, style: theme.textTheme.bodyMedium)),
                     ],
                   ),
                 )),

@@ -36,7 +36,8 @@ class PracticeScreen extends ConsumerWidget {
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
               child: Text(
                 'Choose a skill',
-                style: theme.textTheme.titleLarge?.copyWith(color: AppColors.textOnBrand),
+                style: theme.textTheme.titleLarge
+                    ?.copyWith(color: context.textOnBrand),
               ),
             ),
           ),
@@ -51,7 +52,9 @@ class PracticeScreen extends ConsumerWidget {
                     label: 'All',
                     icon: Icons.apps_rounded,
                     selected: selectedCategory == null,
-                    onTap: () => ref.read(selectedCategoryProvider.notifier).state = null,
+                    onTap: () => ref
+                        .read(selectedCategoryProvider.notifier)
+                        .state = null,
                   ),
                   const SizedBox(width: 8),
                   ...SkillCategory.values.map((c) => Padding(
@@ -60,7 +63,9 @@ class PracticeScreen extends ConsumerWidget {
                           label: c.label,
                           icon: c.icon,
                           selected: selectedCategory == c,
-                          onTap: () => ref.read(selectedCategoryProvider.notifier).state = c,
+                          onTap: () => ref
+                              .read(selectedCategoryProvider.notifier)
+                              .state = c,
                         ),
                       )),
                 ],
@@ -73,7 +78,8 @@ class PracticeScreen extends ConsumerWidget {
               child: EmptyState(
                 icon: Icons.search_off_rounded,
                 title: 'No scenarios here yet',
-                message: 'Try a different category to find a scenario to practise.',
+                message:
+                    'Try a different category to find a scenario to practise.',
               ),
             )
           else
@@ -143,7 +149,8 @@ class _CustomScenarioCta extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Practice Your Own Scenario', style: theme.textTheme.titleMedium),
+                  Text('Practice Your Own Scenario',
+                      style: theme.textTheme.titleMedium),
                   const SizedBox(height: 2),
                   Text(
                     'Describe a real situation and we\'ll build it for you.',
@@ -197,13 +204,13 @@ class _CategoryChip extends StatelessWidget {
             Icon(
               icon,
               size: 16,
-              color: selected ? Colors.white : AppColors.textOnBrandMuted,
+              color: selected ? Colors.white : context.textOnBrandMuted,
             ),
             const SizedBox(width: 6),
             Text(
               label,
               style: theme.textTheme.labelLarge?.copyWith(
-                color: selected ? Colors.white : AppColors.textOnBrandMuted,
+                color: selected ? Colors.white : context.textOnBrandMuted,
               ),
             ),
           ],

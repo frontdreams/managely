@@ -53,7 +53,7 @@ class AnimatedScoreCounter extends StatelessWidget {
                     style: Theme.of(context)
                         .textTheme
                         .labelMedium
-                        ?.copyWith(color: AppColors.textOnBrandMuted),
+                        ?.copyWith(color: context.textOnBrandMuted),
                   ),
                 ],
               ),

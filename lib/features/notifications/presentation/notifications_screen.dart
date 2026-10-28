@@ -16,7 +16,8 @@ class NotificationsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final notifications = ref.watch(debriefNotificationsProvider).valueOrNull ?? [];
+    final notifications =
+        ref.watch(debriefNotificationsProvider).valueOrNull ?? [];
     final unread = notifications.where((p) => p.isDebriefDue).toList();
     final read = notifications.where((p) => !p.isDebriefDue).toList();
 
@@ -59,7 +60,7 @@ class _SectionLabel extends StatelessWidget {
         style: Theme.of(context)
             .textTheme
             .labelSmall
-            ?.copyWith(color: AppColors.textSecondaryLight, letterSpacing: 0.6),
+            ?.copyWith(color: context.textOnBrandMuted, letterSpacing: 0.6),
       ),
     );
   }
@@ -96,7 +97,8 @@ class _EmptyNotifications extends StatelessWidget {
             Text(
               'Debrief reminders for your real meetings will show up here.',
               textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.textSecondaryLight),
+              style: theme.textTheme.bodyMedium
+                  ?.copyWith(color: context.textOnBrandMuted),
             ),
           ],
         ),
@@ -121,7 +123,9 @@ class _NotificationGroup extends StatelessWidget {
           for (var i = 0; i < plans.length; i++) ...[
             _NotificationTile(plan: plans[i]),
             if (i != plans.length - 1)
-              Divider(height: 1, color: Theme.of(context).dividerColor.withValues(alpha: 0.6)),
+              Divider(
+                  height: 1,
+                  color: Theme.of(context).dividerColor.withValues(alpha: 0.6)),
           ],
         ],
       ),
@@ -162,7 +166,7 @@ class _NotificationTile extends StatelessWidget {
               ),
               child: Icon(
                 plan.meetingType.icon,
-                color: _isUnread ? AppColors.danger : AppColors.textSecondaryLight,
+                color: _isUnread ? AppColors.danger : context.textOnBrandMuted,
                 size: 20,
               ),
             ),
@@ -177,7 +181,7 @@ class _NotificationTile extends StatelessWidget {
                         : 'You debriefed your ${plan.meetingType.label}',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: _isUnread ? FontWeight.w700 : FontWeight.w500,
-                      color: AppColors.textOnBrand,
+                      color: context.textOnBrand,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -185,12 +189,14 @@ class _NotificationTile extends StatelessWidget {
                     plan.scenarioTitle,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodySmall?.copyWith(color: AppColors.textSecondaryLight),
+                    style: theme.textTheme.bodySmall
+                        ?.copyWith(color: context.textOnBrandMuted),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     DateFormat('EEE, MMM d · h:mm a').format(plan.scheduledAt),
-                    style: theme.textTheme.labelSmall?.copyWith(color: AppColors.textSecondaryLight),
+                    style: theme.textTheme.labelSmall
+                        ?.copyWith(color: context.textOnBrandMuted),
                   ),
                 ],
               ),
@@ -201,12 +207,13 @@ class _NotificationTile extends StatelessWidget {
                     margin: const EdgeInsets.only(top: 4),
                     width: 9,
                     height: 9,
-                    decoration: const BoxDecoration(color: AppColors.danger, shape: BoxShape.circle),
+                    decoration: const BoxDecoration(
+                        color: AppColors.danger, shape: BoxShape.circle),
                   )
-                : const Padding(
-                    padding: EdgeInsets.only(top: 2),
+                : Padding(
+                    padding: const EdgeInsets.only(top: 2),
                     child: Icon(Icons.chevron_right_rounded,
-                        color: AppColors.textSecondaryLight, size: 20),
+                        color: context.textOnBrandMuted, size: 20),
                   ),
           ],
         ),
@@ -218,7 +225,8 @@ class _NotificationTile extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppTheme.radiusLg)),
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(AppTheme.radiusLg)),
       ),
       builder: (sheetContext) => SafeArea(
         child: Padding(
@@ -237,26 +245,30 @@ class _NotificationTile extends StatelessWidget {
                   borderRadius: BorderRadius.circular(AppTheme.radiusPill),
                 ),
               ),
-              Text(plan.scenarioTitle, style: Theme.of(sheetContext).textTheme.titleMedium),
+              Text(plan.scenarioTitle,
+                  style: Theme.of(sheetContext).textTheme.titleMedium),
               const SizedBox(height: 4),
               Text(
                 DateFormat('EEE, MMM d · h:mm a').format(plan.scheduledAt),
                 style: Theme.of(sheetContext)
                     .textTheme
                     .bodySmall
-                    ?.copyWith(color: AppColors.textSecondaryLight),
+                    ?.copyWith(color: context.textOnBrandMuted),
               ),
               const Divider(height: 28),
-              if (plan.outcomeRating != null) _SummaryRow('Outcome', '${plan.outcomeRating}/5'),
+              if (plan.outcomeRating != null)
+                _SummaryRow('Outcome', '${plan.outcomeRating}/5'),
               if (plan.achievedObjective != null)
-                _SummaryRow('Achieved objective', _prettyObjective(plan.achievedObjective!)),
+                _SummaryRow('Achieved objective',
+                    _prettyObjective(plan.achievedObjective!)),
               if (plan.whatWentWell != null && plan.whatWentWell!.isNotEmpty)
                 _SummaryRow('What went well', plan.whatWentWell!),
               if (plan.whatWasHarder != null && plan.whatWasHarder!.isNotEmpty)
                 _SummaryRow('What was harder', plan.whatWasHarder!),
               if (plan.aiComparisonSummary != null) ...[
                 const SizedBox(height: 8),
-                Text(plan.aiComparisonSummary!, style: Theme.of(sheetContext).textTheme.bodyMedium),
+                Text(plan.aiComparisonSummary!,
+                    style: Theme.of(sheetContext).textTheme.bodyMedium),
               ],
             ],
           ),
@@ -296,7 +308,7 @@ class _SummaryRow extends StatelessWidget {
             style: Theme.of(context)
                 .textTheme
                 .labelMedium
-                ?.copyWith(color: AppColors.textSecondaryLight),
+                ?.copyWith(color: context.textOnBrandMuted),
           ),
           const SizedBox(height: 2),
           Text(value, style: Theme.of(context).textTheme.bodyMedium),

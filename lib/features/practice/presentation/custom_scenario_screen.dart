@@ -21,7 +21,8 @@ class CustomScenarioScreen extends ConsumerStatefulWidget {
   const CustomScenarioScreen({super.key});
 
   @override
-  ConsumerState<CustomScenarioScreen> createState() => _CustomScenarioScreenState();
+  ConsumerState<CustomScenarioScreen> createState() =>
+      _CustomScenarioScreenState();
 }
 
 class _CustomScenarioScreenState extends ConsumerState<CustomScenarioScreen> {
@@ -89,37 +90,41 @@ class _CustomScenarioScreenState extends ConsumerState<CustomScenarioScreen> {
                     child: Container(
                       width: 60,
                       height: 60,
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(colors: AppColors.heroGradient),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(colors: context.heroGradient),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 28),
+                      child: const Icon(Icons.auto_awesome_rounded,
+                          color: Colors.white, size: 28),
                     ),
                   ),
                   const SizedBox(height: 14),
                   Text(
                     'Describe your situation',
                     textAlign: TextAlign.center,
-                    style: theme.textTheme.headlineSmall?.copyWith(color: AppColors.textOnBrand),
+                    style: theme.textTheme.headlineSmall
+                        ?.copyWith(color: context.textOnBrand),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'I\'ll turn it into a scenario you can practise.',
                     textAlign: TextAlign.center,
-                    style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.textOnBrandMuted),
+                    style: theme.textTheme.bodyMedium
+                        ?.copyWith(color: context.textOnBrandMuted),
                   ),
                   const SizedBox(height: 18),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.shield_outlined, color: AppColors.textOnBrandMuted, size: 14),
+                      Icon(Icons.shield_outlined,
+                          color: context.textOnBrandMuted, size: 14),
                       const SizedBox(width: 6),
                       Flexible(
                         child: Text(
                           'Fictional practice only — skip real names.',
                           textAlign: TextAlign.center,
                           style: theme.textTheme.labelSmall
-                              ?.copyWith(color: AppColors.textOnBrandMuted),
+                              ?.copyWith(color: context.textOnBrandMuted),
                         ),
                       ),
                     ],
@@ -127,8 +132,8 @@ class _CustomScenarioScreenState extends ConsumerState<CustomScenarioScreen> {
                   const SizedBox(height: 22),
                   Text(
                     'TRY AN EXAMPLE',
-                    style: theme.textTheme.labelSmall
-                        ?.copyWith(color: AppColors.textOnBrandMuted, letterSpacing: 0.6),
+                    style: theme.textTheme.labelSmall?.copyWith(
+                        color: context.textOnBrandMuted, letterSpacing: 0.6),
                   ),
                   const SizedBox(height: 10),
                   Column(
@@ -138,9 +143,11 @@ class _CustomScenarioScreenState extends ConsumerState<CustomScenarioScreen> {
                           label: _examplePrompts[i],
                           onTap: _isGenerating
                               ? null
-                              : () => setState(() => _controller.text = _examplePrompts[i]),
+                              : () => setState(
+                                  () => _controller.text = _examplePrompts[i]),
                         ),
-                        if (i != _examplePrompts.length - 1) const SizedBox(height: 8),
+                        if (i != _examplePrompts.length - 1)
+                          const SizedBox(height: 8),
                       ],
                     ],
                   ),
@@ -150,18 +157,20 @@ class _CustomScenarioScreenState extends ConsumerState<CustomScenarioScreen> {
                       width: double.infinity,
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Color.alphaBlend(AppColors.danger.withOpacity(0.14), Colors.white),
+                        color: Color.alphaBlend(
+                            AppColors.danger.withOpacity(0.14), Colors.white),
                         borderRadius: BorderRadius.circular(AppTheme.radiusMd),
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.error_outline_rounded, color: AppColors.danger, size: 16),
+                          const Icon(Icons.error_outline_rounded,
+                              color: AppColors.danger, size: 16),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               _errorMessage!,
                               style: theme.textTheme.bodySmall
-                                  ?.copyWith(color: AppColors.textPrimaryLight),
+                                  ?.copyWith(color: context.textOnBrand),
                             ),
                           ),
                         ],
@@ -265,7 +274,8 @@ class _Composer extends StatelessWidget {
                             color: Colors.white,
                           ),
                         )
-                      : const Icon(Icons.arrow_upward_rounded, color: Colors.white),
+                      : const Icon(Icons.arrow_upward_rounded,
+                          color: Colors.white),
                 ),
               ),
             ),
@@ -303,17 +313,18 @@ class _ExampleRow extends StatelessWidget {
           ),
           child: Row(
             children: [
-              const Icon(Icons.chat_bubble_outline_rounded,
-                  size: 16, color: AppColors.textOnBrandMuted),
+              Icon(Icons.chat_bubble_outline_rounded,
+                  size: 16, color: context.textOnBrandMuted),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   label,
-                  style: theme.textTheme.bodySmall?.copyWith(color: AppColors.textOnBrandMuted),
+                  style: theme.textTheme.bodySmall
+                      ?.copyWith(color: context.textOnBrandMuted),
                 ),
               ),
-              const Icon(Icons.chevron_right_rounded,
-                  size: 18, color: AppColors.textOnBrandMuted),
+              Icon(Icons.chevron_right_rounded,
+                  size: 18, color: context.textOnBrandMuted),
             ],
           ),
         ),

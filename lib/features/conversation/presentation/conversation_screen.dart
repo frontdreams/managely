@@ -160,7 +160,8 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('End Conversation?'),
-        content: const Text('You\'ll get feedback on how you communicated so far.'),
+        content:
+            const Text('You\'ll get feedback on how you communicated so far.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -230,7 +231,9 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
     final scenario = state.scenario;
 
     if (scenario == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator(color: AppColors.primary)));
+      return const Scaffold(
+          body: Center(
+              child: CircularProgressIndicator(color: AppColors.primary)));
     }
 
     if (_voiceMode) {
@@ -254,7 +257,7 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: AppColors.bgLight,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         leading: IconButton(
           icon: const Icon(Icons.close_rounded),
           onPressed: _confirmExit,
@@ -274,18 +277,20 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
               style: Theme.of(context)
                   .textTheme
                   .titleMedium
-                  ?.copyWith(color: AppColors.textOnBrand),
+                  ?.copyWith(color: context.textOnBrand),
             ),
             Row(
               children: [
                 DifficultyStars(filled: scenario.difficulty.stars, size: 11),
                 const SizedBox(width: 6),
                 Text(
-                  state.roundNumber > 1 ? 'Round ${state.roundNumber}' : scenario.difficulty.label,
+                  state.roundNumber > 1
+                      ? 'Round ${state.roundNumber}'
+                      : scenario.difficulty.label,
                   style: Theme.of(context)
                       .textTheme
                       .labelMedium
-                      ?.copyWith(color: AppColors.textOnBrandMuted),
+                      ?.copyWith(color: context.textOnBrandMuted),
                 ),
               ],
             ),
@@ -297,13 +302,14 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: const BoxDecoration(
-              color: AppColors.bgLight,
-              border: Border(bottom: BorderSide(color: AppColors.borderLight)),
+            decoration: BoxDecoration(
+              color: Theme.of(context).scaffoldBackgroundColor,
+              border: Border(bottom: BorderSide(color: context.borderOnBrand)),
             ),
             child: Row(
               children: [
-                _EmployeeAvatar(name: scenario.employeeName, color: color, radius: 18),
+                _EmployeeAvatar(
+                    name: scenario.employeeName, color: color, radius: 18),
                 const SizedBox(width: 10),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -313,14 +319,14 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
                       style: Theme.of(context)
                           .textTheme
                           .titleSmall
-                          ?.copyWith(color: AppColors.textOnBrand),
+                          ?.copyWith(color: context.textOnBrand),
                     ),
                     Text(
                       'Employee',
                       style: Theme.of(context)
                           .textTheme
                           .labelMedium
-                          ?.copyWith(color: AppColors.textOnBrandMuted),
+                          ?.copyWith(color: context.textOnBrandMuted),
                     ),
                   ],
                 ),
@@ -334,34 +340,40 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
                 ListView.builder(
                   controller: _scrollController,
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                  itemCount: state.messages.length + (state.isEmployeeTyping ? 1 : 0),
+                  itemCount:
+                      state.messages.length + (state.isEmployeeTyping ? 1 : 0),
                   itemBuilder: (context, i) {
                     if (i == state.messages.length) {
-                      return _TypingBubble(color: color, name: scenario.employeeName);
+                      return _TypingBubble(
+                          color: color, name: scenario.employeeName);
                     }
                     final message = state.messages[i];
-                    return _MessageBubble(message: message, employeeColor: color);
+                    return _MessageBubble(
+                        message: message, employeeColor: color);
                   },
                 ),
               ],
             ),
           ),
-          if (state.status == ConversationStatus.error && state.errorMessage != null)
+          if (state.status == ConversationStatus.error &&
+              state.errorMessage != null)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Color.alphaBlend(AppColors.danger.withOpacity(0.1), Colors.white),
+                  color: Color.alphaBlend(
+                      AppColors.danger.withOpacity(0.1), Colors.white),
                   borderRadius: BorderRadius.circular(AppTheme.radiusSm),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.error_outline_rounded, color: AppColors.danger, size: 18),
+                    const Icon(Icons.error_outline_rounded,
+                        color: AppColors.danger, size: 18),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: Text(state.errorMessage!,
-                          style: Theme.of(context).textTheme.bodyMedium)),
+                        child: Text(state.errorMessage!,
+                            style: Theme.of(context).textTheme.bodyMedium)),
                   ],
                 ),
               ),
@@ -383,13 +395,17 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
                             // horizontal padding and the mic suffix icon —
                             // needed to measure how many lines the current
                             // text wraps to.
-                            final lineCount = _inputLineCount(constraints.maxWidth - 32 - 48, style);
+                            final lineCount = _inputLineCount(
+                                constraints.maxWidth - 32 - 48, style);
                             return AnimatedContainer(
                               duration: const Duration(milliseconds: 150),
                               curve: Curves.easeOut,
                               decoration: BoxDecoration(
-                                color: Theme.of(context).inputDecorationTheme.fillColor,
-                                borderRadius: BorderRadius.circular(_composerRadiusFor(lineCount)),
+                                color: Theme.of(context)
+                                    .inputDecorationTheme
+                                    .fillColor,
+                                borderRadius: BorderRadius.circular(
+                                    _composerRadiusFor(lineCount)),
                                 border: Border.all(
                                   color: _textFocusNode.hasFocus
                                       ? AppColors.primary
@@ -403,10 +419,12 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
                                 minLines: 1,
                                 maxLines: _composerMaxLines,
                                 style: style,
-                                textCapitalization: TextCapitalization.sentences,
+                                textCapitalization:
+                                    TextCapitalization.sentences,
                                 decoration: InputDecoration(
-                                  hintText:
-                                      _isListening ? 'Listening…' : 'Type your response...',
+                                  hintText: _isListening
+                                      ? 'Listening…'
+                                      : 'Type your response...',
                                   filled: false,
                                   border: InputBorder.none,
                                   enabledBorder: InputBorder.none,
@@ -416,10 +434,11 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
                                   suffixIcon: IconButton(
                                     onPressed: _toggleListening,
                                     icon: _isListening
-                                        ? _SoundWaveIndicator(level: _soundLevel)
-                                        : const Icon(
+                                        ? _SoundWaveIndicator(
+                                            level: _soundLevel)
+                                        : Icon(
                                             Icons.mic_none_rounded,
-                                            color: AppColors.textSecondaryLight,
+                                            color: context.textOnBrandMuted,
                                           ),
                                   ),
                                 ),
@@ -443,10 +462,12 @@ class _ConversationScreenState extends ConsumerState<ConversationScreen> {
                   ),
                   const SizedBox(height: 8),
                   TextButton.icon(
-                    onPressed: state.messages.length > 1 ? _endConversation : null,
+                    onPressed:
+                        state.messages.length > 1 ? _endConversation : null,
                     icon: const Icon(Icons.flag_outlined, size: 18),
                     label: const Text('End Conversation'),
-                    style: TextButton.styleFrom(foregroundColor: AppColors.textOnBrandMuted),
+                    style: TextButton.styleFrom(
+                        foregroundColor: context.textOnBrandMuted),
                   ),
                 ],
               ),
@@ -508,7 +529,8 @@ class _EmployeeAvatar extends StatelessWidget {
   final Color color;
   final double radius;
 
-  const _EmployeeAvatar({required this.name, required this.color, required this.radius});
+  const _EmployeeAvatar(
+      {required this.name, required this.color, required this.radius});
 
   @override
   Widget build(BuildContext context) {
@@ -586,7 +608,8 @@ class _DoodlePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _DoodlePainter oldDelegate) => oldDelegate.color != color;
+  bool shouldRepaint(covariant _DoodlePainter oldDelegate) =>
+      oldDelegate.color != color;
 }
 
 class _MessageBubble extends StatelessWidget {
@@ -606,18 +629,21 @@ class _MessageBubble extends StatelessWidget {
       curve: Curves.easeOutCubic,
       builder: (context, v, child) => Opacity(
         opacity: v,
-        child: Transform.translate(offset: Offset(0, (1 - v) * 10), child: child),
+        child:
+            Transform.translate(offset: Offset(0, (1 - v) * 10), child: child),
       ),
       child: Align(
         alignment: isManager ? Alignment.centerRight : Alignment.centerLeft,
         child: Container(
           margin: const EdgeInsets.symmetric(vertical: 6),
-          constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.74),
+          constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.74),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
             color: isManager
                 ? AppColors.primary
-                : Color.alphaBlend(employeeColor.withOpacity(0.12), Colors.white),
+                : Color.alphaBlend(
+                    employeeColor.withOpacity(0.12), Colors.white),
             borderRadius: BorderRadius.only(
               topLeft: const Radius.circular(18),
               topRight: const Radius.circular(18),
@@ -628,7 +654,8 @@ class _MessageBubble extends StatelessWidget {
           child: Text(
             message.text,
             style: theme.textTheme.bodyLarge?.copyWith(
-              color: isManager ? Colors.white : theme.textTheme.bodyLarge?.color,
+              color:
+                  isManager ? Colors.white : theme.textTheme.bodyLarge?.color,
             ),
           ),
         ),
@@ -646,7 +673,8 @@ class _TypingBubble extends StatefulWidget {
   State<_TypingBubble> createState() => _TypingBubbleState();
 }
 
-class _TypingBubbleState extends State<_TypingBubble> with SingleTickerProviderStateMixin {
+class _TypingBubbleState extends State<_TypingBubble>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
   @override
@@ -687,7 +715,8 @@ class _TypingBubbleState extends State<_TypingBubble> with SingleTickerProviderS
               mainAxisSize: MainAxisSize.min,
               children: List.generate(3, (i) {
                 final t = (_controller.value + (i * 0.2)) % 1.0;
-                final scale = 0.6 + (0.4 * (1 - (t - 0.5).abs() * 2).clamp(0, 1));
+                final scale =
+                    0.6 + (0.4 * (1 - (t - 0.5).abs() * 2).clamp(0, 1));
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 2),
                   child: Transform.scale(
@@ -695,7 +724,8 @@ class _TypingBubbleState extends State<_TypingBubble> with SingleTickerProviderS
                     child: Container(
                       width: 7,
                       height: 7,
-                      decoration: BoxDecoration(color: widget.color, shape: BoxShape.circle),
+                      decoration: BoxDecoration(
+                          color: widget.color, shape: BoxShape.circle),
                     ),
                   ),
                 );

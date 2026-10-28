@@ -49,12 +49,18 @@ extension StoryCategoryX on StoryCategory {
     }
   }
 
+  // Deliberately the muted "paint box" accents (see AppColors' doc
+  // comment) rather than AppColors.primary/accent — those are both pure
+  // black in this monochrome theme, which tints the icon on the Home
+  // stories tray invisible against its own near-black circle once dark
+  // mode's near-black background is behind it too. These stay visible on
+  // both themes without needing to know which one is active.
   Color get color {
     switch (this) {
       case StoryCategory.announcements:
-        return AppColors.primary;
+        return AppColors.iconBlue;
       case StoryCategory.trends:
-        return AppColors.accent;
+        return AppColors.iconTeal;
       case StoryCategory.insights:
         return AppColors.iconPurple;
       case StoryCategory.offers:
@@ -100,7 +106,8 @@ extension StoryBackgroundX on StoryBackground {
 
   /// Contrasting color for text/icons/chrome shown on top of [color] —
   /// black on the white background, white on grey/black.
-  Color get textColor => this == StoryBackground.white ? Colors.black : Colors.white;
+  Color get textColor =>
+      this == StoryBackground.white ? Colors.black : Colors.white;
 
   static StoryBackground fromName(String? name) {
     return StoryBackground.values.firstWhere(

@@ -32,7 +32,8 @@ class UserManagementScreen extends ConsumerWidget {
           if (users.isEmpty) {
             return const Center(child: Text('No users yet.'));
           }
-          final premiumCount = users.where((u) => u.subscriptionTier == 'premium').length;
+          final premiumCount =
+              users.where((u) => u.subscriptionTier == 'premium').length;
 
           return RefreshIndicator(
             onRefresh: () async => ref.invalidate(adminUsersProvider),
@@ -62,7 +63,8 @@ class _StatsRow extends StatelessWidget {
   final int total;
   final int premium;
   final int free;
-  const _StatsRow({required this.total, required this.premium, required this.free});
+  const _StatsRow(
+      {required this.total, required this.premium, required this.free});
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +75,8 @@ class _StatsRow extends StatelessWidget {
           Expanded(child: _StatChip(label: 'Total', value: '$total')),
           const SizedBox(width: 10),
           Expanded(
-            child: _StatChip(label: 'Premium', value: '$premium', color: AppColors.warning),
+            child: _StatChip(
+                label: 'Premium', value: '$premium', color: AppColors.warning),
           ),
           const SizedBox(width: 10),
           Expanded(child: _StatChip(label: 'Free', value: '$free')),
@@ -103,12 +106,14 @@ class _StatChip extends StatelessWidget {
         children: [
           Text(
             value,
-            style: theme.textTheme.titleLarge?.copyWith(color: color ?? AppColors.primary),
+            style: theme.textTheme.titleLarge
+                ?.copyWith(color: color ?? AppColors.primary),
           ),
           const SizedBox(height: 2),
           Text(
             label,
-            style: theme.textTheme.labelSmall?.copyWith(color: AppColors.textSecondaryLight),
+            style: theme.textTheme.labelSmall
+                ?.copyWith(color: context.textOnBrandMuted),
           ),
         ],
       ),
@@ -141,7 +146,8 @@ class _UserCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ProfileAvatar(photoUrl: user.photoUrl, name: user.name ?? '', radius: 22),
+              ProfileAvatar(
+                  photoUrl: user.photoUrl, name: user.name ?? '', radius: 22),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -151,7 +157,9 @@ class _UserCard extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            (user.name?.isNotEmpty ?? false) ? user.name! : 'Unnamed user',
+                            (user.name?.isNotEmpty ?? false)
+                                ? user.name!
+                                : 'Unnamed user',
                             style: theme.textTheme.titleSmall,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -159,7 +167,8 @@ class _UserCard extends StatelessWidget {
                         ),
                         if (isAdmin) ...[
                           const SizedBox(width: 6),
-                          const Icon(Icons.shield_rounded, size: 15, color: AppColors.primary),
+                          const Icon(Icons.shield_rounded,
+                              size: 15, color: AppColors.primary),
                         ],
                       ],
                     ),
@@ -167,7 +176,7 @@ class _UserCard extends StatelessWidget {
                     Text(
                       user.email ?? 'No email on file',
                       style: theme.textTheme.bodySmall
-                          ?.copyWith(color: AppColors.textSecondaryLight),
+                          ?.copyWith(color: context.textOnBrandMuted),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -177,7 +186,8 @@ class _UserCard extends StatelessWidget {
               const SizedBox(width: 8),
               _TierBadge(isPremium: isPremium),
               const SizedBox(width: 4),
-              const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondaryLight),
+              Icon(Icons.chevron_right_rounded,
+                  color: context.textOnBrandMuted),
             ],
           ),
         ),
@@ -194,7 +204,8 @@ void _showUserDetailSheet(BuildContext context, AdminUserSummary user) {
     isScrollControlled: true,
     backgroundColor: Colors.white,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(AppTheme.radiusLg)),
+      borderRadius:
+          BorderRadius.vertical(top: Radius.circular(AppTheme.radiusLg)),
     ),
     builder: (context) => _UserDetailSheet(user: user),
   );
@@ -232,7 +243,8 @@ class _UserDetailSheet extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ProfileAvatar(photoUrl: user.photoUrl, name: user.name ?? '', radius: 26),
+                ProfileAvatar(
+                    photoUrl: user.photoUrl, name: user.name ?? '', radius: 26),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Column(
@@ -242,7 +254,9 @@ class _UserDetailSheet extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Text(
-                              (user.name?.isNotEmpty ?? false) ? user.name! : 'Unnamed user',
+                              (user.name?.isNotEmpty ?? false)
+                                  ? user.name!
+                                  : 'Unnamed user',
                               style: theme.textTheme.titleMedium,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -250,7 +264,8 @@ class _UserDetailSheet extends StatelessWidget {
                           ),
                           if (isAdmin) ...[
                             const SizedBox(width: 6),
-                            const Icon(Icons.shield_rounded, size: 16, color: AppColors.primary),
+                            const Icon(Icons.shield_rounded,
+                                size: 16, color: AppColors.primary),
                           ],
                         ],
                       ),
@@ -258,7 +273,7 @@ class _UserDetailSheet extends StatelessWidget {
                       Text(
                         user.email ?? 'No email on file',
                         style: theme.textTheme.bodySmall
-                            ?.copyWith(color: AppColors.textSecondaryLight),
+                            ?.copyWith(color: context.textOnBrandMuted),
                       ),
                     ],
                   ),
@@ -271,7 +286,10 @@ class _UserDetailSheet extends StatelessWidget {
             Text('Purchase History', style: theme.textTheme.titleSmall),
             const SizedBox(height: 12),
             if (user.lastEventType != null) ...[
-              _InfoRow(icon: Icons.bolt_rounded, label: 'Last event', value: user.lastEventType!),
+              _InfoRow(
+                  icon: Icons.bolt_rounded,
+                  label: 'Last event',
+                  value: user.lastEventType!),
               if (user.lastProductId != null)
                 _InfoRow(
                   icon: Icons.sell_outlined,
@@ -283,7 +301,8 @@ class _UserDetailSheet extends StatelessWidget {
                   icon: Icons.payments_outlined,
                   label: 'Amount',
                   value:
-                      '${user.lastAmount!.toStringAsFixed(2)} ${user.lastCurrency ?? ''}'.trim(),
+                      '${user.lastAmount!.toStringAsFixed(2)} ${user.lastCurrency ?? ''}'
+                          .trim(),
                 ),
               if (user.lastPurchasedAt != null)
                 _InfoRow(
@@ -298,7 +317,10 @@ class _UserDetailSheet extends StatelessWidget {
                   value: dateFormat.format(user.lastExpirationAt!),
                 ),
               if (user.lastStore != null)
-                _InfoRow(icon: Icons.storefront_outlined, label: 'Store', value: user.lastStore!),
+                _InfoRow(
+                    icon: Icons.storefront_outlined,
+                    label: 'Store',
+                    value: user.lastStore!),
             ] else
               Text('No purchase history.', style: theme.textTheme.bodySmall),
           ],
@@ -318,13 +340,15 @@ class _TierBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: isPremium ? AppColors.warning.withOpacity(0.15) : AppColors.borderLight,
+        color: isPremium
+            ? AppColors.warning.withOpacity(0.15)
+            : AppColors.borderLight,
         borderRadius: BorderRadius.circular(AppTheme.radiusPill),
       ),
       child: Text(
         isPremium ? 'PREMIUM' : 'FREE',
         style: theme.textTheme.labelSmall?.copyWith(
-          color: isPremium ? AppColors.warning : AppColors.textSecondaryLight,
+          color: isPremium ? AppColors.warning : context.textOnBrandMuted,
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -336,7 +360,8 @@ class _InfoRow extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
-  const _InfoRow({required this.icon, required this.label, required this.value});
+  const _InfoRow(
+      {required this.icon, required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -345,12 +370,14 @@ class _InfoRow extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         children: [
-          Icon(icon, size: 14, color: AppColors.textSecondaryLight),
+          Icon(icon, size: 14, color: context.textOnBrandMuted),
           const SizedBox(width: 8),
           Expanded(
             child: Text(label, style: theme.textTheme.bodySmall),
           ),
-          Text(value, style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600)),
+          Text(value,
+              style: theme.textTheme.bodySmall
+                  ?.copyWith(fontWeight: FontWeight.w600)),
         ],
       ),
     );
@@ -368,7 +395,8 @@ class _ErrorState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.error_outline_rounded, color: AppColors.danger, size: 32),
+          const Icon(Icons.error_outline_rounded,
+              color: AppColors.danger, size: 32),
           const SizedBox(height: 12),
           Text(message),
           const SizedBox(height: 12),

@@ -72,7 +72,8 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen>
     await _disposeVideoController();
 
     if (story.videoUrl != null) {
-      final controller = VideoPlayerController.networkUrl(Uri.parse(story.videoUrl!));
+      final controller =
+          VideoPlayerController.networkUrl(Uri.parse(story.videoUrl!));
       _videoController = controller;
       _videoControllerUrl = story.videoUrl;
       await controller.initialize();
@@ -123,7 +124,10 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen>
   void _recordView(String storyId) {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
-    ref.read(storiesRepositoryProvider).recordView(storyId, uid).catchError((_) {});
+    ref
+        .read(storiesRepositoryProvider)
+        .recordView(storyId, uid)
+        .catchError((_) {});
   }
 
   Future<void> _saveImage(String imageUrl) async {
@@ -132,10 +136,13 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen>
       final response = await http.get(Uri.parse(imageUrl));
       if (response.statusCode != 200) throw Exception('Download failed');
       await Gal.putImageBytes(response.bodyBytes, album: 'Managely');
-      if (mounted) messenger.showSnackBar(const SnackBar(content: Text('Saved to gallery.')));
+      if (mounted)
+        messenger
+            .showSnackBar(const SnackBar(content: Text('Saved to gallery.')));
     } catch (_) {
       if (mounted) {
-        messenger.showSnackBar(const SnackBar(content: Text('Couldn\'t save the image.')));
+        messenger.showSnackBar(
+            const SnackBar(content: Text('Couldn\'t save the image.')));
       }
     }
   }
@@ -145,7 +152,8 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen>
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete story?'),
-        content: const Text('This removes it for everyone. This can\'t be undone.'),
+        content:
+            const Text('This removes it for everyone. This can\'t be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -193,9 +201,8 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen>
     // against a white background, matching the story's own text color.
     final chromeColor = hasMedia ? Colors.white : story.background.textColor;
     final isAdmin = ref.watch(userProfileProvider).isAdmin;
-    final hasBottomText =
-        (story.title != null && story.title!.isNotEmpty) ||
-            (story.body != null && story.body!.isNotEmpty);
+    final hasBottomText = (story.title != null && story.title!.isNotEmpty) ||
+        (story.body != null && story.body!.isNotEmpty);
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -206,7 +213,8 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen>
             // big centered text, otherwise a category-tinted gradient.
             Positioned.fill(
               child: story.videoUrl != null
-                  ? (_videoController != null && _videoController!.value.isInitialized
+                  ? (_videoController != null &&
+                          _videoController!.value.isInitialized
                       ? FittedBox(
                           fit: BoxFit.contain,
                           child: SizedBox(
@@ -235,7 +243,10 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen>
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [Colors.black.withOpacity(0.35), Colors.transparent],
+                      colors: [
+                        Colors.black.withOpacity(0.35),
+                        Colors.transparent
+                      ],
                       stops: const [0.0, 0.25],
                     ),
                   ),
@@ -251,7 +262,10 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen>
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [Colors.transparent, Colors.black.withOpacity(0.75)],
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withOpacity(0.75)
+                      ],
                       stops: const [0.55, 1.0],
                     ),
                   ),
@@ -313,7 +327,8 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen>
                           shape: BoxShape.circle,
                           color: widget.category.color,
                         ),
-                        child: Icon(widget.category.icon, color: Colors.white, size: 16),
+                        child: Icon(widget.category.icon,
+                            color: Colors.white, size: 16),
                       ),
                       const SizedBox(width: 10),
                       Expanded(
@@ -322,13 +337,16 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen>
                           children: [
                             Text(
                               widget.category.label,
-                              style: theme.textTheme.titleSmall
-                                  ?.copyWith(color: chromeColor, fontWeight: FontWeight.w700),
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                  color: chromeColor,
+                                  fontWeight: FontWeight.w700),
                             ),
                             Text(
-                              DateFormat.MMMd().add_jm().format(story.createdAt),
-                              style: theme.textTheme.labelSmall
-                                  ?.copyWith(color: chromeColor.withOpacity(0.7)),
+                              DateFormat.MMMd()
+                                  .add_jm()
+                                  .format(story.createdAt),
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                  color: chromeColor.withOpacity(0.7)),
                             ),
                           ],
                         ),
@@ -347,10 +365,12 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen>
                 const Spacer(),
                 if (isAdmin)
                   Padding(
-                    padding: EdgeInsets.only(right: 20, bottom: hasMedia ? 8 : 20),
+                    padding:
+                        EdgeInsets.only(right: 20, bottom: hasMedia ? 8 : 20),
                     child: Align(
                       alignment: Alignment.centerRight,
-                      child: _ViewCountBadge(count: story.viewerCount, color: chromeColor),
+                      child: _ViewCountBadge(
+                          count: story.viewerCount, color: chromeColor),
                     ),
                   ),
                 // Text-only stories show their title/body as the big
@@ -365,14 +385,16 @@ class _StoryViewerScreenState extends ConsumerState<StoryViewerScreen>
                         if (story.title != null && story.title!.isNotEmpty)
                           Text(
                             story.title!,
-                            style: theme.textTheme.headlineSmall?.copyWith(color: Colors.white),
+                            style: theme.textTheme.headlineSmall
+                                ?.copyWith(color: Colors.white),
                           ),
                         if (story.body != null && story.body!.isNotEmpty) ...[
                           if (story.title != null && story.title!.isNotEmpty)
                             const SizedBox(height: 8),
                           Text(
                             story.body!,
-                            style: theme.textTheme.bodyLarge?.copyWith(color: Colors.white),
+                            style: theme.textTheme.bodyLarge
+                                ?.copyWith(color: Colors.white),
                           ),
                         ],
                       ],
@@ -414,7 +436,8 @@ class _StoryMenuButton extends StatelessWidget {
     return PopupMenuButton<_StoryMenuAction>(
       icon: Icon(Icons.more_vert_rounded, color: color),
       color: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.radiusMd)),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppTheme.radiusMd)),
       onSelected: (action) {
         switch (action) {
           case _StoryMenuAction.close:
@@ -459,9 +482,9 @@ class _MenuRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 18, color: color ?? AppColors.textPrimaryLight),
+        Icon(icon, size: 18, color: color ?? context.textOnBrand),
         const SizedBox(width: 10),
-        Text(label, style: TextStyle(color: color ?? AppColors.textPrimaryLight)),
+        Text(label, style: TextStyle(color: color ?? context.textOnBrand)),
       ],
     );
   }
@@ -588,11 +611,15 @@ class _FallbackBackground extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [category.color, Color.alphaBlend(Colors.black26, category.color)],
+          colors: [
+            category.color,
+            Color.alphaBlend(Colors.black26, category.color)
+          ],
         ),
       ),
       child: Center(
-        child: Icon(category.icon, color: Colors.white.withOpacity(0.25), size: 120),
+        child: Icon(category.icon,
+            color: Colors.white.withOpacity(0.25), size: 120),
       ),
     );
   }

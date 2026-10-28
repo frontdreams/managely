@@ -24,11 +24,11 @@ class ConfidenceIllustration extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                _Bar(height: 46, color: AppColors.textOnBrand.withOpacity(0.28)),
+                _Bar(height: 46, color: context.textOnBrand.withOpacity(0.28)),
                 const SizedBox(width: 10),
-                _Bar(height: 74, color: AppColors.textOnBrand.withOpacity(0.5)),
+                _Bar(height: 74, color: context.textOnBrand.withOpacity(0.5)),
                 const SizedBox(width: 10),
-                _Bar(height: 60, color: AppColors.textOnBrand.withOpacity(0.38)),
+                _Bar(height: 60, color: context.textOnBrand.withOpacity(0.38)),
                 const SizedBox(width: 10),
                 const Stack(
                   clipBehavior: Clip.none,
@@ -51,7 +51,8 @@ class ConfidenceIllustration extends StatelessWidget {
           const Positioned(
             top: 6,
             left: 26,
-            child: Icon(Icons.auto_awesome_rounded, color: AppColors.accent, size: 18),
+            child: Icon(Icons.auto_awesome_rounded,
+                color: AppColors.accent, size: 18),
           ),
         ],
       ),
@@ -106,7 +107,7 @@ class ConversationIllustration extends StatelessWidget {
                   width: 6,
                   height: 6,
                   decoration: BoxDecoration(
-                    color: AppColors.textOnBrand.withOpacity(0.6),
+                    color: context.textOnBrand.withOpacity(0.6),
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -135,9 +136,9 @@ class FeedbackIllustration extends StatelessWidget {
             width: 168,
             padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 18),
             decoration: BoxDecoration(
-              color: AppColors.textOnBrand.withOpacity(0.05),
+              color: context.textOnBrand.withOpacity(0.05),
               borderRadius: BorderRadius.circular(22),
-              border: Border.all(color: AppColors.textOnBrand.withOpacity(0.15)),
+              border: Border.all(color: context.textOnBrand.withOpacity(0.15)),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -148,7 +149,8 @@ class FeedbackIllustration extends StatelessWidget {
                     3,
                     (i) => const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 2),
-                      child: Icon(Icons.star_rounded, color: AppColors.accent, size: 22),
+                      child: Icon(Icons.star_rounded,
+                          color: AppColors.accent, size: 22),
                     ),
                   ),
                 ),
@@ -195,7 +197,7 @@ class _Backdrop extends StatelessWidget {
       height: 200,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: AppColors.textOnBrand.withOpacity(0.04),
+        color: context.textOnBrand.withOpacity(0.04),
       ),
     );
   }
@@ -292,7 +294,8 @@ class _Bubble extends StatelessWidget {
         ],
       ),
       child: Row(
-        mainAxisAlignment: alignEnd ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment:
+            alignEnd ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           Icon(icon, color: iconColor, size: 22),
           const SizedBox(width: 8),
@@ -336,7 +339,7 @@ class _SkillLine extends StatelessWidget {
       width: width,
       height: 8,
       decoration: BoxDecoration(
-        color: AppColors.textOnBrand.withOpacity(0.15),
+        color: context.textOnBrand.withOpacity(0.15),
         borderRadius: BorderRadius.circular(4),
       ),
     );

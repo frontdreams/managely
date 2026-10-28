@@ -103,7 +103,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final profile = ref.watch(userProfileProvider);
-    final displayPhoto = _removePhoto ? null : (_stagedPhoto ?? profile.photoUrl);
+    final displayPhoto =
+        _removePhoto ? null : (_stagedPhoto ?? profile.photoUrl);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Edit Profile')),
@@ -130,7 +131,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         decoration: BoxDecoration(
                           color: AppColors.accent,
                           shape: BoxShape.circle,
-                          border: Border.all(color: AppColors.bgLight, width: 3),
+                          border:
+                              Border.all(color: AppColors.bgLight, width: 3),
                         ),
                         child: const Icon(
                           Icons.camera_alt_rounded,
@@ -153,7 +155,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             const SizedBox(height: 24),
             Text(
               'Full name',
-              style: theme.textTheme.labelLarge?.copyWith(color: AppColors.textOnBrand),
+              style: theme.textTheme.labelLarge
+                  ?.copyWith(color: context.textOnBrand),
             ),
             const SizedBox(height: 8),
             TextFormField(
@@ -168,7 +171,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             const SizedBox(height: 24),
             Text(
               'Manager level',
-              style: theme.textTheme.labelLarge?.copyWith(color: AppColors.textOnBrand),
+              style: theme.textTheme.labelLarge
+                  ?.copyWith(color: context.textOnBrand),
             ),
             const SizedBox(height: 8),
             Wrap(
@@ -180,13 +184,16 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   onTap: () => setState(() => _level = level),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
                       color: selected
-                          ? Color.alphaBlend(AppColors.accent.withOpacity(0.22), Colors.white)
+                          ? Color.alphaBlend(
+                              AppColors.accent.withOpacity(0.22), Colors.white)
                           : AppColors.surfaceLight,
                       border: Border.all(
-                        color: selected ? AppColors.accent : AppColors.borderLight,
+                        color:
+                            selected ? AppColors.accent : AppColors.borderLight,
                         width: selected ? 1.5 : 1,
                       ),
                       borderRadius: BorderRadius.circular(AppTheme.radiusPill),
@@ -194,7 +201,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     child: Text(
                       level.label,
                       style: theme.textTheme.labelLarge?.copyWith(
-                        color: selected ? AppColors.primary : AppColors.textOnBrand,
+                        color:
+                            selected ? AppColors.primary : context.textOnBrand,
                       ),
                     ),
                   ),
@@ -247,23 +255,28 @@ class _PhotoActionSheet extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: Text('Update Photo', style: theme.textTheme.headlineSmall),
+                child:
+                    Text('Update Photo', style: theme.textTheme.headlineSmall),
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.photo_camera_outlined, color: AppColors.primary),
+              leading: const Icon(Icons.photo_camera_outlined,
+                  color: AppColors.primary),
               title: const Text('Take Photo'),
               onTap: () => Navigator.of(context).pop(_PhotoAction.camera),
             ),
             ListTile(
-              leading: const Icon(Icons.photo_library_outlined, color: AppColors.primary),
+              leading: const Icon(Icons.photo_library_outlined,
+                  color: AppColors.primary),
               title: const Text('Choose from Gallery'),
               onTap: () => Navigator.of(context).pop(_PhotoAction.gallery),
             ),
             if (showRemove)
               ListTile(
-                leading: const Icon(Icons.delete_outline_rounded, color: AppColors.danger),
-                title: const Text('Remove Photo', style: TextStyle(color: AppColors.danger)),
+                leading: const Icon(Icons.delete_outline_rounded,
+                    color: AppColors.danger),
+                title: const Text('Remove Photo',
+                    style: TextStyle(color: AppColors.danger)),
                 onTap: () => Navigator.of(context).pop(_PhotoAction.remove),
               ),
           ],

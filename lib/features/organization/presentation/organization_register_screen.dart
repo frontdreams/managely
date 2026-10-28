@@ -100,7 +100,7 @@ class _OrganizationRegisterScreenState
           style: Theme.of(context)
               .textTheme
               .headlineMedium
-              ?.copyWith(color: AppColors.textOnBrand),
+              ?.copyWith(color: context.textOnBrand),
         ),
         const SizedBox(height: 6),
         Text(
@@ -108,7 +108,7 @@ class _OrganizationRegisterScreenState
           style: Theme.of(context)
               .textTheme
               .bodyMedium
-              ?.copyWith(color: AppColors.textOnBrandMuted),
+              ?.copyWith(color: context.textOnBrandMuted),
         ),
         const SizedBox(height: 28),
         if (authState.hasError)
@@ -222,7 +222,7 @@ class _OrganizationRegisterScreenState
                 style: Theme.of(context)
                     .textTheme
                     .bodyMedium
-                    ?.copyWith(color: AppColors.textOnBrandMuted),
+                    ?.copyWith(color: context.textOnBrandMuted),
               ),
               TextButton(
                 onPressed: isLoading ? null : () => context.go('/login'),

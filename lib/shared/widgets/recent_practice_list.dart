@@ -81,9 +81,11 @@ class _EdgeChevron extends StatelessWidget {
           border: Border.all(color: Colors.black.withOpacity(0.15)),
         ),
         child: Icon(
-          pointingUp ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
+          pointingUp
+              ? Icons.keyboard_arrow_up_rounded
+              : Icons.keyboard_arrow_down_rounded,
           size: 20,
-          color: AppColors.textOnBrand,
+          color: context.textOnBrand,
         ),
       ),
     );

@@ -74,7 +74,8 @@ class _AppShellState extends State<AppShell> {
       }
     }
     _lastBackPressAt = now;
-    AppSnackBar.show(context, 'Press back again to exit', duration: _exitPromptWindow);
+    AppSnackBar.show(context, 'Press back again to exit',
+        duration: _exitPromptWindow);
   }
 
   void _handleBack() {
@@ -119,8 +120,16 @@ const _navItems = <_NavItemData>[
     selectedIcon: Icons.fitness_center_rounded,
     label: 'Practice'
   ),
-  (icon: Icons.insights_outlined, selectedIcon: Icons.insights_rounded, label: 'Progress'),
-  (icon: Icons.person_outline_rounded, selectedIcon: Icons.person_rounded, label: 'Profile'),
+  (
+    icon: Icons.insights_outlined,
+    selectedIcon: Icons.insights_rounded,
+    label: 'Progress'
+  ),
+  (
+    icon: Icons.person_outline_rounded,
+    selectedIcon: Icons.person_rounded,
+    label: 'Profile'
+  ),
 ];
 
 /// The bottom nav bar actually in use — full-width, opaque white, flush
@@ -138,9 +147,9 @@ class _SolidBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: AppColors.borderLight)),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        border: Border(top: BorderSide(color: context.borderOnBrand)),
       ),
       child: SafeArea(
         top: false,
@@ -247,7 +256,8 @@ class _NavIcon extends StatelessWidget {
   final _NavItemData item;
   final bool selected;
   final VoidCallback onTap;
-  const _NavIcon({required this.item, required this.selected, required this.onTap});
+  const _NavIcon(
+      {required this.item, required this.selected, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -263,12 +273,12 @@ class _NavIcon extends StatelessWidget {
           width: 44,
           height: 44,
           decoration: BoxDecoration(
-            color: selected ? AppColors.primaryLight : Colors.transparent,
+            color: selected ? context.surfaceOnBrand : Colors.transparent,
             borderRadius: BorderRadius.circular(14),
           ),
           child: Icon(
             selected ? item.selectedIcon : item.icon,
-            color: selected ? AppColors.primary : AppColors.textSecondaryLight,
+            color: selected ? context.textOnBrand : context.textOnBrandMuted,
             size: 22,
           ),
         ),
@@ -289,12 +299,12 @@ class _CenterActionButton extends StatelessWidget {
       child: InkWell(
         onTap: onPressed,
         borderRadius: BorderRadius.circular(14),
-        child: const SizedBox(
+        child: SizedBox(
           width: 44,
           height: 44,
           child: Icon(
             Icons.add_rounded,
-            color: AppColors.textSecondaryLight,
+            color: context.textOnBrandMuted,
             size: 22,
           ),
         ),

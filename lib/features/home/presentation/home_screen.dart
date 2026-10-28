@@ -40,7 +40,8 @@ class HomeScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Row(
           children: [
-            Image.asset('assets/icon.png', width: 36, height: 36, color: AppColors.textOnBrand),
+            Image.asset('assets/icon.png',
+                width: 36, height: 36, color: context.textOnBrand),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
@@ -100,7 +101,8 @@ class HomeScreen extends ConsumerWidget {
                     child: _DueDebriefBanner(
                       planId: dueDebriefs.first.id,
                       scenarioTitle: dueDebriefs.first.scenarioTitle,
-                      onTap: () => context.push('/debrief/${dueDebriefs.first.id}'),
+                      onTap: () =>
+                          context.push('/debrief/${dueDebriefs.first.id}'),
                     ),
                   ),
                 ),
@@ -161,12 +163,12 @@ class HomeScreen extends ConsumerWidget {
                         style: Theme.of(context)
                             .textTheme
                             .titleLarge
-                            ?.copyWith(color: AppColors.textOnBrand),
+                            ?.copyWith(color: context.textOnBrand),
                       ),
                       TextButton(
                         onPressed: () => context.go('/progress'),
                         style: TextButton.styleFrom(
-                          foregroundColor: AppColors.textOnBrand,
+                          foregroundColor: context.textOnBrand,
                           padding: EdgeInsets.zero,
                           minimumSize: Size.zero,
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -209,9 +211,11 @@ class HomeScreen extends ConsumerWidget {
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
                                   color: skillColor(weakest).withOpacity(0.12),
-                                  borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                                  borderRadius:
+                                      BorderRadius.circular(AppTheme.radiusMd),
                                 ),
-                                child: Icon(weakest.icon, color: skillColor(weakest)),
+                                child: Icon(weakest.icon,
+                                    color: skillColor(weakest)),
                               ),
                               const SizedBox(width: 14),
                               Expanded(
@@ -219,11 +223,15 @@ class HomeScreen extends ConsumerWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(weakest.label,
-                                        style: Theme.of(context).textTheme.titleMedium),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium),
                                     const SizedBox(height: 2),
                                     Text(
                                       'Focus here for the biggest overall improvement.',
-                                      style: Theme.of(context).textTheme.bodyMedium,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium,
                                     ),
                                   ],
                                 ),
@@ -240,7 +248,8 @@ class HomeScreen extends ConsumerWidget {
                           backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(AppTheme.radiusPill),
+                            borderRadius:
+                                BorderRadius.circular(AppTheme.radiusPill),
                           ),
                         ),
                         child: Text('Practise ${weakest.label}'),
@@ -291,8 +300,8 @@ class _HomeHeroCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: AppColors.heroGradient,
+        gradient: LinearGradient(
+          colors: context.heroGradient,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -319,12 +328,14 @@ class _HomeHeroCard extends StatelessWidget {
                     const SizedBox(height: 10),
                     Text(
                       'Ready to practise?',
-                      style: theme.textTheme.titleLarge?.copyWith(color: Colors.white),
+                      style: theme.textTheme.titleLarge
+                          ?.copyWith(color: Colors.white),
                     ),
                     const SizedBox(height: 3),
                     Text(
                       'Pick a scenario and roleplay with an AI employee.',
-                      style: theme.textTheme.bodySmall?.copyWith(color: Colors.white70),
+                      style: theme.textTheme.bodySmall
+                          ?.copyWith(color: Colors.white70),
                     ),
                   ],
                 ),
@@ -420,20 +431,23 @@ class _ContinuePractisingCard extends StatelessWidget {
                   color: AppColors.iconBlue.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(AppTheme.radiusSm),
                 ),
-                child: const Icon(Icons.replay_rounded, color: AppColors.iconBlue),
+                child:
+                    const Icon(Icons.replay_rounded, color: AppColors.iconBlue),
               ),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Continue Practising', style: theme.textTheme.labelMedium),
+                    Text('Continue Practising',
+                        style: theme.textTheme.labelMedium),
                     const SizedBox(height: 2),
                     Text(scenario.title, style: theme.textTheme.titleMedium),
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondaryLight),
+              Icon(Icons.chevron_right_rounded,
+                  color: context.textOnBrandMuted),
             ],
           ),
         ),
@@ -474,7 +488,8 @@ class _DueDebriefBanner extends StatelessWidget {
                   color: AppColors.iconAmber.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(AppTheme.radiusSm),
                 ),
-                child: const Icon(Icons.rate_review_outlined, color: AppColors.iconAmber),
+                child: const Icon(Icons.rate_review_outlined,
+                    color: AppColors.iconAmber),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -492,7 +507,8 @@ class _DueDebriefBanner extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondaryLight),
+              Icon(Icons.chevron_right_rounded,
+                  color: context.textOnBrandMuted),
             ],
           ),
         ),
@@ -522,7 +538,8 @@ class _RecommendedCard extends StatelessWidget {
           padding: const EdgeInsets.only(bottom: 10, left: 4),
           child: Text(
             'Your ${weakestSkill.label.toLowerCase()} score has room to grow. Try this scenario next.',
-            style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.textOnBrandMuted),
+            style: theme.textTheme.bodyMedium
+                ?.copyWith(color: context.textOnBrandMuted),
           ),
         ),
         ScenarioCard(scenario: scenario, onTap: onTap),
@@ -537,7 +554,8 @@ class _RecommendedCard extends StatelessWidget {
 class _NotificationBellButton extends StatelessWidget {
   final int unreadCount;
   final VoidCallback onTap;
-  const _NotificationBellButton({required this.unreadCount, required this.onTap});
+  const _NotificationBellButton(
+      {required this.unreadCount, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -546,7 +564,7 @@ class _NotificationBellButton extends StatelessWidget {
       icon: Stack(
         clipBehavior: Clip.none,
         children: [
-          const Icon(Icons.notifications_outlined, color: AppColors.textOnBrand),
+          Icon(Icons.notifications_outlined, color: context.textOnBrand),
           if (unreadCount > 0)
             Positioned(
               top: -1,
@@ -557,7 +575,10 @@ class _NotificationBellButton extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: AppColors.danger,
                   shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.bgLight, width: 1.5),
+                  border: Border.all(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    width: 1.5,
+                  ),
                 ),
               ),
             ),

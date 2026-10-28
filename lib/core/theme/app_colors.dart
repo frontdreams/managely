@@ -90,4 +90,54 @@ class AppColors {
     Color(0xFFFAFAFA),
     Color(0xFFE3E3E6),
   ];
+
+  /// Dark-mode counterpart to [heroGradient] — a mid-gray gradient
+  /// instead of near-black, so a hero card still reads as its own surface
+  /// against the dark theme's pure-black scaffold instead of blending
+  /// into it. Still paired with light/white text on top, same as
+  /// [heroGradient]. Pick between the two with [BuildContextThemeX.isDark].
+  static const List<Color> heroGradientDark = [
+    Color(0xFF3A3A3C),
+    Color(0xFF222224),
+  ];
+}
+
+/// Context-aware equivalents of the "on brand/background" neutrals above.
+/// [textOnBrand]/[textOnBrandMuted]/[textSecondaryLight] etc. are plain
+/// `static const` fields, so they can't themselves switch with the
+/// in-app Dark Theme toggle — anywhere outside a `Text` styled straight
+/// from [AppTypography.textTheme] (which already bakes brightness in via
+/// `AppTheme.light`/`AppTheme.dark`) needs one of these instead, or the
+/// text/icon stays the light-mode shade and goes invisible against a dark
+/// background.
+extension BuildContextThemeX on BuildContext {
+  bool get isDark => Theme.of(this).brightness == Brightness.dark;
+
+  /// Primary "on background" text/icon color — use wherever code would
+  /// otherwise reach for the static [AppColors.textOnBrand] or
+  /// [AppColors.textPrimaryLight] outside of light-theme-only code.
+  Color get textOnBrand =>
+      isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
+
+  /// Muted "on background" text/icon color — use wherever code would
+  /// otherwise reach for the static [AppColors.textOnBrandMuted] or
+  /// [AppColors.textSecondaryLight] outside of light-theme-only code.
+  Color get textOnBrandMuted =>
+      isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
+
+  /// A hairline border that's visible against either theme's background —
+  /// use wherever code would otherwise reach for the static
+  /// [AppColors.borderLight] outside of light-theme-only code.
+  Color get borderOnBrand =>
+      isDark ? AppColors.borderDark : AppColors.borderLight;
+
+  /// A faint tinted chip/circle background (e.g. an empty-state icon badge)
+  /// that's visible against either theme — use wherever code would
+  /// otherwise reach for the static [AppColors.primaryLight] or
+  /// [AppColors.surfaceLight] outside of light-theme-only code.
+  Color get surfaceOnBrand =>
+      isDark ? AppColors.surfaceDark : AppColors.surfaceLight;
+
+  List<Color> get heroGradient =>
+      isDark ? AppColors.heroGradientDark : AppColors.heroGradient;
 }

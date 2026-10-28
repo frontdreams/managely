@@ -13,19 +13,19 @@ class SplashScreen extends StatelessWidget {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            const SizedBox(
+            SizedBox(
               width: 220,
               height: 220,
               child: CircularProgressIndicator(
                 strokeWidth: 3,
-                color: AppColors.textOnBrand,
+                color: context.textOnBrand,
               ),
             ),
             Image.asset(
               'assets/icon.png',
               width: 150,
               height: 150,
-              color: AppColors.textOnBrand,
+              color: context.textOnBrand,
             ),
           ],
         ),

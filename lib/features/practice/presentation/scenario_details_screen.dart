@@ -18,7 +18,8 @@ class ScenarioDetailsScreen extends ConsumerWidget {
   final String scenarioId;
   const ScenarioDetailsScreen({super.key, required this.scenarioId});
 
-  Future<void> _start(BuildContext context, WidgetRef ref, Scenario scenario) async {
+  Future<void> _start(
+      BuildContext context, WidgetRef ref, Scenario scenario) async {
     final profile = ref.read(userProfileProvider);
 
     // The baseline Skills Assessment is skippable right after signup, but
@@ -66,7 +67,8 @@ class ScenarioDetailsScreen extends ConsumerWidget {
     final color = skillColor(scenario.primarySkill);
 
     final isLockedByTier = scenario.isPremium && !profile.isPremiumTier;
-    final isLockedByUsage = !isLockedByTier && profile.hasReachedFreeConversationLimit;
+    final isLockedByUsage =
+        !isLockedByTier && profile.hasReachedFreeConversationLimit;
     final isLocked = isLockedByTier || isLockedByUsage;
 
     return Scaffold(
@@ -89,24 +91,30 @@ class ScenarioDetailsScreen extends ConsumerWidget {
                       Icon(scenario.category.icon, color: color, size: 18),
                       const SizedBox(width: 8),
                       Text(scenario.category.label,
-                          style: theme.textTheme.labelMedium?.copyWith(color: color)),
+                          style: theme.textTheme.labelMedium
+                              ?.copyWith(color: color)),
                       if (scenario.isPremium) ...[
                         const Spacer(),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
                           decoration: BoxDecoration(
-                            gradient: const LinearGradient(colors: AppColors.goldGradient),
-                            borderRadius: BorderRadius.circular(AppTheme.radiusPill),
+                            gradient: const LinearGradient(
+                                colors: AppColors.goldGradient),
+                            borderRadius:
+                                BorderRadius.circular(AppTheme.radiusPill),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Image.asset('assets/icons/premium.png',
-                                  width: 12, height: 12, color: AppColors.primary),
+                                  width: 12,
+                                  height: 12,
+                                  color: AppColors.primary),
                               const SizedBox(width: 4),
                               Text('PREMIUM',
-                                  style: theme.textTheme.labelSmall
-                                      ?.copyWith(color: AppColors.primary, fontSize: 10)),
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                      color: AppColors.primary, fontSize: 10)),
                             ],
                           ),
                         ),
@@ -118,11 +126,14 @@ class ScenarioDetailsScreen extends ConsumerWidget {
                   const SizedBox(height: 14),
                   Row(
                     children: [
-                      Text(scenario.difficulty.label, style: theme.textTheme.labelMedium),
+                      Text(scenario.difficulty.label,
+                          style: theme.textTheme.labelMedium),
                       const SizedBox(width: 16),
-                      const Icon(Icons.schedule, size: 14, color: AppColors.textSecondaryLight),
+                      Icon(Icons.schedule,
+                          size: 14, color: context.textOnBrandMuted),
                       const SizedBox(width: 4),
-                      Text('${scenario.estimatedMinutes} min', style: theme.textTheme.labelMedium),
+                      Text('${scenario.estimatedMinutes} min',
+                          style: theme.textTheme.labelMedium),
                     ],
                   ),
                   const SizedBox(height: 14),
@@ -131,7 +142,8 @@ class ScenarioDetailsScreen extends ConsumerWidget {
                     runSpacing: 8,
                     children: scenario.skillsPractised
                         .map((s) => Chip(
-                              avatar: Icon(s.icon, size: 14, color: skillColor(s)),
+                              avatar:
+                                  Icon(s.icon, size: 14, color: skillColor(s)),
                               label: Text(s.label),
                               backgroundColor: skillColor(s).withOpacity(0.12),
                               labelStyle: theme.textTheme.labelMedium
@@ -159,7 +171,8 @@ class ScenarioDetailsScreen extends ConsumerWidget {
             const SizedBox(height: 16),
             _InfoBlock(
               title: 'Employee Style',
-              body: '${scenario.employeeName} · ${scenario.employeeRole}\n${scenario.employeePersonality}',
+              body:
+                  '${scenario.employeeName} · ${scenario.employeeRole}\n${scenario.employeePersonality}',
               icon: Icons.person_outline_rounded,
               color: AppColors.iconPurple,
             ),
@@ -168,7 +181,8 @@ class ScenarioDetailsScreen extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(colors: AppColors.goldGradient),
+                  gradient:
+                      const LinearGradient(colors: AppColors.goldGradient),
                   borderRadius: BorderRadius.circular(AppTheme.radiusMd),
                 ),
                 child: Row(
@@ -180,7 +194,8 @@ class ScenarioDetailsScreen extends ConsumerWidget {
                     Expanded(
                       child: Text(
                         'This is a Premium scenario. Upgrade to unlock it and every advanced scenario.',
-                        style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.primary),
+                        style: theme.textTheme.bodyMedium
+                            ?.copyWith(color: AppColors.primary),
                       ),
                     ),
                   ],
@@ -190,18 +205,21 @@ class ScenarioDetailsScreen extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(colors: AppColors.goldGradient),
+                  gradient:
+                      const LinearGradient(colors: AppColors.goldGradient),
                   borderRadius: BorderRadius.circular(AppTheme.radiusMd),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.lock_outline_rounded, color: AppColors.primary, size: 20),
+                    const Icon(Icons.lock_outline_rounded,
+                        color: AppColors.primary, size: 20),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
                         'You\'ve used your ${UserProfile.freeConversationLimitPerCycle} free conversations this month. Upgrade for unlimited practice.',
-                        style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.primary),
+                        style: theme.textTheme.bodyMedium
+                            ?.copyWith(color: AppColors.primary),
                       ),
                     ),
                   ],
@@ -217,7 +235,8 @@ class ScenarioDetailsScreen extends ConsumerWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.shield_outlined, color: AppColors.primary, size: 20),
+                    const Icon(Icons.shield_outlined,
+                        color: AppColors.primary, size: 20),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
@@ -280,7 +299,10 @@ class _GradientButton extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 label,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AppColors.primary),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium
+                    ?.copyWith(color: AppColors.primary),
               ),
             ],
           ),

@@ -52,7 +52,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           style: Theme.of(context)
               .textTheme
               .headlineMedium
-              ?.copyWith(color: AppColors.textOnBrand),
+              ?.copyWith(color: context.textOnBrand),
         ),
         const SizedBox(height: 6),
         Text(
@@ -60,10 +60,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           style: Theme.of(context)
               .textTheme
               .bodyMedium
-              ?.copyWith(color: AppColors.textOnBrandMuted),
+              ?.copyWith(color: context.textOnBrandMuted),
         ),
         const SizedBox(height: 28),
-        if (authState.hasError) AuthErrorBanner(message: authState.error.toString()),
+        if (authState.hasError)
+          AuthErrorBanner(message: authState.error.toString()),
         TextFormField(
           controller: _emailController,
           keyboardType: TextInputType.emailAddress,
@@ -102,7 +103,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         Align(
           alignment: Alignment.centerRight,
           child: TextButton(
-            onPressed: isLoading ? null : () => context.push('/forgot-password'),
+            onPressed:
+                isLoading ? null : () => context.push('/forgot-password'),
             style: TextButton.styleFrom(foregroundColor: AppColors.accent),
             child: const Text('Forgot password?'),
           ),
@@ -136,7 +138,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 style: Theme.of(context)
                     .textTheme
                     .bodyMedium
-                    ?.copyWith(color: AppColors.textOnBrandMuted),
+                    ?.copyWith(color: context.textOnBrandMuted),
               ),
               TextButton(
                 onPressed: isLoading ? null : () => context.push('/register'),

@@ -61,7 +61,8 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
     // screen's spinners/error text. The actual tier change (and
     // navigating away) is handled by the ref.listen in build() below,
     // once main.dart's listener finishes verifying.
-    _purchaseSub = ref.read(purchaseServiceProvider).purchaseStream.listen((purchases) {
+    _purchaseSub =
+        ref.read(purchaseServiceProvider).purchaseStream.listen((purchases) {
       for (final purchase in purchases) {
         if (purchase.status == PurchaseStatus.restored) {
           _restoreFoundSomething?.complete(true);
@@ -70,7 +71,8 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
           setState(() {
             _isPurchasing = false;
             _isRestoring = false;
-            _errorMessage = purchase.error?.message ?? 'Purchase failed. Please try again.';
+            _errorMessage =
+                purchase.error?.message ?? 'Purchase failed. Please try again.';
           });
         } else if (purchase.status == PurchaseStatus.canceled) {
           if (!mounted) continue;
@@ -164,7 +166,9 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
       context.pop();
       return;
     }
-    await ref.read(userProfileProvider.notifier).setSubscriptionTier(SubscriptionTier.free);
+    await ref
+        .read(userProfileProvider.notifier)
+        .setSubscriptionTier(SubscriptionTier.free);
     if (mounted) context.go('/onboarding');
   }
 
@@ -182,7 +186,8 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
       userProfileProvider.select((p) => p.subscriptionTier),
       (previous, next) {
         if (!_isPurchasing && !_isRestoring) return;
-        if (next == SubscriptionTier.premium || next == SubscriptionTier.professional) {
+        if (next == SubscriptionTier.premium ||
+            next == SubscriptionTier.professional) {
           _onPremiumConfirmed();
         }
       },
@@ -191,14 +196,17 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
     // A company's own employees don't buy anything themselves — only the
     // org owner does, and everyone else just sees their current status.
     if (profile.isOrgMember && !profile.isOrgOwner) {
-      return _OrgMemberStatusView(isUpgradeFlow: widget.isUpgradeFlow, profile: profile);
+      return _OrgMemberStatusView(
+          isUpgradeFlow: widget.isUpgradeFlow, profile: profile);
     }
 
     final isAnnual = _billingPeriod == _BillingPeriod.annual;
     final isBusy = _isPurchasing || _isRestoring;
 
     return Scaffold(
-      appBar: widget.isUpgradeFlow ? AppBar(title: const Text('Manage Subscription')) : null,
+      appBar: widget.isUpgradeFlow
+          ? AppBar(title: const Text('Manage Subscription'))
+          : null,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
@@ -210,7 +218,8 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
                   width: 64,
                   height: 64,
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(colors: AppColors.goldGradient),
+                    gradient:
+                        const LinearGradient(colors: AppColors.goldGradient),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: const Icon(Icons.workspace_premium_rounded,
@@ -219,15 +228,19 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
                 const SizedBox(height: 20),
               ],
               Text(
-                profile.isOrgOwner ? 'Company Subscription' : 'Get the most out of Managely',
-                style: theme.textTheme.headlineMedium?.copyWith(color: AppColors.textOnBrand),
+                profile.isOrgOwner
+                    ? 'Company Subscription'
+                    : 'Get the most out of Managely',
+                style: theme.textTheme.headlineMedium
+                    ?.copyWith(color: context.textOnBrand),
               ),
               const SizedBox(height: 8),
               Text(
                 profile.isOrgOwner
                     ? 'Pick the seat band that fits your team — everyone on ${profile.orgName ?? 'your company'}\'s domain gets Professional access once you upgrade.'
                     : 'Start with Premium, or continue for free — you can change this anytime in your profile.',
-                style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.textOnBrandMuted),
+                style: theme.textTheme.bodyMedium
+                    ?.copyWith(color: context.textOnBrandMuted),
               ),
               const SizedBox(height: 20),
               Expanded(
@@ -240,7 +253,8 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
                       )
                     : _IndividualPlanPicker(
                         billingPeriod: _billingPeriod,
-                        onBillingPeriodChanged: (p) => setState(() => _billingPeriod = p),
+                        onBillingPeriodChanged: (p) =>
+                            setState(() => _billingPeriod = p),
                         isAnnual: isAnnual,
                         isBusy: isBusy,
                         isPurchasing: _isPurchasing,
@@ -250,7 +264,9 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
                         onPurchase: _purchase,
                         onRestore: _restore,
                         onContinueFree: _continueFree,
-                        continueFreeLabel: widget.isUpgradeFlow ? 'Cancel' : 'Continue for Free',
+                        continueFreeLabel: widget.isUpgradeFlow
+                            ? 'Cancel'
+                            : 'Continue for Free',
                       ),
               ),
             ],
@@ -324,7 +340,8 @@ class _IndividualPlanPicker extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (monthly != null && annual != null)
-                _BillingToggle(period: billingPeriod, onChanged: onBillingPeriodChanged),
+                _BillingToggle(
+                    period: billingPeriod, onChanged: onBillingPeriodChanged),
               const SizedBox(height: 20),
               _PlanCard(
                 title: 'Premium',
@@ -345,15 +362,18 @@ class _IndividualPlanPicker extends ConsumerWidget {
                     ? const SizedBox(
                         width: 22,
                         height: 22,
-                        child: CircularProgressIndicator(strokeWidth: 2.5, color: AppColors.primary),
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2.5, color: AppColors.primary),
                       )
-                    : Text(isAnnual ? 'Start Premium — Annual' : 'Start Premium'),
+                    : Text(
+                        isAnnual ? 'Start Premium — Annual' : 'Start Premium'),
               ),
               const SizedBox(height: 10),
               Center(
                 child: TextButton(
                   onPressed: isBusy ? null : onRestore,
-                  style: TextButton.styleFrom(foregroundColor: AppColors.textOnBrandMuted),
+                  style: TextButton.styleFrom(
+                      foregroundColor: context.textOnBrandMuted),
                   child: isRestoring
                       ? const SizedBox(
                           width: 16,
@@ -366,7 +386,8 @@ class _IndividualPlanPicker extends ConsumerWidget {
               Center(
                 child: TextButton(
                   onPressed: isBusy ? null : onContinueFree,
-                  style: TextButton.styleFrom(foregroundColor: AppColors.textOnBrandMuted),
+                  style: TextButton.styleFrom(
+                      foregroundColor: context.textOnBrandMuted),
                   child: Text(continueFreeLabel),
                 ),
               ),
@@ -413,7 +434,9 @@ class _OrgSeatBandPicker extends ConsumerWidget {
               for (final p in products) {
                 if (p.id == e.key) product = p;
               }
-              return product == null ? null : (product: product, seats: e.value);
+              return product == null
+                  ? null
+                  : (product: product, seats: e.value);
             })
             .whereType<({ProductDetails product, int seats})>()
             .toList();
@@ -481,11 +504,13 @@ class _SeatBandCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Up to $seats seats',
-                    style: theme.textTheme.titleMedium?.copyWith(color: AppColors.textOnBrand)),
+                    style: theme.textTheme.titleMedium
+                        ?.copyWith(color: context.textOnBrand)),
                 const SizedBox(height: 2),
                 Text(
                   '$price / month',
-                  style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.textOnBrandMuted),
+                  style: theme.textTheme.bodyMedium
+                      ?.copyWith(color: context.textOnBrandMuted),
                 ),
               ],
             ),
@@ -495,13 +520,15 @@ class _SeatBandCard extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppTheme.radiusPill)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppTheme.radiusPill)),
             ),
             child: isPurchasing
                 ? const SizedBox(
                     width: 18,
                     height: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2, color: Colors.white),
                   )
                 : const Text('Choose'),
           ),
@@ -516,7 +543,8 @@ class _SeatBandCard extends StatelessWidget {
 class _OrgMemberStatusView extends StatelessWidget {
   final bool isUpgradeFlow;
   final UserProfile profile;
-  const _OrgMemberStatusView({required this.isUpgradeFlow, required this.profile});
+  const _OrgMemberStatusView(
+      {required this.isUpgradeFlow, required this.profile});
 
   @override
   Widget build(BuildContext context) {
@@ -534,16 +562,20 @@ class _OrgMemberStatusView extends StatelessWidget {
       icon = Icons.workspace_premium_rounded;
     } else if (isPending) {
       title = 'Waiting for approval';
-      body = 'An admin at ${profile.orgName ?? 'your organization'} needs to approve your account before you get Professional access.';
+      body =
+          'An admin at ${profile.orgName ?? 'your organization'} needs to approve your account before you get Professional access.';
       icon = Icons.hourglass_top_rounded;
     } else {
       title = "Your organization hasn't upgraded yet";
-      body = 'Ask your admin to subscribe ${profile.orgName ?? 'your organization'} to Professional.';
+      body =
+          'Ask your admin to subscribe ${profile.orgName ?? 'your organization'} to Professional.';
       icon = Icons.apartment_outlined;
     }
 
     return Scaffold(
-      appBar: isUpgradeFlow ? AppBar(title: const Text('Company Subscription')) : null,
+      appBar: isUpgradeFlow
+          ? AppBar(title: const Text('Company Subscription'))
+          : null,
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -554,16 +586,20 @@ class _OrgMemberStatusView extends StatelessWidget {
                 Container(
                   width: 64,
                   height: 64,
-                  decoration: const BoxDecoration(color: AppColors.primaryLight, shape: BoxShape.circle),
+                  decoration: const BoxDecoration(
+                      color: AppColors.primaryLight, shape: BoxShape.circle),
                   child: Icon(icon, color: AppColors.primary, size: 30),
                 ),
                 const SizedBox(height: 20),
-                Text(title, textAlign: TextAlign.center, style: theme.textTheme.titleLarge),
+                Text(title,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.titleLarge),
                 const SizedBox(height: 8),
                 Text(
                   body,
                   textAlign: TextAlign.center,
-                  style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.textSecondaryLight),
+                  style: theme.textTheme.bodyMedium
+                      ?.copyWith(color: context.textOnBrandMuted),
                 ),
                 if (isUpgradeFlow) ...[
                   const SizedBox(height: 24),
@@ -595,12 +631,16 @@ class _ErrorBanner extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.error_outline_rounded, color: AppColors.danger, size: 18),
+          const Icon(Icons.error_outline_rounded,
+              color: AppColors.danger, size: 18),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               message,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textOnBrand),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: context.textOnBrand),
             ),
           ),
         ],
@@ -621,18 +661,20 @@ class _OfferingsErrorState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.cloud_off_rounded, color: AppColors.textOnBrandMuted, size: 32),
+          Icon(Icons.cloud_off_rounded,
+              color: context.textOnBrandMuted, size: 32),
           const SizedBox(height: 12),
           Text(
             message,
             textAlign: TextAlign.center,
-            style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.textOnBrandMuted),
+            style: theme.textTheme.bodyMedium
+                ?.copyWith(color: context.textOnBrandMuted),
           ),
           const SizedBox(height: 12),
           OutlinedButton(
             onPressed: onRetry,
             style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.textOnBrand,
+              foregroundColor: context.textOnBrand,
               side: const BorderSide(color: AppColors.borderLight),
             ),
             child: const Text('Try Again'),
@@ -666,8 +708,8 @@ class _PlanCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: AppColors.heroGradient,
+        gradient: LinearGradient(
+          colors: context.heroGradient,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -687,16 +729,19 @@ class _PlanCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(title,
-                  style: theme.textTheme.headlineSmall?.copyWith(color: Colors.white)),
+                  style: theme.textTheme.headlineSmall
+                      ?.copyWith(color: Colors.white)),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: AppColors.accent,
                   borderRadius: BorderRadius.circular(AppTheme.radiusPill),
                 ),
                 child: Text(
                   badge,
-                  style: theme.textTheme.labelSmall?.copyWith(color: Colors.white),
+                  style:
+                      theme.textTheme.labelSmall?.copyWith(color: Colors.white),
                 ),
               ),
             ],
@@ -707,11 +752,13 @@ class _PlanCard extends StatelessWidget {
           Text.rich(
             TextSpan(
               text: price,
-              style: theme.textTheme.headlineMedium?.copyWith(color: Colors.white),
+              style:
+                  theme.textTheme.headlineMedium?.copyWith(color: Colors.white),
               children: [
                 TextSpan(
                   text: period,
-                  style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white.withOpacity(0.8)),
+                  style: theme.textTheme.bodyMedium
+                      ?.copyWith(color: Colors.white.withOpacity(0.8)),
                 ),
               ],
             ),
@@ -721,10 +768,13 @@ class _PlanCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.check_circle_rounded, color: Colors.white, size: 18),
+                const Icon(Icons.check_circle_rounded,
+                    color: Colors.white, size: 18),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: Text(benefit, style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white)),
+                  child: Text(benefit,
+                      style: theme.textTheme.bodyMedium
+                          ?.copyWith(color: Colors.white)),
                 ),
               ],
             ),
@@ -780,7 +830,8 @@ class _BillingOption extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
-  const _BillingOption({required this.label, required this.selected, required this.onTap});
+  const _BillingOption(
+      {required this.label, required this.selected, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -798,7 +849,7 @@ class _BillingOption extends StatelessWidget {
           label,
           textAlign: TextAlign.center,
           style: theme.textTheme.labelLarge?.copyWith(
-            color: selected ? Colors.white : AppColors.textOnBrandMuted,
+            color: selected ? Colors.white : context.textOnBrandMuted,
           ),
         ),
       ),
