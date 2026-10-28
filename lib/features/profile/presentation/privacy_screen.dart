@@ -47,7 +47,55 @@ class PrivacyScreen extends StatelessWidget {
               style: theme.textTheme.bodyMedium,
             ),
           ),
+          const SizedBox(height: 32),
+          Divider(color: context.borderOnBrand),
+          const SizedBox(height: 24),
+          Text(
+            l10n.privacyPolicyHeading,
+            style: theme.textTheme.titleLarge?.copyWith(color: context.textOnBrand),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.privacyPolicyIntro,
+            style: theme.textTheme.bodyMedium?.copyWith(color: context.textOnBrandMuted),
+          ),
+          const SizedBox(height: 20),
+          _PolicyBlock(title: l10n.privacyDataCollectedTitle, body: l10n.privacyDataCollectedBody),
+          _PolicyBlock(title: l10n.privacyDataUseTitle, body: l10n.privacyDataUseBody),
+          _PolicyBlock(title: l10n.privacyDataShareTitle, body: l10n.privacyDataShareBody),
+          _PolicyBlock(title: l10n.privacyRightsTitle, body: l10n.privacyRightsBody),
+          _PolicyBlock(title: l10n.privacyKvkkTitle, body: l10n.privacyKvkkBody),
+          _PolicyBlock(title: l10n.privacyChildrenTitle, body: l10n.privacyChildrenBody),
+          _PolicyBlock(title: l10n.privacyContactTitle, body: l10n.privacyContactBody),
           const SizedBox(height: 100),
+        ],
+      ),
+    );
+  }
+}
+
+class _PolicyBlock extends StatelessWidget {
+  final String title;
+  final String body;
+  const _PolicyBlock({required this.title, required this.body});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: theme.textTheme.titleSmall?.copyWith(color: context.textOnBrand),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            body,
+            style: theme.textTheme.bodyMedium?.copyWith(color: context.textOnBrandMuted),
+          ),
         ],
       ),
     );
