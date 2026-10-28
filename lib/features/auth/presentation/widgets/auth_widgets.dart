@@ -72,12 +72,14 @@ class AuthErrorBanner extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Color.alphaBlend(AppColors.danger.withOpacity(0.12), Colors.white),
+        color:
+            Color.alphaBlend(AppColors.danger.withOpacity(0.12), Colors.white),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         children: [
-          const Icon(Icons.error_outline_rounded, color: AppColors.danger, size: 18),
+          const Icon(Icons.error_outline_rounded,
+              color: AppColors.danger, size: 18),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
@@ -90,6 +92,26 @@ class AuthErrorBanner extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Fine-print shown at the bottom of both sign-up forms (individual and
+/// company) — there's no dedicated Terms of Use/Privacy Policy page to
+/// link to yet, so this is a plain acknowledgement rather than a tappable
+/// link, same as most "by continuing you agree..." sign-up notices.
+class AuthTermsNotice extends StatelessWidget {
+  const AuthTermsNotice({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      'By signing up, you agree to our Privacy Policy and Terms of Use.',
+      textAlign: TextAlign.center,
+      style: Theme.of(context)
+          .textTheme
+          .bodySmall
+          ?.copyWith(color: AppColors.textOnBrandMuted),
     );
   }
 }

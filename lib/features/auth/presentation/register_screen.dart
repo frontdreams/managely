@@ -19,7 +19,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmController = TextEditingController();
   bool _obscure = true;
 
   @override
@@ -27,7 +26,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
-    _confirmController.dispose();
     super.dispose();
   }
 
@@ -69,7 +67,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               ?.copyWith(color: AppColors.textOnBrandMuted),
         ),
         const SizedBox(height: 28),
-        if (authState.hasError) AuthErrorBanner(message: authState.error.toString()),
+        if (authState.hasError)
+          AuthErrorBanner(message: authState.error.toString()),
         TextFormField(
           controller: _nameController,
           textInputAction: TextInputAction.next,
@@ -101,7 +100,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         TextFormField(
           controller: _passwordController,
           obscureText: _obscure,
-          textInputAction: TextInputAction.next,
+          textInputAction: TextInputAction.done,
+          onFieldSubmitted: (_) => _submit(),
           decoration: InputDecoration(
             hintText: 'Password',
             prefixIcon: const Icon(Icons.lock_outline_rounded),
@@ -115,21 +115,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           validator: (v) {
             if (v == null || v.isEmpty) return 'Enter a password';
             if (v.length < 6) return 'At least 6 characters';
-            return null;
-          },
-        ),
-        const SizedBox(height: 14),
-        TextFormField(
-          controller: _confirmController,
-          obscureText: _obscure,
-          textInputAction: TextInputAction.done,
-          onFieldSubmitted: (_) => _submit(),
-          decoration: const InputDecoration(
-            hintText: 'Confirm password',
-            prefixIcon: Icon(Icons.lock_outline_rounded),
-          ),
-          validator: (v) {
-            if (v != _passwordController.text) return 'Passwords do not match';
             return null;
           },
         ),
@@ -155,10 +140,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         const SizedBox(height: 20),
         Center(
           child: TextButton.icon(
-            onPressed: isLoading ? null : () => context.push('/register/organization'),
+            onPressed:
+                isLoading ? null : () => context.push('/register/organization'),
             icon: const Icon(Icons.apartment_outlined, size: 18),
             label: const Text('Create company account'),
-            style: TextButton.styleFrom(foregroundColor: AppColors.textOnBrandMuted),
+            style: TextButton.styleFrom(
+                foregroundColor: AppColors.textOnBrandMuted),
           ),
         ),
         const SizedBox(height: 8),
@@ -186,6 +173,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             ],
           ),
         ),
+        const SizedBox(height: 20),
+        const AuthTermsNotice(),
       ],
     );
   }

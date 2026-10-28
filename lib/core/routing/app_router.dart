@@ -5,6 +5,7 @@ import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/register_screen.dart';
 import '../../features/organization/presentation/organization_register_screen.dart';
 import '../../features/organization/presentation/organization_settings_screen.dart';
+import '../../features/organization/providers/organization_providers.dart';
 import '../../features/auth/presentation/forgot_password_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screen.dart';
 import '../../features/onboarding/presentation/skills_assessment_screen.dart';
@@ -40,7 +41,12 @@ import '../services/service_providers.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
-const _authRoutes = {'/login', '/register', '/register/organization', '/forgot-password'};
+const _authRoutes = {
+  '/login',
+  '/register',
+  '/register/organization',
+  '/forgot-password'
+};
 
 /// Keeps the splash screen on screen for at least this long, even if auth
 /// and onboarding state resolve sooner.
@@ -60,6 +66,7 @@ class _RouterRefreshNotifier extends ChangeNotifier {
     ref.listen(authStateChangesProvider, (_, __) => notifyListeners());
     ref.listen(userProfileProvider, (_, __) => notifyListeners());
     ref.listen(pendingDebriefIdProvider, (_, __) => notifyListeners());
+    ref.listen(orgSetupPendingProvider, (_, __) => notifyListeners());
   }
 }
 
@@ -101,10 +108,21 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return loc == '/splash' ? null : '/splash';
       }
 
+      // A company sign-up is still linking its organization — hold on
+      // splash rather than letting a brand-new, not-yet-org-linked
+      // profile fall through to '/subscription' and flash the individual
+      // Premium picker instead of the company one. See
+      // orgSetupPendingProvider's doc comment.
+      if (ref.read(orgSetupPendingProvider)) {
+        return loc == '/splash' ? null : '/splash';
+      }
+
       // Brand-new (or otherwise not-yet-onboarded) accounts pick a plan,
       // then their focus skills, before reaching the rest of the app.
       if (!profile.onboardingComplete) {
-        return (loc == '/subscription' || loc == '/onboarding') ? null : '/subscription';
+        return (loc == '/subscription' || loc == '/onboarding')
+            ? null
+            : '/subscription';
       }
 
       // A debrief reminder notification was tapped (even from a cold
@@ -197,8 +215,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         // `extra` only survives the one push call and gets lost (crashing
         // this screen) if the router ever rebuilds this route for any
         // other reason, e.g. a redirect re-evaluation.
-        builder: (context, state) =>
-            CustomScenarioConfirmScreen(scenario: ref.read(customScenarioDraftProvider)!),
+        builder: (context, state) => CustomScenarioConfirmScreen(
+            scenario: ref.read(customScenarioDraftProvider)!),
       ),
       GoRoute(
         path: '/notifications',
@@ -213,7 +231,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/upgrade',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const SubscriptionScreen(isUpgradeFlow: true),
+        builder: (context, state) =>
+            const SubscriptionScreen(isUpgradeFlow: true),
       ),
       GoRoute(
         path: '/admin/users',
@@ -259,32 +278,42 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               initialLocation: i == navigationShell.currentIndex,
             ),
             onCreatePressed: () => context.push(
-              ref.read(userProfileProvider).isPremiumTier ? '/custom-scenario' : '/upgrade',
+              ref.read(userProfileProvider).isPremiumTier
+                  ? '/custom-scenario'
+                  : '/upgrade',
             ),
             child: navigationShell,
           );
         },
         branches: [
           StatefulShellBranch(routes: [
-            GoRoute(path: '/home', builder: (context, state) => const HomeScreen()),
+            GoRoute(
+                path: '/home', builder: (context, state) => const HomeScreen()),
           ]),
           StatefulShellBranch(routes: [
-            GoRoute(path: '/practice', builder: (context, state) => const PracticeScreen()),
+            GoRoute(
+                path: '/practice',
+                builder: (context, state) => const PracticeScreen()),
           ]),
           StatefulShellBranch(routes: [
-            GoRoute(path: '/progress', builder: (context, state) => const ProgressScreen()),
+            GoRoute(
+                path: '/progress',
+                builder: (context, state) => const ProgressScreen()),
           ]),
           StatefulShellBranch(routes: [
-            GoRoute(path: '/profile', builder: (context, state) => const ProfileScreen(), routes: [
-              GoRoute(
-                path: 'privacy',
-                builder: (context, state) => const PrivacyScreen(),
-              ),
-              GoRoute(
-                path: 'about',
-                builder: (context, state) => const AboutScreen(),
-              ),
-            ]),
+            GoRoute(
+                path: '/profile',
+                builder: (context, state) => const ProfileScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'privacy',
+                    builder: (context, state) => const PrivacyScreen(),
+                  ),
+                  GoRoute(
+                    path: 'about',
+                    builder: (context, state) => const AboutScreen(),
+                  ),
+                ]),
           ]),
         ],
       ),
@@ -312,8 +341,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/evaluation',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) =>
-            EvaluationScreen(historicalSession: state.extra as PracticeSession?),
+        builder: (context, state) => EvaluationScreen(
+            historicalSession: state.extra as PracticeSession?),
       ),
     ],
   );

@@ -18,10 +18,22 @@ final organizationRepositoryProvider = Provider<OrganizationRepository>((ref) {
   );
 });
 
+/// True for the brief window between a company sign-up's Firebase Auth
+/// account being created and its `createOrJoin` call (+ the profile
+/// refresh that follows) finishing. `userProfileProvider` re-hydrates the
+/// instant auth state changes, seeding a blank, non-org profile before the
+/// backend has had a chance to stamp `orgId`/`orgRole` onto it — without
+/// this flag, the router's redirect (see app_router.dart) would race
+/// straight on to '/subscription' off that stale profile and show the
+/// individual Premium picker instead of the company one. Set by
+/// [OrganizationRegisterScreen._submit].
+final orgSetupPendingProvider = StateProvider<bool>((ref) => false);
+
 /// The signed-in user's own organization, or null for an individual
 /// account. Live — reflects a seat-band purchase or an admin action
 /// (approve/remove) without needing a manual refresh.
-final currentOrganizationProvider = StreamProvider.autoDispose<Organization?>((ref) {
+final currentOrganizationProvider =
+    StreamProvider.autoDispose<Organization?>((ref) {
   final orgId = ref.watch(userProfileProvider.select((p) => p.orgId));
   if (orgId == null) return const Stream.empty();
   return ref.watch(organizationRepositoryProvider).watchOrganization(orgId);

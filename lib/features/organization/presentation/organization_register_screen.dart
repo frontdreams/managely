@@ -23,10 +23,12 @@ class OrganizationRegisterScreen extends ConsumerStatefulWidget {
   const OrganizationRegisterScreen({super.key});
 
   @override
-  ConsumerState<OrganizationRegisterScreen> createState() => _OrganizationRegisterScreenState();
+  ConsumerState<OrganizationRegisterScreen> createState() =>
+      _OrganizationRegisterScreenState();
 }
 
-class _OrganizationRegisterScreenState extends ConsumerState<OrganizationRegisterScreen> {
+class _OrganizationRegisterScreenState
+    extends ConsumerState<OrganizationRegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _companyController = TextEditingController();
   final _nameController = TextEditingController();
@@ -47,29 +49,40 @@ class _OrganizationRegisterScreenState extends ConsumerState<OrganizationRegiste
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final ok = await ref.read(authControllerProvider.notifier).register(
-          _nameController.text,
-          _emailController.text,
-          _passwordController.text,
-        );
-    if (!ok || !mounted) return;
-
-    setState(() => _linkingOrg = true);
+    // Held true until organization linking is fully done — see
+    // orgSetupPendingProvider's doc comment. Without this, the router
+    // redirects to '/subscription' off a brand-new profile that hasn't
+    // been stamped with orgId/orgRole yet, showing the individual Premium
+    // picker instead of the company one. Read/written via `ref`, not
+    // `context`, so it keeps working even after the router moves this
+    // screen off-stage mid-flow (see the `isHydrated` splash hold above
+    // it, which already does this for every sign-up).
+    ref.read(orgSetupPendingProvider.notifier).state = true;
     try {
-      await ref
-          .read(organizationRepositoryProvider)
-          .createOrJoin(companyName: _companyController.text.trim());
-    } catch (e) {
-      if (mounted) {
-        AppSnackBar.show(
-          context,
-          'Your account was created, but setting up the organization failed: $e',
-        );
+      final ok = await ref.read(authControllerProvider.notifier).register(
+            _nameController.text,
+            _emailController.text,
+            _passwordController.text,
+          );
+      if (!ok) return;
+
+      if (mounted) setState(() => _linkingOrg = true);
+      try {
+        await ref
+            .read(organizationRepositoryProvider)
+            .createOrJoin(companyName: _companyController.text.trim());
+      } catch (e) {
+        if (mounted) {
+          AppSnackBar.show(
+            context,
+            'Your account was created, but setting up the organization failed: $e',
+          );
+        }
       }
-    }
-    if (mounted) {
       await ref.read(userProfileProvider.notifier).refresh();
-      setState(() => _linkingOrg = false);
+      if (mounted) setState(() => _linkingOrg = false);
+    } finally {
+      ref.read(orgSetupPendingProvider.notifier).state = false;
     }
   }
 
@@ -98,7 +111,8 @@ class _OrganizationRegisterScreenState extends ConsumerState<OrganizationRegiste
               ?.copyWith(color: AppColors.textOnBrandMuted),
         ),
         const SizedBox(height: 28),
-        if (authState.hasError) AuthErrorBanner(message: authState.error.toString()),
+        if (authState.hasError)
+          AuthErrorBanner(message: authState.error.toString()),
         TextFormField(
           controller: _companyController,
           textInputAction: TextInputAction.next,
@@ -198,6 +212,33 @@ class _OrganizationRegisterScreenState extends ConsumerState<OrganizationRegiste
             ],
           ),
         ),
+        const SizedBox(height: 8),
+        Center(
+          child: Wrap(
+            alignment: WrapAlignment.center,
+            children: [
+              Text(
+                'Already have an account? ',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: AppColors.textOnBrandMuted),
+              ),
+              TextButton(
+                onPressed: isLoading ? null : () => context.go('/login'),
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.accent,
+                  padding: EdgeInsets.zero,
+                  minimumSize: const Size(0, 0),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: const Text('Log In'),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+        const AuthTermsNotice(),
       ],
     );
   }
