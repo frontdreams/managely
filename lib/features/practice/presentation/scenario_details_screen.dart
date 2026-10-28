@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/skill_color.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../models/scenario.dart';
 import '../../../models/user_profile.dart';
 import '../../../shared/widgets/practice_safely_sheet.dart';
@@ -70,9 +71,10 @@ class ScenarioDetailsScreen extends ConsumerWidget {
     final isLockedByUsage =
         !isLockedByTier && profile.hasReachedFreeConversationLimit;
     final isLocked = isLockedByTier || isLockedByUsage;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Scenario')),
+      appBar: AppBar(title: Text(l10n.scenarioAppBarTitle)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
@@ -112,7 +114,7 @@ class ScenarioDetailsScreen extends ConsumerWidget {
                                   height: 12,
                                   color: AppColors.primary),
                               const SizedBox(width: 4),
-                              Text('PREMIUM',
+                              Text(l10n.scenarioPremiumBadge,
                                   style: theme.textTheme.labelSmall?.copyWith(
                                       color: AppColors.primary, fontSize: 10)),
                             ],
@@ -156,21 +158,21 @@ class ScenarioDetailsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 24),
             _InfoBlock(
-              title: 'Situation',
+              title: l10n.scenarioSituationLabel,
               body: scenario.situation,
               icon: Icons.info_outline_rounded,
               color: AppColors.iconBlue,
             ),
             const SizedBox(height: 16),
             _InfoBlock(
-              title: 'Manager Objective',
+              title: l10n.scenarioObjectiveLabel,
               body: scenario.objective,
               icon: Icons.flag_outlined,
               color: AppColors.iconAmber,
             ),
             const SizedBox(height: 16),
             _InfoBlock(
-              title: 'Employee Style',
+              title: l10n.scenarioEmployeeStyleLabel,
               body:
                   '${scenario.employeeName} · ${scenario.employeeRole}\n${scenario.employeePersonality}',
               icon: Icons.person_outline_rounded,
@@ -193,7 +195,7 @@ class ScenarioDetailsScreen extends ConsumerWidget {
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'This is a Premium scenario. Upgrade to unlock it and every advanced scenario.',
+                        l10n.scenarioPremiumLockNotice,
                         style: theme.textTheme.bodyMedium
                             ?.copyWith(color: AppColors.primary),
                       ),
@@ -217,7 +219,8 @@ class ScenarioDetailsScreen extends ConsumerWidget {
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'You\'ve used your ${UserProfile.freeConversationLimitPerCycle} free conversations this month. Upgrade for unlimited practice.',
+                        l10n.scenarioUsageLimitNotice(
+                            UserProfile.freeConversationLimitPerCycle),
                         style: theme.textTheme.bodyMedium
                             ?.copyWith(color: AppColors.primary),
                       ),
@@ -240,7 +243,7 @@ class ScenarioDetailsScreen extends ConsumerWidget {
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'Before you start: use fictional or anonymized information. Avoid entering sensitive personal information about real employees.',
+                        l10n.practiceSafetyNotice,
                         style: theme.textTheme.bodyMedium,
                       ),
                     ),
@@ -256,12 +259,12 @@ class ScenarioDetailsScreen extends ConsumerWidget {
           child: isLocked
               ? _GradientButton(
                   onPressed: () => _start(context, ref, scenario),
-                  label: 'Upgrade to Start',
+                  label: l10n.scenarioUpgradeToStartButton,
                 )
               : ElevatedButton(
                   onPressed: () => _start(context, ref, scenario),
                   style: AppTheme.accentPillButtonStyle,
-                  child: const Text('Start Conversation'),
+                  child: Text(l10n.scenarioStartConversationButton),
                 ),
         ),
       ),

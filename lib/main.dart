@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'core/constants/app_constants.dart';
@@ -11,6 +12,7 @@ import 'core/theme/app_theme.dart';
 import 'features/profile/providers/profile_providers.dart';
 import 'features/debrief/providers/debrief_providers.dart';
 import 'firebase_options.dart';
+import 'l10n/app_localizations.dart';
 import 'models/user_profile.dart';
 
 void main() async {
@@ -82,7 +84,16 @@ class _ManagelyAppState extends ConsumerState<ManagelyApp> {
   @override
   Widget build(BuildContext context) {
     final router = ref.watch(appRouterProvider);
-    final isDark = ref.watch(userProfileProvider.select((p) => p.themeIsDark));
+    final themeMode = ref.watch(userProfileProvider.select((p) => p.themeMode));
+    final languageOverride = ref.watch(userProfileProvider.select((p) => p.languageOverride));
+
+    // ThemeMode.system doesn't resolve to an actual Brightness until
+    // MediaQuery has it — needed below to pick the right status bar icon
+    // color, since that can't just ask "isDark" the way AppTheme.dark/
+    // light's own widgets do via Theme.of(context).
+    final platformBrightness = MediaQuery.platformBrightnessOf(context);
+    final isDark = themeMode == ThemeMode.dark ||
+        (themeMode == ThemeMode.system && platformBrightness == Brightness.dark);
 
     // Picks up a subscription renewal, cancellation, or refund that
     // managely-backend verified from a Play/App Store server notification
@@ -111,7 +122,28 @@ class _ManagelyAppState extends ConsumerState<ManagelyApp> {
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,
-        themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+        themeMode: themeMode,
+        // Explicit override picked from Preferences — Turkish or English,
+        // nothing else supported yet. Left null to fall through to
+        // localeResolutionCallback below, which is what actually
+        // implements "Turkish device gets Turkish, everyone else gets
+        // English" (Flutter only calls that callback when `locale` itself
+        // is null).
+        locale: languageOverride != null ? Locale(languageOverride) : null,
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        localeResolutionCallback: (deviceLocale, supportedLocales) {
+          if (deviceLocale != null &&
+              supportedLocales.any((l) => l.languageCode == deviceLocale.languageCode)) {
+            return Locale(deviceLocale.languageCode);
+          }
+          return const Locale('en');
+        },
         routerConfig: router,
         // Dismiss the on-screen keyboard when tapping anywhere outside the
         // focused field, on every screen, without each screen wiring it up.

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/services/service_providers.dart';
+import '../../../l10n/app_localizations.dart';
 import '../providers/practice_providers.dart';
 
 /// Lets a user describe a real situation they're facing in their own words.
@@ -30,11 +31,14 @@ class _CustomScenarioScreenState extends ConsumerState<CustomScenarioScreen> {
   bool _isGenerating = false;
   String? _errorMessage;
 
-  static const _examplePrompts = [
-    'An employee keeps interrupting others in meetings.',
-    'I need to tell someone their promotion is on hold.',
-    'A teammate is upset I gave a project to someone else.',
-  ];
+  List<String> _examplePrompts(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return [
+      l10n.customScenarioExample1,
+      l10n.customScenarioExample2,
+      l10n.customScenarioExample3,
+    ];
+  }
 
   Future<void> _generateAndStart() async {
     final prompt = _controller.text.trim();
@@ -62,7 +66,7 @@ class _CustomScenarioScreenState extends ConsumerState<CustomScenarioScreen> {
     } catch (e) {
       setState(() {
         _isGenerating = false;
-        _errorMessage = 'Couldn\'t build a scenario from that — try again.';
+        _errorMessage = AppLocalizations.of(context).customScenarioGenerationFailed;
       });
     }
   }
@@ -78,7 +82,7 @@ class _CustomScenarioScreenState extends ConsumerState<CustomScenarioScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Your Own Scenario')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context).customScenarioAppBarTitle)),
       body: SafeArea(
         child: Column(
           children: [
@@ -100,14 +104,14 @@ class _CustomScenarioScreenState extends ConsumerState<CustomScenarioScreen> {
                   ),
                   const SizedBox(height: 14),
                   Text(
-                    'Describe your situation',
+                    AppLocalizations.of(context).customScenarioHeadline,
                     textAlign: TextAlign.center,
                     style: theme.textTheme.headlineSmall
                         ?.copyWith(color: context.textOnBrand),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'I\'ll turn it into a scenario you can practise.',
+                    AppLocalizations.of(context).customScenarioSubtitle,
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodyMedium
                         ?.copyWith(color: context.textOnBrandMuted),
@@ -121,7 +125,7 @@ class _CustomScenarioScreenState extends ConsumerState<CustomScenarioScreen> {
                       const SizedBox(width: 6),
                       Flexible(
                         child: Text(
-                          'Fictional practice only — skip real names.',
+                          AppLocalizations.of(context).customScenarioFictionalNotice,
                           textAlign: TextAlign.center,
                           style: theme.textTheme.labelSmall
                               ?.copyWith(color: context.textOnBrandMuted),
@@ -131,22 +135,22 @@ class _CustomScenarioScreenState extends ConsumerState<CustomScenarioScreen> {
                   ),
                   const SizedBox(height: 22),
                   Text(
-                    'TRY AN EXAMPLE',
+                    AppLocalizations.of(context).customScenarioTryExample,
                     style: theme.textTheme.labelSmall?.copyWith(
                         color: context.textOnBrandMuted, letterSpacing: 0.6),
                   ),
                   const SizedBox(height: 10),
                   Column(
                     children: [
-                      for (var i = 0; i < _examplePrompts.length; i++) ...[
+                      for (var i = 0; i < _examplePrompts(context).length; i++) ...[
                         _ExampleRow(
-                          label: _examplePrompts[i],
+                          label: _examplePrompts(context)[i],
                           onTap: _isGenerating
                               ? null
-                              : () => setState(
-                                  () => _controller.text = _examplePrompts[i]),
+                              : () => setState(() => _controller.text =
+                                  _examplePrompts(context)[i]),
                         ),
-                        if (i != _examplePrompts.length - 1)
+                        if (i != _examplePrompts(context).length - 1)
                           const SizedBox(height: 8),
                       ],
                     ],
@@ -217,7 +221,7 @@ class _Composer extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(18, 4, 6, 4),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(AppTheme.radiusPill),
         boxShadow: [
           BoxShadow(
@@ -241,8 +245,8 @@ class _Composer extends StatelessWidget {
                 textCapitalization: TextCapitalization.sentences,
                 enabled: enabled,
                 onSubmitted: (_) => onSend(),
-                decoration: const InputDecoration(
-                  hintText: 'What\'s going on?',
+                decoration: InputDecoration(
+                  hintText: AppLocalizations.of(context).customScenarioComposerHint,
                   filled: false,
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,
@@ -299,7 +303,7 @@ class _ExampleRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Material(
-      color: AppColors.surfaceLight,
+      color: context.surfaceOnBrand,
       borderRadius: BorderRadius.circular(AppTheme.radiusMd),
       child: InkWell(
         onTap: onTap,
@@ -308,7 +312,7 @@ class _ExampleRow extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
-            border: Border.all(color: AppColors.borderLight),
+            border: Border.all(color: context.borderOnBrand),
             borderRadius: BorderRadius.circular(AppTheme.radiusMd),
           ),
           child: Row(

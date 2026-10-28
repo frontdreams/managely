@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart' show ThemeMode;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../models/user_profile.dart';
 import '../../../models/scenario.dart';
@@ -169,8 +170,17 @@ class UserProfileNotifier extends StateNotifier<UserProfile> {
     await _persist();
   }
 
-  Future<void> toggleTheme(bool isDark) async {
-    state = state.copyWith(themeIsDark: isDark);
+  Future<void> setThemeMode(ThemeMode mode) async {
+    state = state.copyWith(themeMode: mode);
+    await _persist();
+  }
+
+  /// Pass null to go back to following the device's own language.
+  Future<void> setLanguageOverride(String? languageCode) async {
+    state = state.copyWith(
+      languageOverride: languageCode,
+      clearLanguageOverride: languageCode == null,
+    );
     await _persist();
   }
 

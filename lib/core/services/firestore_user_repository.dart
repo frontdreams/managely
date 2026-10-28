@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart' show ThemeMode;
 import '../../models/conversation.dart';
 import '../../models/evaluation.dart';
 import '../../models/scenario.dart';
@@ -13,6 +14,21 @@ class FirestoreUserRepository {
 
   DocumentReference<Map<String, dynamic>> _userDoc(String uid) =>
       _firestore.collection('users').doc(uid);
+
+  /// Reads the new tri-state `themeMode` field, falling back to the
+  /// pre-existing boolean `themeIsDark` for accounts saved before this
+  /// field existed — `true` migrates to [ThemeMode.dark], `false` or
+  /// absent migrates to [ThemeMode.system] rather than [ThemeMode.light],
+  /// since a user who never touched the old toggle was always just
+  /// getting light by coincidence (the only mode that existed), not
+  /// because they rejected dark mode.
+  ThemeMode _themeModeFromJson(Map<String, dynamic> json) {
+    final raw = json['themeMode'] as String?;
+    if (raw != null) {
+      return ThemeMode.values.firstWhere((m) => m.name == raw, orElse: () => ThemeMode.system);
+    }
+    return (json['themeIsDark'] as bool? ?? false) ? ThemeMode.dark : ThemeMode.system;
+  }
 
   Future<UserProfile?> loadProfile(String uid) async {
     final snapshot = await _userDoc(uid).get();
@@ -105,7 +121,11 @@ class FirestoreUserRepository {
         'currentStreak': p.currentStreak,
         'onboardingComplete': p.onboardingComplete,
         'skillsAssessmentComplete': p.skillsAssessmentComplete,
-        'themeIsDark': p.themeIsDark,
+        'themeMode': p.themeMode.name,
+        // Explicitly deletes the field (rather than just omitting it) when
+        // cleared back to "follow the device" — a merge write would
+        // otherwise leave a previously-set override in place forever.
+        'languageOverride': p.languageOverride ?? FieldValue.delete(),
         'notificationsEnabled': p.notificationsEnabled,
         'emailVerified': p.emailVerified,
       };
@@ -140,7 +160,8 @@ class FirestoreUserRepository {
       currentStreak: json['currentStreak'] as int? ?? 0,
       onboardingComplete: json['onboardingComplete'] as bool? ?? false,
       skillsAssessmentComplete: json['skillsAssessmentComplete'] as bool? ?? false,
-      themeIsDark: json['themeIsDark'] as bool? ?? false,
+      themeMode: _themeModeFromJson(json),
+      languageOverride: json['languageOverride'] as String?,
       notificationsEnabled: json['notificationsEnabled'] as bool? ?? true,
       isHydrated: true,
       emailVerified: json['emailVerified'] as bool? ?? defaults.emailVerified,

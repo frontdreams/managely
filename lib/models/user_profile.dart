@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart' show ThemeMode;
 import 'scenario.dart';
 import 'user_role.dart';
 
@@ -85,7 +86,19 @@ class UserProfile {
   /// conversation is started.
   final DateTime? usageCycleStart;
 
-  final bool themeIsDark;
+  /// Defaults to [ThemeMode.system] — so a brand-new or signed-out account
+  /// (Welcome/Onboarding/auth screens, before any profile has loaded)
+  /// still follows the device's own light/dark setting instead of being
+  /// stuck on light. Explicit Light/Dark is a deliberate override set from
+  /// the Preferences screen; see [UserProfileNotifier.setThemeMode].
+  final ThemeMode themeMode;
+
+  /// Null means "follow the device's language" (Turkish if the device is
+  /// set to Turkish, English otherwise — see the locale resolution in
+  /// main.dart). Set to an explicit language code ('en'/'tr') once the
+  /// user picks one from the Preferences screen.
+  final String? languageOverride;
+
   final bool notificationsEnabled;
 
   /// True once this profile has been loaded from Firestore for the signed-in
@@ -124,7 +137,8 @@ class UserProfile {
     this.skillsAssessmentComplete = false,
     this.freeConversationsUsedThisCycle = 0,
     this.usageCycleStart,
-    this.themeIsDark = false,
+    this.themeMode = ThemeMode.system,
+    this.languageOverride,
     this.notificationsEnabled = true,
     this.isHydrated = false,
     this.emailVerified = false,
@@ -183,7 +197,9 @@ class UserProfile {
     bool? skillsAssessmentComplete,
     int? freeConversationsUsedThisCycle,
     DateTime? usageCycleStart,
-    bool? themeIsDark,
+    ThemeMode? themeMode,
+    String? languageOverride,
+    bool clearLanguageOverride = false,
     bool? notificationsEnabled,
     bool? isHydrated,
     bool? emailVerified,
@@ -209,7 +225,9 @@ class UserProfile {
       freeConversationsUsedThisCycle:
           freeConversationsUsedThisCycle ?? this.freeConversationsUsedThisCycle,
       usageCycleStart: usageCycleStart ?? this.usageCycleStart,
-      themeIsDark: themeIsDark ?? this.themeIsDark,
+      themeMode: themeMode ?? this.themeMode,
+      languageOverride:
+          clearLanguageOverride ? null : (languageOverride ?? this.languageOverride),
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       isHydrated: isHydrated ?? this.isHydrated,
       emailVerified: emailVerified ?? this.emailVerified,

@@ -21,6 +21,7 @@ import '../../features/evaluation/presentation/evaluation_screen.dart';
 import '../../features/progress/presentation/progress_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/profile/presentation/edit_profile_screen.dart';
+import '../../features/profile/presentation/preferences_screen.dart';
 import '../../features/profile/presentation/privacy_screen.dart';
 import '../../features/profile/presentation/about_screen.dart';
 import '../../features/admin/presentation/user_management_screen.dart';
@@ -312,6 +313,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'about',
                     builder: (context, state) => const AboutScreen(),
+                  ),
+                  GoRoute(
+                    path: 'preferences',
+                    builder: (context, state) => const PreferencesScreen(),
                   ),
                 ]),
           ]),

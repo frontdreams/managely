@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/public_email_domains.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/app_snackbar.dart';
 import '../../auth/providers/auth_providers.dart';
 import '../../auth/presentation/widgets/auth_scaffold.dart';
@@ -75,7 +76,7 @@ class _OrganizationRegisterScreenState
         if (mounted) {
           AppSnackBar.show(
             context,
-            'Your account was created, but setting up the organization failed: $e',
+            AppLocalizations.of(context).orgSetupFailedSnackbar(e.toString()),
           );
         }
       }
@@ -90,13 +91,14 @@ class _OrganizationRegisterScreenState
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
     final isLoading = authState.isLoading || _linkingOrg;
+    final l10n = AppLocalizations.of(context);
 
     return AuthScaffold(
       formKey: _formKey,
       showBackButton: true,
       children: [
         Text(
-          'Create your company account',
+          l10n.orgRegisterTitle,
           style: Theme.of(context)
               .textTheme
               .headlineMedium
@@ -104,7 +106,7 @@ class _OrganizationRegisterScreenState
         ),
         const SizedBox(height: 6),
         Text(
-          'Bring Managely to your whole team.',
+          l10n.orgRegisterSubtitle,
           style: Theme.of(context)
               .textTheme
               .bodyMedium
@@ -116,12 +118,12 @@ class _OrganizationRegisterScreenState
         TextFormField(
           controller: _companyController,
           textInputAction: TextInputAction.next,
-          decoration: const InputDecoration(
-            hintText: 'Company name',
-            prefixIcon: Icon(Icons.apartment_outlined),
+          decoration: InputDecoration(
+            hintText: l10n.orgCompanyNameHint,
+            prefixIcon: const Icon(Icons.apartment_outlined),
           ),
           validator: (v) {
-            if (v == null || v.trim().isEmpty) return 'Enter your company name';
+            if (v == null || v.trim().isEmpty) return l10n.orgCompanyNameRequired;
             return null;
           },
         ),
@@ -129,12 +131,12 @@ class _OrganizationRegisterScreenState
         TextFormField(
           controller: _nameController,
           textInputAction: TextInputAction.next,
-          decoration: const InputDecoration(
-            hintText: 'Full name',
-            prefixIcon: Icon(Icons.person_outline_rounded),
+          decoration: InputDecoration(
+            hintText: l10n.authFullNameHint,
+            prefixIcon: const Icon(Icons.person_outline_rounded),
           ),
           validator: (v) {
-            if (v == null || v.trim().isEmpty) return 'Enter your name';
+            if (v == null || v.trim().isEmpty) return l10n.authNameRequired;
             return null;
           },
         ),
@@ -143,16 +145,16 @@ class _OrganizationRegisterScreenState
           controller: _emailController,
           keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.next,
-          decoration: const InputDecoration(
-            hintText: 'Work email',
-            prefixIcon: Icon(Icons.mail_outline_rounded),
+          decoration: InputDecoration(
+            hintText: l10n.orgWorkEmailHint,
+            prefixIcon: const Icon(Icons.mail_outline_rounded),
           ),
           validator: (v) {
             final value = v?.trim() ?? '';
-            if (value.isEmpty) return 'Enter your work email';
-            if (!value.contains('@')) return 'Enter a valid email';
+            if (value.isEmpty) return l10n.orgWorkEmailRequired;
+            if (!value.contains('@')) return l10n.authEmailInvalid;
             if (isPublicEmailDomain(value)) {
-              return 'Use your company email, not a personal address';
+              return l10n.orgPersonalEmailNotAllowed;
             }
             return null;
           },
@@ -164,7 +166,7 @@ class _OrganizationRegisterScreenState
           textInputAction: TextInputAction.done,
           onFieldSubmitted: (_) => _submit(),
           decoration: InputDecoration(
-            hintText: 'Password',
+            hintText: l10n.authPasswordHint,
             prefixIcon: const Icon(Icons.lock_outline_rounded),
             suffixIcon: IconButton(
               icon: Icon(_obscure
@@ -174,8 +176,8 @@ class _OrganizationRegisterScreenState
             ),
           ),
           validator: (v) {
-            if (v == null || v.isEmpty) return 'Enter a password';
-            if (v.length < 6) return 'At least 6 characters';
+            if (v == null || v.isEmpty) return l10n.authPasswordRequiredNew;
+            if (v.length < 6) return l10n.authPasswordTooShort;
             return null;
           },
         ),
@@ -192,7 +194,7 @@ class _OrganizationRegisterScreenState
                     color: Colors.white,
                   ),
                 )
-              : const Text('Create Company Account'),
+              : Text(l10n.orgCreateCompanyAccountButton),
         ),
         const SizedBox(height: 28),
         Center(
@@ -207,7 +209,7 @@ class _OrganizationRegisterScreenState
                   minimumSize: const Size(0, 0),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
-                child: const Text('Create Personal Account'),
+                child: Text(l10n.orgCreatePersonalAccountLink),
               ),
             ],
           ),
@@ -218,7 +220,7 @@ class _OrganizationRegisterScreenState
             alignment: WrapAlignment.center,
             children: [
               Text(
-                'Already have an account? ',
+                l10n.authAlreadyHaveAccountPrompt,
                 style: Theme.of(context)
                     .textTheme
                     .bodyMedium
@@ -232,7 +234,7 @@ class _OrganizationRegisterScreenState
                   minimumSize: const Size(0, 0),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
-                child: const Text('Log In'),
+                child: Text(l10n.authLogInButton),
               ),
             ],
           ),

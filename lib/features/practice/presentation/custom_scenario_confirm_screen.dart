@@ -10,6 +10,7 @@ import '../../../models/scenario.dart';
 import '../../../models/user_profile.dart';
 import '../../../models/real_meeting_plan.dart';
 import '../../../core/services/notification_service.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/difficulty_stars.dart';
 import '../../../shared/widgets/practice_safely_sheet.dart';
 import '../../conversation/providers/conversation_providers.dart';
@@ -95,9 +96,8 @@ class _CustomScenarioConfirmScreenState
 
     if (_isRealLife && _scheduledAt == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content:
-                Text('Pick a date and time for the real conversation first.')),
+        SnackBar(
+            content: Text(AppLocalizations.of(context).customScenarioPickDateTimeFirst)),
       );
       return;
     }
@@ -138,8 +138,10 @@ class _CustomScenarioConfirmScreenState
     final profile = ref.watch(userProfileProvider);
     final isLocked = profile.hasReachedFreeConversationLimit;
 
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Review Your Scenario')),
+      appBar: AppBar(title: Text(l10n.customScenarioConfirmAppBarTitle)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
@@ -147,7 +149,7 @@ class _CustomScenarioConfirmScreenState
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.primaryLight,
+                color: context.surfaceOnBrand,
                 borderRadius: BorderRadius.circular(AppTheme.radiusMd),
               ),
               child: Row(
@@ -157,7 +159,7 @@ class _CustomScenarioConfirmScreenState
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Here\'s what I understood — check it looks right before you start.',
+                      l10n.customScenarioConfirmIntro,
                       style: theme.textTheme.bodySmall,
                     ),
                   ),
@@ -220,19 +222,19 @@ class _CustomScenarioConfirmScreenState
             ),
             const SizedBox(height: 24),
             _InfoBlock(
-              title: 'Situation',
+              title: l10n.scenarioSituationLabel,
               body: scenario.situation,
               icon: Icons.info_outline_rounded,
             ),
             const SizedBox(height: 16),
             _InfoBlock(
-              title: 'Manager Objective',
+              title: l10n.scenarioObjectiveLabel,
               body: scenario.objective,
               icon: Icons.flag_outlined,
             ),
             const SizedBox(height: 16),
             _InfoBlock(
-              title: 'Employee Style',
+              title: l10n.scenarioEmployeeStyleLabel,
               body:
                   '${scenario.employeeName} · ${scenario.employeeRole}\n${scenario.employeePersonality}',
               icon: Icons.person_outline_rounded,
@@ -255,11 +257,11 @@ class _CustomScenarioConfirmScreenState
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Is this a real upcoming conversation?',
+                              Text(l10n.customScenarioRealMeetingQuestion,
                                   style: theme.textTheme.titleSmall),
                               const SizedBox(height: 2),
                               Text(
-                                'We\'ll remind you to debrief an hour after it happens.',
+                                l10n.customScenarioRealMeetingSubtitle,
                                 style: theme.textTheme.bodySmall,
                               ),
                             ],
@@ -277,7 +279,8 @@ class _CustomScenarioConfirmScreenState
                     ),
                     if (_isRealLife) ...[
                       const Divider(height: 28),
-                      Text('Meeting type', style: theme.textTheme.labelLarge),
+                      Text(l10n.customScenarioMeetingTypeLabel,
+                          style: theme.textTheme.labelLarge),
                       const SizedBox(height: 10),
                       Wrap(
                         spacing: 8,
@@ -300,7 +303,8 @@ class _CustomScenarioConfirmScreenState
                         }).toList(),
                       ),
                       const SizedBox(height: 18),
-                      Text('When', style: theme.textTheme.labelLarge),
+                      Text(l10n.customScenarioWhenLabel,
+                          style: theme.textTheme.labelLarge),
                       const SizedBox(height: 10),
                       InkWell(
                         onTap: _pickDateTime,
@@ -309,7 +313,7 @@ class _CustomScenarioConfirmScreenState
                           padding: const EdgeInsets.symmetric(
                               horizontal: 14, vertical: 14),
                           decoration: BoxDecoration(
-                            border: Border.all(color: AppColors.borderLight),
+                            border: Border.all(color: context.borderOnBrand),
                             borderRadius:
                                 BorderRadius.circular(AppTheme.radiusMd),
                           ),
@@ -320,7 +324,7 @@ class _CustomScenarioConfirmScreenState
                               const SizedBox(width: 10),
                               Text(
                                 _scheduledAt == null
-                                    ? 'Choose date & time'
+                                    ? l10n.customScenarioChooseDateTime
                                     : DateFormat('EEE, MMM d · h:mm a')
                                         .format(_scheduledAt!),
                                 style: theme.textTheme.bodyMedium,
@@ -330,7 +334,8 @@ class _CustomScenarioConfirmScreenState
                         ),
                       ),
                       const SizedBox(height: 18),
-                      Text('Duration', style: theme.textTheme.labelLarge),
+                      Text(l10n.customScenarioDurationLabel,
+                          style: theme.textTheme.labelLarge),
                       const SizedBox(height: 10),
                       Wrap(
                         spacing: 8,
@@ -340,7 +345,7 @@ class _CustomScenarioConfirmScreenState
                             selected: selected,
                             onSelected: (_) =>
                                 setState(() => _durationMinutes = mins),
-                            label: Text('$mins min'),
+                            label: Text(l10n.customScenarioDurationMinutes(mins)),
                             selectedColor: AppColors.primary,
                             labelStyle: TextStyle(
                                 color: selected ? Colors.white : null),
@@ -348,7 +353,7 @@ class _CustomScenarioConfirmScreenState
                         }).toList(),
                       ),
                       const SizedBox(height: 18),
-                      Text('Anything else worth noting? (optional)',
+                      Text(l10n.customScenarioPrepNotesLabel,
                           style: theme.textTheme.labelLarge),
                       const SizedBox(height: 10),
                       TextField(
@@ -356,10 +361,9 @@ class _CustomScenarioConfirmScreenState
                         minLines: 2,
                         maxLines: 4,
                         textCapitalization: TextCapitalization.sentences,
-                        decoration: const InputDecoration(
-                          hintText:
-                              'History, context, what you\'re nervous about...',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          hintText: l10n.customScenarioPrepNotesHint,
+                          border: const OutlineInputBorder(),
                         ),
                       ),
                     ],
@@ -373,7 +377,7 @@ class _CustomScenarioConfirmScreenState
               child: TextButton.icon(
                 onPressed: () => context.pop(),
                 icon: const Icon(Icons.edit_outlined, size: 16),
-                label: const Text('Not quite right? Describe it differently'),
+                label: Text(l10n.customScenarioDescribeDifferently),
               ),
             ),
             const SizedBox(height: 12),
@@ -393,7 +397,8 @@ class _CustomScenarioConfirmScreenState
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'You\'ve used your ${UserProfile.freeConversationLimitPerCycle} free conversations this month. Upgrade for unlimited practice.',
+                        l10n.scenarioUsageLimitNotice(
+                            UserProfile.freeConversationLimitPerCycle),
                         style: theme.textTheme.bodyMedium
                             ?.copyWith(color: AppColors.primary),
                       ),
@@ -416,7 +421,7 @@ class _CustomScenarioConfirmScreenState
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        '${scenario.employeeName} is fictional, even if a real name was mentioned in your description.',
+                        l10n.customScenarioFictionalEmployeeNotice(scenario.employeeName),
                         style: theme.textTheme.bodyMedium,
                       ),
                     ),
@@ -434,7 +439,9 @@ class _CustomScenarioConfirmScreenState
             icon: isLocked
                 ? const Icon(Icons.workspace_premium_rounded)
                 : const SizedBox.shrink(),
-            label: Text(isLocked ? 'Upgrade to Start' : 'Start Conversation'),
+            label: Text(isLocked
+                ? l10n.scenarioUpgradeToStartButton
+                : l10n.scenarioStartConversationButton),
           ),
         ),
       ),

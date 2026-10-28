@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../l10n/app_localizations.dart';
 import '../providers/auth_providers.dart';
 import 'widgets/auth_scaffold.dart';
 import 'widgets/auth_widgets.dart';
@@ -38,13 +39,14 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
     final isLoading = authState.isLoading;
+    final l10n = AppLocalizations.of(context);
 
     return AuthScaffold(
       formKey: _formKey,
       showBackButton: true,
       children: [
         Text(
-          'Reset your password',
+          l10n.authForgotPasswordTitle,
           style: Theme.of(context)
               .textTheme
               .headlineMedium
@@ -52,7 +54,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
         ),
         const SizedBox(height: 6),
         Text(
-          "Enter your email and we'll send you a reset link.",
+          l10n.authForgotPasswordSubtitle,
           style: Theme.of(context)
               .textTheme
               .bodyMedium
@@ -77,11 +79,15 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'Reset link sent to ${_emailController.text.trim()}. Check your inbox.',
+                    // Always a light card regardless of theme (same
+                    // reasoning as AuthErrorBanner) — hardcode the text
+                    // color to match instead of using context.textOnBrand,
+                    // which would go white-on-white in dark mode.
+                    l10n.authResetLinkSent(_emailController.text.trim()),
                     style: Theme.of(context)
                         .textTheme
                         .bodyMedium
-                        ?.copyWith(color: context.textOnBrand),
+                        ?.copyWith(color: AppColors.textPrimaryLight),
                   ),
                 ),
               ],
@@ -93,13 +99,13 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.done,
             onFieldSubmitted: (_) => _submit(),
-            decoration: const InputDecoration(
-              hintText: 'Email',
-              prefixIcon: Icon(Icons.mail_outline_rounded),
+            decoration: InputDecoration(
+              hintText: l10n.authEmailHint,
+              prefixIcon: const Icon(Icons.mail_outline_rounded),
             ),
             validator: (v) {
-              if (v == null || v.trim().isEmpty) return 'Enter your email';
-              if (!v.contains('@')) return 'Enter a valid email';
+              if (v == null || v.trim().isEmpty) return l10n.authEmailRequired;
+              if (!v.contains('@')) return l10n.authEmailInvalid;
               return null;
             },
           ),
@@ -116,7 +122,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                       color: Colors.white,
                     ),
                   )
-                : const Text('Send Reset Link'),
+                : Text(l10n.authSendResetLinkButton),
           ),
         ],
         const SizedBox(height: 20),
@@ -124,7 +130,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           child: TextButton(
             onPressed: () => context.pop(),
             style: TextButton.styleFrom(foregroundColor: AppColors.accent),
-            child: const Text('Back to Log In'),
+            child: Text(l10n.authBackToLogIn),
           ),
         ),
       ],

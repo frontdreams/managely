@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/services/service_providers.dart';
+import '../../../l10n/app_localizations.dart';
 import '../providers/email_verification_providers.dart';
 import 'widgets/auth_scaffold.dart';
 import 'widgets/auth_widgets.dart';
@@ -64,8 +65,8 @@ class _EmailVerificationScreenState
       _startCooldown();
     } else {
       final error = ref.read(emailVerificationControllerProvider).error;
-      setState(() =>
-          _error = error?.toString() ?? 'Couldn\'t send the code. Try again.');
+      setState(() => _error =
+          error?.toString() ?? AppLocalizations.of(context).authCodeSendFailed);
     }
   }
 
@@ -77,7 +78,7 @@ class _EmailVerificationScreenState
         .verifyCode(_code);
     if (!mounted) return;
     if (!ok) {
-      setState(() => _error = 'That code is incorrect or has expired.');
+      setState(() => _error = AppLocalizations.of(context).authCodeIncorrect);
       _otpKey.currentState?.clear();
     }
   }
@@ -90,14 +91,15 @@ class _EmailVerificationScreenState
   Widget build(BuildContext context) {
     final state = ref.watch(emailVerificationControllerProvider);
     final isLoading = state.isLoading;
+    final l10n = AppLocalizations.of(context);
     final email =
-        ref.watch(firebaseAuthProvider).currentUser?.email ?? 'your email';
+        ref.watch(firebaseAuthProvider).currentUser?.email ?? l10n.authYourEmailFallback;
 
     return AuthScaffold(
       formKey: _formKey,
       children: [
         Text(
-          'Verify your email',
+          l10n.authVerifyEmailTitle,
           style: Theme.of(context)
               .textTheme
               .headlineMedium
@@ -105,7 +107,7 @@ class _EmailVerificationScreenState
         ),
         const SizedBox(height: 6),
         Text(
-          'Enter the 6-digit code we sent to $email.',
+          l10n.authVerifyEmailSubtitle(email),
           style: Theme.of(context)
               .textTheme
               .bodyMedium
@@ -133,13 +135,13 @@ class _EmailVerificationScreenState
                     color: Colors.white,
                   ),
                 )
-              : const Text('Verify'),
+              : Text(l10n.authVerifyButton),
         ),
         const SizedBox(height: 20),
         Center(
           child: _cooldownSeconds > 0
               ? Text(
-                  'Resend code in ${_cooldownSeconds}s',
+                  l10n.authResendCodeIn(_cooldownSeconds),
                   style: Theme.of(context)
                       .textTheme
                       .bodyMedium
@@ -149,7 +151,7 @@ class _EmailVerificationScreenState
                   onPressed: isLoading ? null : _sendCode,
                   style:
                       TextButton.styleFrom(foregroundColor: AppColors.accent),
-                  child: const Text('Resend code'),
+                  child: Text(l10n.authResendCode),
                 ),
         ),
         const SizedBox(height: 8),
@@ -158,7 +160,7 @@ class _EmailVerificationScreenState
             onPressed: isLoading ? null : _logOut,
             style:
                 TextButton.styleFrom(foregroundColor: context.textOnBrandMuted),
-            child: const Text('Wrong email? Log out'),
+            child: Text(l10n.authWrongEmailLogOut),
           ),
         ),
       ],
@@ -253,11 +255,11 @@ class _OtpBoxesState extends State<_OtpBoxes> {
                 contentPadding: EdgeInsets.zero,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(AppTheme.radiusSm),
-                  borderSide: const BorderSide(color: AppColors.borderLight),
+                  borderSide: BorderSide(color: context.borderOnBrand),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(AppTheme.radiusSm),
-                  borderSide: const BorderSide(color: AppColors.borderLight),
+                  borderSide: BorderSide(color: context.borderOnBrand),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(AppTheme.radiusSm),

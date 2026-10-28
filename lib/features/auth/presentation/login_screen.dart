@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../l10n/app_localizations.dart';
 import '../providers/auth_providers.dart';
 import 'widgets/auth_scaffold.dart';
 import 'widgets/auth_widgets.dart';
@@ -43,12 +44,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
     final isLoading = authState.isLoading;
+    final l10n = AppLocalizations.of(context);
 
     return AuthScaffold(
       formKey: _formKey,
       children: [
         Text(
-          'Welcome back',
+          l10n.authLoginTitle,
           style: Theme.of(context)
               .textTheme
               .headlineMedium
@@ -56,7 +58,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
         const SizedBox(height: 6),
         Text(
-          'Log in to keep practising.',
+          l10n.authLoginSubtitle,
           style: Theme.of(context)
               .textTheme
               .bodyMedium
@@ -69,13 +71,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           controller: _emailController,
           keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.next,
-          decoration: const InputDecoration(
-            hintText: 'Email',
-            prefixIcon: Icon(Icons.mail_outline_rounded),
+          decoration: InputDecoration(
+            hintText: l10n.authEmailHint,
+            prefixIcon: const Icon(Icons.mail_outline_rounded),
           ),
           validator: (v) {
-            if (v == null || v.trim().isEmpty) return 'Enter your email';
-            if (!v.contains('@')) return 'Enter a valid email';
+            if (v == null || v.trim().isEmpty) return l10n.authEmailRequired;
+            if (!v.contains('@')) return l10n.authEmailInvalid;
             return null;
           },
         ),
@@ -86,7 +88,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           textInputAction: TextInputAction.done,
           onFieldSubmitted: (_) => _submit(),
           decoration: InputDecoration(
-            hintText: 'Password',
+            hintText: l10n.authPasswordHint,
             prefixIcon: const Icon(Icons.lock_outline_rounded),
             suffixIcon: IconButton(
               icon: Icon(_obscure
@@ -96,7 +98,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
           ),
           validator: (v) {
-            if (v == null || v.isEmpty) return 'Enter your password';
+            if (v == null || v.isEmpty) return l10n.authPasswordRequiredLogin;
             return null;
           },
         ),
@@ -106,7 +108,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             onPressed:
                 isLoading ? null : () => context.push('/forgot-password'),
             style: TextButton.styleFrom(foregroundColor: AppColors.accent),
-            child: const Text('Forgot password?'),
+            child: Text(l10n.authForgotPasswordLink),
           ),
         ),
         const SizedBox(height: 8),
@@ -122,7 +124,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     color: Colors.white,
                   ),
                 )
-              : const Text('Log In'),
+              : Text(l10n.authLogInButton),
         ),
         const SizedBox(height: 20),
         const AuthOrDivider(),
@@ -134,7 +136,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             alignment: WrapAlignment.center,
             children: [
               Text(
-                "Don't have an account? ",
+                l10n.authNoAccountPrompt,
                 style: Theme.of(context)
                     .textTheme
                     .bodyMedium
@@ -148,7 +150,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   minimumSize: const Size(0, 0),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
-                child: const Text('Sign Up'),
+                child: Text(l10n.authSignUpLink),
               ),
             ],
           ),

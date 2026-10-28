@@ -5,6 +5,7 @@ import '../../../core/services/welcome_prefs.dart';
 import '../../../core/services/service_providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../l10n/app_localizations.dart';
 import 'widgets/welcome_illustrations.dart';
 
 /// The very first thing a first-time user sees, right after the splash
@@ -23,28 +24,28 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
   final PageController _controller = PageController();
   int _page = 0;
 
-  static const _pages = [
-    _IntroContent(
-      illustration: ConfidenceIllustration(),
-      headline: 'Become a more confident manager.',
-      body:
-          'Managely helps new and developing managers build real communication skill — one practice conversation at a time.',
-    ),
-    _IntroContent(
-      illustration: ConversationIllustration(),
-      headline: 'Practise difficult conversations with realistic AI employees.',
-      body:
-          'Step into a roleplay with an AI "employee" that responds dynamically to how you communicate.',
-    ),
-    _IntroContent(
-      illustration: FeedbackIllustration(),
-      headline: 'Get feedback. Retry. Improve.',
-      body:
-          'After every conversation, get a clear breakdown of your strengths and a concrete next step to try.',
-    ),
-  ];
+  List<_IntroContent> _pages(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return [
+      _IntroContent(
+        illustration: const ConfidenceIllustration(),
+        headline: l10n.welcomePage1Headline,
+        body: l10n.welcomePage1Body,
+      ),
+      _IntroContent(
+        illustration: const ConversationIllustration(),
+        headline: l10n.welcomePage2Headline,
+        body: l10n.welcomePage2Body,
+      ),
+      _IntroContent(
+        illustration: const FeedbackIllustration(),
+        headline: l10n.welcomePage3Headline,
+        body: l10n.welcomePage3Body,
+      ),
+    ];
+  }
 
-  bool get _isLastPage => _page == _pages.length - 1;
+  bool get _isLastPage => _page == _pages(context).length - 1;
 
   void _next() {
     if (_isLastPage) {
@@ -81,7 +82,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  _PageDots(count: _pages.length, current: _page),
+                  _PageDots(count: _pages(context).length, current: _page),
                   if (!_isLastPage)
                     Positioned(
                       right: 12,
@@ -89,7 +90,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                         onPressed: _finish,
                         style: TextButton.styleFrom(
                             foregroundColor: context.textOnBrandMuted),
-                        child: const Text('Skip'),
+                        child: Text(AppLocalizations.of(context).commonSkip),
                       ),
                     ),
                 ],
@@ -99,7 +100,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
               child: PageView(
                 controller: _controller,
                 onPageChanged: (i) => setState(() => _page = i),
-                children: _pages.map((c) => _IntroPage(content: c)).toList(),
+                children: _pages(context).map((c) => _IntroPage(content: c)).toList(),
               ),
             ),
             Padding(
@@ -109,7 +110,9 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                 child: ElevatedButton(
                   onPressed: _next,
                   style: AppTheme.accentPillButtonStyle,
-                  child: Text(_isLastPage ? 'Get Started' : 'Continue'),
+                  child: Text(_isLastPage
+                      ? AppLocalizations.of(context).welcomeGetStarted
+                      : AppLocalizations.of(context).commonContinue),
                 ),
               ),
             ),

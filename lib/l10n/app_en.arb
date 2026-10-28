@@ -1,0 +1,205 @@
+{
+  "@@locale": "en",
+
+  "navHome": "Home",
+  "navPractice": "Practice",
+  "navProgress": "Progress",
+  "navProfile": "Profile",
+  "navCreate": "Create",
+
+  "commonCancel": "Cancel",
+  "commonSave": "Save",
+  "commonContinue": "Continue",
+  "commonBack": "Back",
+  "commonRetry": "Try Again",
+  "commonClose": "Close",
+  "commonViewAll": "View all",
+  "commonSkip": "Skip",
+
+  "preferencesTitle": "Preferences",
+  "preferencesRowSubtitle": "Language, theme",
+  "preferencesLanguageLabel": "Language",
+  "preferencesLanguageAutomatic": "Automatic (device)",
+  "preferencesLanguageAutomaticSubtitle": "Turkish on a Turkish device, English otherwise",
+  "preferencesThemeLabel": "Theme",
+  "preferencesThemeSystem": "System",
+  "preferencesThemeSystemSubtitle": "Matches your device setting",
+  "preferencesThemeLight": "Light",
+  "preferencesThemeDark": "Dark",
+
+  "welcomeGetStarted": "Get Started",
+  "welcomePage1Headline": "Become a more confident manager.",
+  "welcomePage1Body": "Managely helps new and developing managers build real communication skill — one practice conversation at a time.",
+  "welcomePage2Headline": "Practise difficult conversations with realistic AI employees.",
+  "welcomePage2Body": "Step into a roleplay with an AI \"employee\" that responds dynamically to how you communicate.",
+  "welcomePage3Headline": "Get feedback. Retry. Improve.",
+  "welcomePage3Body": "After every conversation, get a clear breakdown of your strengths and a concrete next step to try.",
+
+  "onboardingTitle": "What matters most to you?",
+  "onboardingSubtitle": "Drag to rank these in the order you'd most like to improve. Managely will prioritize scenarios around the top of your list.",
+  "onboardingSkillGivingFeedback": "Giving Feedback",
+  "onboardingSkillConfidence": "Confidence & Assertiveness",
+  "onboardingSkillConflict": "Conflict Management",
+  "onboardingSkillBoundaries": "Setting Boundaries",
+  "onboardingSkillActiveListening": "Active Listening",
+  "onboardingSkillEmpathy": "Empathy & Difficult Conversations",
+
+  "assessmentTitle": "Skills Assessment",
+  "assessmentSkipForNow": "Skip for now",
+  "assessmentQuestionProgress": "Question {current} of {total}",
+  "@assessmentQuestionProgress": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "assessmentResultsTitle": "Your Starting Scores",
+  "assessmentResultsHeadline": "Here's where you're starting from.",
+  "assessmentResultsBody": "Based on how you responded to realistic workplace situations — not a self-rating. Every conversation you practise from here will move these.",
+  "assessmentContinueButton": "Continue to Managely",
+
+  "authEmailHint": "Email",
+  "authEmailRequired": "Enter your email",
+  "authEmailInvalid": "Enter a valid email",
+  "authPasswordHint": "Password",
+  "authPasswordRequiredLogin": "Enter your password",
+  "authPasswordRequiredNew": "Enter a password",
+  "authPasswordTooShort": "At least 6 characters",
+  "authFullNameHint": "Full name",
+  "authNameRequired": "Enter your name",
+  "authLogInButton": "Log In",
+  "authForgotPasswordLink": "Forgot password?",
+  "authLoginTitle": "Welcome back",
+  "authLoginSubtitle": "Log in to keep practising.",
+  "authNoAccountPrompt": "Don't have an account? ",
+  "authSignUpLink": "Sign Up",
+  "authAlreadyHaveAccountPrompt": "Already have an account? ",
+
+  "authRegisterTitle": "Create your account",
+  "authRegisterSubtitle": "Start practising difficult conversations today.",
+  "authCreateAccountButton": "Create Account",
+  "authCreateCompanyAccountLink": "Create company account",
+
+  "authForgotPasswordTitle": "Reset your password",
+  "authForgotPasswordSubtitle": "Enter your email and we'll send you a reset link.",
+  "authResetLinkSent": "Reset link sent to {email}. Check your inbox.",
+  "@authResetLinkSent": {
+    "placeholders": { "email": {"type": "String"} }
+  },
+  "authSendResetLinkButton": "Send Reset Link",
+  "authBackToLogIn": "Back to Log In",
+
+  "authVerifyEmailTitle": "Verify your email",
+  "authVerifyEmailSubtitle": "Enter the 6-digit code we sent to {email}.",
+  "@authVerifyEmailSubtitle": {
+    "placeholders": { "email": {"type": "String"} }
+  },
+  "authYourEmailFallback": "your email",
+  "authVerifyButton": "Verify",
+  "authResendCodeIn": "Resend code in {seconds}s",
+  "@authResendCodeIn": {
+    "placeholders": { "seconds": {"type": "int"} }
+  },
+  "authResendCode": "Resend code",
+  "authWrongEmailLogOut": "Wrong email? Log out",
+  "authCodeSendFailed": "Couldn't send the code. Try again.",
+  "authCodeIncorrect": "That code is incorrect or has expired.",
+
+  "authContinueWithGoogle": "Continue with Google",
+  "authTermsNotice": "By signing up, you agree to our Privacy Policy and Terms of Use.",
+  "authOrDivider": "or",
+
+  "orgRegisterTitle": "Create your company account",
+  "orgRegisterSubtitle": "Bring Managely to your whole team.",
+  "orgCompanyNameHint": "Company name",
+  "orgCompanyNameRequired": "Enter your company name",
+  "orgWorkEmailHint": "Work email",
+  "orgWorkEmailRequired": "Enter your work email",
+  "orgPersonalEmailNotAllowed": "Use your company email, not a personal address",
+  "orgCreateCompanyAccountButton": "Create Company Account",
+  "orgCreatePersonalAccountLink": "Create Personal Account",
+  "orgSetupFailedSnackbar": "Your account was created, but setting up the organization failed: {error}",
+  "@orgSetupFailedSnackbar": {
+    "placeholders": { "error": {"type": "String"} }
+  },
+
+  "homeGreeting": "Hello, {name}",
+  "@homeGreeting": {
+    "placeholders": { "name": {"type": "String"} }
+  },
+  "homeYourSkillsSection": "Your Skills",
+  "homeRecentPracticeSection": "Recent Practice",
+  "homeGrowthAreaSection": "Your Growth Area",
+  "homeGrowthAreaBody": "Focus here for the biggest overall improvement.",
+  "homePractiseSkillButton": "Practise {skill}",
+  "@homePractiseSkillButton": {
+    "placeholders": { "skill": {"type": "String"} }
+  },
+  "homeRecommendedSection": "Recommended for You",
+  "homeHeroTitle": "Ready to practise?",
+  "homeHeroSubtitle": "Pick a scenario and roleplay with an AI employee.",
+  "homeHeroButton": "Start Practising",
+  "homeContinuePractisingLabel": "Continue Practising",
+  "homeDebriefBannerTitle": "How did it go?",
+  "homeDebriefBannerBody": "Log your debrief for \"{scenarioTitle}\"",
+  "@homeDebriefBannerBody": {
+    "placeholders": { "scenarioTitle": {"type": "String"} }
+  },
+  "homeRecommendedCaption": "Your {skill} score has room to grow. Try this scenario next.",
+  "@homeRecommendedCaption": {
+    "placeholders": { "skill": {"type": "String"} }
+  },
+
+  "practiceTitle": "Practice",
+  "practiceChooseSkill": "Choose a skill",
+  "practiceAllCategory": "All",
+  "practiceEmptyTitle": "No scenarios here yet",
+  "practiceEmptyMessage": "Try a different category to find a scenario to practise.",
+  "practiceCustomScenarioTitle": "Practice Your Own Scenario",
+  "practiceCustomScenarioSubtitle": "Describe a real situation and we'll build it for you.",
+  "practiceSafetyNotice": "Before you start: use fictional or anonymized information. Avoid entering sensitive personal information about real employees.",
+
+  "scenarioAppBarTitle": "Scenario",
+  "scenarioPremiumBadge": "PREMIUM",
+  "scenarioSituationLabel": "Situation",
+  "scenarioObjectiveLabel": "Manager Objective",
+  "scenarioEmployeeStyleLabel": "Employee Style",
+  "scenarioPremiumLockNotice": "This is a Premium scenario. Upgrade to unlock it and every advanced scenario.",
+  "scenarioUsageLimitNotice": "You've used your {count} free conversations this month. Upgrade for unlimited practice.",
+  "@scenarioUsageLimitNotice": {
+    "placeholders": { "count": {"type": "int"} }
+  },
+  "scenarioUpgradeToStartButton": "Upgrade to Start",
+  "scenarioStartConversationButton": "Start Conversation",
+
+  "customScenarioExample1": "An employee keeps interrupting others in meetings.",
+  "customScenarioExample2": "I need to tell someone their promotion is on hold.",
+  "customScenarioExample3": "A teammate is upset I gave a project to someone else.",
+  "customScenarioGenerationFailed": "Couldn't build a scenario from that — try again.",
+  "customScenarioAppBarTitle": "Your Own Scenario",
+  "customScenarioHeadline": "Describe your situation",
+  "customScenarioSubtitle": "I'll turn it into a scenario you can practise.",
+  "customScenarioFictionalNotice": "Fictional practice only — skip real names.",
+  "customScenarioTryExample": "TRY AN EXAMPLE",
+  "customScenarioComposerHint": "What's going on?",
+  "customScenarioPickDateTimeFirst": "Pick a date and time for the real conversation first.",
+  "customScenarioConfirmAppBarTitle": "Review Your Scenario",
+  "customScenarioConfirmIntro": "Here's what I understood — check it looks right before you start.",
+  "customScenarioRealMeetingQuestion": "Is this a real upcoming conversation?",
+  "customScenarioRealMeetingSubtitle": "We'll remind you to debrief an hour after it happens.",
+  "customScenarioMeetingTypeLabel": "Meeting type",
+  "customScenarioWhenLabel": "When",
+  "customScenarioChooseDateTime": "Choose date & time",
+  "customScenarioDurationLabel": "Duration",
+  "customScenarioDurationMinutes": "{minutes} min",
+  "@customScenarioDurationMinutes": {
+    "placeholders": { "minutes": {"type": "int"} }
+  },
+  "customScenarioPrepNotesLabel": "Anything else worth noting? (optional)",
+  "customScenarioPrepNotesHint": "History, context, what you're nervous about...",
+  "customScenarioDescribeDifferently": "Not quite right? Describe it differently",
+  "customScenarioFictionalEmployeeNotice": "{name} is fictional, even if a real name was mentioned in your description.",
+  "@customScenarioFictionalEmployeeNotice": {
+    "placeholders": { "name": {"type": "String"} }
+  }
+}

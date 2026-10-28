@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../core/theme/app_colors.dart';
+import '../../l10n/app_localizations.dart';
 import 'app_snackbar.dart';
 
 /// Wraps the four main tabs (Home, Practice, Progress, Profile) with a
@@ -111,26 +112,30 @@ class _AppShellState extends State<AppShell> {
   }
 }
 
-typedef _NavItemData = ({IconData icon, IconData selectedIcon, String label});
+typedef _NavItemData = ({IconData icon, IconData selectedIcon});
 
 const _navItems = <_NavItemData>[
-  (icon: Icons.home_outlined, selectedIcon: Icons.home_rounded, label: 'Home'),
-  (
-    icon: Icons.fitness_center_outlined,
-    selectedIcon: Icons.fitness_center_rounded,
-    label: 'Practice'
-  ),
-  (
-    icon: Icons.insights_outlined,
-    selectedIcon: Icons.insights_rounded,
-    label: 'Progress'
-  ),
-  (
-    icon: Icons.person_outline_rounded,
-    selectedIcon: Icons.person_rounded,
-    label: 'Profile'
-  ),
+  (icon: Icons.home_outlined, selectedIcon: Icons.home_rounded),
+  (icon: Icons.fitness_center_outlined, selectedIcon: Icons.fitness_center_rounded),
+  (icon: Icons.insights_outlined, selectedIcon: Icons.insights_rounded),
+  (icon: Icons.person_outline_rounded, selectedIcon: Icons.person_rounded),
 ];
+
+/// Labels aren't part of the const [_navItems] data itself since they need
+/// to come from [AppLocalizations] at build time.
+String _navLabel(BuildContext context, int index) {
+  final l10n = AppLocalizations.of(context);
+  switch (index) {
+    case 0:
+      return l10n.navHome;
+    case 1:
+      return l10n.navPractice;
+    case 2:
+      return l10n.navProgress;
+    default:
+      return l10n.navProfile;
+  }
+}
 
 /// The bottom nav bar actually in use — full-width, opaque white, flush
 /// with the bottom of the screen (no floating margin or blur).
@@ -160,22 +165,26 @@ class _SolidBar extends StatelessWidget {
             children: [
               _NavIcon(
                 item: _navItems[0],
+                label: _navLabel(context, 0),
                 selected: currentIndex == 0,
                 onTap: () => onTabSelected(0),
               ),
               _NavIcon(
                 item: _navItems[1],
+                label: _navLabel(context, 1),
                 selected: currentIndex == 1,
                 onTap: () => onTabSelected(1),
               ),
               _CenterActionButton(onPressed: onCreatePressed),
               _NavIcon(
                 item: _navItems[2],
+                label: _navLabel(context, 2),
                 selected: currentIndex == 2,
                 onTap: () => onTabSelected(2),
               ),
               _NavIcon(
                 item: _navItems[3],
+                label: _navLabel(context, 3),
                 selected: currentIndex == 3,
                 onTap: () => onTabSelected(3),
               ),
@@ -225,22 +234,26 @@ class _GlassBar extends StatelessWidget {
             children: [
               _NavIcon(
                 item: _navItems[0],
+                label: _navLabel(context, 0),
                 selected: currentIndex == 0,
                 onTap: () => onTabSelected(0),
               ),
               _NavIcon(
                 item: _navItems[1],
+                label: _navLabel(context, 1),
                 selected: currentIndex == 1,
                 onTap: () => onTabSelected(1),
               ),
               _CenterActionButton(onPressed: onCreatePressed),
               _NavIcon(
                 item: _navItems[2],
+                label: _navLabel(context, 2),
                 selected: currentIndex == 2,
                 onTap: () => onTabSelected(2),
               ),
               _NavIcon(
                 item: _navItems[3],
+                label: _navLabel(context, 3),
                 selected: currentIndex == 3,
                 onTap: () => onTabSelected(3),
               ),
@@ -254,15 +267,20 @@ class _GlassBar extends StatelessWidget {
 
 class _NavIcon extends StatelessWidget {
   final _NavItemData item;
+  final String label;
   final bool selected;
   final VoidCallback onTap;
-  const _NavIcon(
-      {required this.item, required this.selected, required this.onTap});
+  const _NavIcon({
+    required this.item,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: item.label,
+      label: label,
       button: true,
       selected: selected,
       child: InkWell(
@@ -294,7 +312,7 @@ class _CenterActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: 'Create',
+      label: AppLocalizations.of(context).navCreate,
       button: true,
       child: InkWell(
         onTap: onPressed,

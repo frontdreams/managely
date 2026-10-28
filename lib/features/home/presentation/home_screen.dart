@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/skill_color.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../models/scenario.dart';
 import '../../../models/user_profile.dart';
 import '../../../shared/widgets/profile_avatar.dart';
@@ -35,6 +36,7 @@ class HomeScreen extends ConsumerWidget {
     final recentSessionsPreview = sessions.take(5).toList();
     final weakest = profile.weakestSkill;
     final dueDebriefs = ref.watch(dueDebriefsProvider).valueOrNull ?? [];
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -45,7 +47,7 @@ class HomeScreen extends ConsumerWidget {
             const SizedBox(width: 10),
             Expanded(
               child: Text(
-                'Hello, ${_firstName(profile.name)}',
+                l10n.homeGreeting(_firstName(profile.name)),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -120,8 +122,8 @@ class HomeScreen extends ConsumerWidget {
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 28, 20, 12),
                   child: SectionHeader(
-                    title: 'Your Skills',
-                    actionLabel: 'View all',
+                    title: l10n.homeYourSkillsSection,
+                    actionLabel: l10n.commonViewAll,
                     onAction: () => context.go('/progress'),
                   ),
                 ),
@@ -159,7 +161,7 @@ class HomeScreen extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Recent Practice',
+                        l10n.homeRecentPracticeSection,
                         style: Theme.of(context)
                             .textTheme
                             .titleLarge
@@ -174,7 +176,7 @@ class HomeScreen extends ConsumerWidget {
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                         child: Text(
-                          'View all',
+                          l10n.commonViewAll,
                           style: Theme.of(context).textTheme.labelSmall,
                         ),
                       ),
@@ -191,10 +193,10 @@ class HomeScreen extends ConsumerWidget {
                   ),
                 ),
               ),
-              const SliverToBoxAdapter(
+              SliverToBoxAdapter(
                 child: Padding(
-                  padding: EdgeInsets.fromLTRB(20, 28, 20, 12),
-                  child: SectionHeader(title: 'Your Growth Area'),
+                  padding: const EdgeInsets.fromLTRB(20, 28, 20, 12),
+                  child: SectionHeader(title: l10n.homeGrowthAreaSection),
                 ),
               ),
               SliverToBoxAdapter(
@@ -228,7 +230,7 @@ class HomeScreen extends ConsumerWidget {
                                             .titleMedium),
                                     const SizedBox(height: 2),
                                     Text(
-                                      'Focus here for the biggest overall improvement.',
+                                      l10n.homeGrowthAreaBody,
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyMedium,
@@ -252,16 +254,16 @@ class HomeScreen extends ConsumerWidget {
                                 BorderRadius.circular(AppTheme.radiusPill),
                           ),
                         ),
-                        child: Text('Practise ${weakest.label}'),
+                        child: Text(l10n.homePractiseSkillButton(weakest.label)),
                       ),
                     ],
                   ),
                 ),
               ),
-              const SliverToBoxAdapter(
+              SliverToBoxAdapter(
                 child: Padding(
-                  padding: EdgeInsets.fromLTRB(20, 28, 20, 12),
-                  child: SectionHeader(title: 'Recommended for You'),
+                  padding: const EdgeInsets.fromLTRB(20, 28, 20, 12),
+                  child: SectionHeader(title: l10n.homeRecommendedSection),
                 ),
               ),
               SliverToBoxAdapter(
@@ -327,13 +329,13 @@ class _HomeHeroCard extends StatelessWidget {
                     _ScoreRing(score: profile.averageScore),
                     const SizedBox(height: 10),
                     Text(
-                      'Ready to practise?',
+                      AppLocalizations.of(context).homeHeroTitle,
                       style: theme.textTheme.titleLarge
                           ?.copyWith(color: Colors.white),
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      'Pick a scenario and roleplay with an AI employee.',
+                      AppLocalizations.of(context).homeHeroSubtitle,
                       style: theme.textTheme.bodySmall
                           ?.copyWith(color: Colors.white70),
                     ),
@@ -361,7 +363,7 @@ class _HomeHeroCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(AppTheme.radiusPill),
                 ),
               ),
-              child: const Text('Start Practising'),
+              child: Text(AppLocalizations.of(context).homeHeroButton),
             ),
           ),
         ],
@@ -439,7 +441,7 @@ class _ContinuePractisingCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Continue Practising',
+                    Text(AppLocalizations.of(context).homeContinuePractisingLabel,
                         style: theme.textTheme.labelMedium),
                     const SizedBox(height: 2),
                     Text(scenario.title, style: theme.textTheme.titleMedium),
@@ -496,10 +498,11 @@ class _DueDebriefBanner extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('How did it go?', style: theme.textTheme.titleMedium),
+                    Text(AppLocalizations.of(context).homeDebriefBannerTitle,
+                        style: theme.textTheme.titleMedium),
                     const SizedBox(height: 2),
                     Text(
-                      'Log your debrief for "$scenarioTitle"',
+                      AppLocalizations.of(context).homeDebriefBannerBody(scenarioTitle),
                       style: theme.textTheme.bodyMedium,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -537,7 +540,8 @@ class _RecommendedCard extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(bottom: 10, left: 4),
           child: Text(
-            'Your ${weakestSkill.label.toLowerCase()} score has room to grow. Try this scenario next.',
+            AppLocalizations.of(context)
+                .homeRecommendedCaption(weakestSkill.label.toLowerCase()),
             style: theme.textTheme.bodyMedium
                 ?.copyWith(color: context.textOnBrandMuted),
           ),

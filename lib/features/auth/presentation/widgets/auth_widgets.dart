@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// App icon shown at the top of every auth screen so the brand stays
 /// recognisable across login, sign up and password reset.
@@ -46,7 +47,7 @@ class GoogleSignInButton extends StatelessWidget {
             Image.asset('assets/google.png', width: 20, height: 20),
             const SizedBox(width: 10),
             Text(
-              'Continue with Google',
+              AppLocalizations.of(context).authContinueWithGoogle,
               style: Theme.of(context)
                   .textTheme
                   .titleMedium
@@ -106,7 +107,7 @@ class AuthTermsNotice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      'By signing up, you agree to our Privacy Policy and Terms of Use.',
+      AppLocalizations.of(context).authTermsNotice,
       textAlign: TextAlign.center,
       style: Theme.of(context)
           .textTheme
@@ -129,7 +130,7 @@ class AuthOrDivider extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Text(
-            'or',
+            AppLocalizations.of(context).authOrDivider,
             style: Theme.of(context)
                 .textTheme
                 .labelMedium

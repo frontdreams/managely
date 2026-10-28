@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../l10n/app_localizations.dart';
 import '../providers/auth_providers.dart';
 import 'widgets/auth_scaffold.dart';
 import 'widgets/auth_widgets.dart';
@@ -46,13 +47,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
     final isLoading = authState.isLoading;
+    final l10n = AppLocalizations.of(context);
 
     return AuthScaffold(
       formKey: _formKey,
       showBackButton: true,
       children: [
         Text(
-          'Create your account',
+          l10n.authRegisterTitle,
           style: Theme.of(context)
               .textTheme
               .headlineMedium
@@ -60,7 +62,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         ),
         const SizedBox(height: 6),
         Text(
-          'Start practising difficult conversations today.',
+          l10n.authRegisterSubtitle,
           style: Theme.of(context)
               .textTheme
               .bodyMedium
@@ -72,12 +74,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         TextFormField(
           controller: _nameController,
           textInputAction: TextInputAction.next,
-          decoration: const InputDecoration(
-            hintText: 'Full name',
-            prefixIcon: Icon(Icons.person_outline_rounded),
+          decoration: InputDecoration(
+            hintText: l10n.authFullNameHint,
+            prefixIcon: const Icon(Icons.person_outline_rounded),
           ),
           validator: (v) {
-            if (v == null || v.trim().isEmpty) return 'Enter your name';
+            if (v == null || v.trim().isEmpty) return l10n.authNameRequired;
             return null;
           },
         ),
@@ -86,13 +88,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           controller: _emailController,
           keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.next,
-          decoration: const InputDecoration(
-            hintText: 'Email',
-            prefixIcon: Icon(Icons.mail_outline_rounded),
+          decoration: InputDecoration(
+            hintText: l10n.authEmailHint,
+            prefixIcon: const Icon(Icons.mail_outline_rounded),
           ),
           validator: (v) {
-            if (v == null || v.trim().isEmpty) return 'Enter your email';
-            if (!v.contains('@')) return 'Enter a valid email';
+            if (v == null || v.trim().isEmpty) return l10n.authEmailRequired;
+            if (!v.contains('@')) return l10n.authEmailInvalid;
             return null;
           },
         ),
@@ -103,7 +105,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           textInputAction: TextInputAction.done,
           onFieldSubmitted: (_) => _submit(),
           decoration: InputDecoration(
-            hintText: 'Password',
+            hintText: l10n.authPasswordHint,
             prefixIcon: const Icon(Icons.lock_outline_rounded),
             suffixIcon: IconButton(
               icon: Icon(_obscure
@@ -113,8 +115,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             ),
           ),
           validator: (v) {
-            if (v == null || v.isEmpty) return 'Enter a password';
-            if (v.length < 6) return 'At least 6 characters';
+            if (v == null || v.isEmpty) return l10n.authPasswordRequiredNew;
+            if (v.length < 6) return l10n.authPasswordTooShort;
             return null;
           },
         ),
@@ -131,7 +133,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     color: Colors.white,
                   ),
                 )
-              : const Text('Create Account'),
+              : Text(l10n.authCreateAccountButton),
         ),
         const SizedBox(height: 20),
         const AuthOrDivider(),
@@ -143,7 +145,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             onPressed:
                 isLoading ? null : () => context.push('/register/organization'),
             icon: const Icon(Icons.apartment_outlined, size: 18),
-            label: const Text('Create company account'),
+            label: Text(l10n.authCreateCompanyAccountLink),
             style:
                 TextButton.styleFrom(foregroundColor: context.textOnBrandMuted),
           ),
@@ -154,7 +156,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             alignment: WrapAlignment.center,
             children: [
               Text(
-                'Already have an account? ',
+                l10n.authAlreadyHaveAccountPrompt,
                 style: Theme.of(context)
                     .textTheme
                     .bodyMedium
@@ -168,7 +170,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   minimumSize: const Size(0, 0),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
-                child: const Text('Log In'),
+                child: Text(l10n.authLogInButton),
               ),
             ],
           ),

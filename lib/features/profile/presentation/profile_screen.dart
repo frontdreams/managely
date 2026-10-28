@@ -5,7 +5,6 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/services/service_providers.dart';
 import '../../../models/user_profile.dart';
-import '../../../shared/widgets/app_snackbar.dart';
 import '../../../shared/widgets/profile_avatar.dart';
 import '../providers/profile_providers.dart';
 
@@ -164,20 +163,12 @@ class ProfileScreen extends ConsumerWidget {
                       .read(userProfileProvider.notifier)
                       .toggleNotifications(v),
                 ),
-                _SettingsSwitchRow(
-                  icon: Icons.dark_mode_outlined,
-                  iconColor: AppColors.iconPurple,
-                  title: 'Dark Theme',
-                  value: profile.themeIsDark,
-                  onChanged: (v) =>
-                      ref.read(userProfileProvider.notifier).toggleTheme(v),
-                ),
                 _SettingsRow(
-                  icon: Icons.smart_toy_outlined,
-                  iconColor: AppColors.iconTeal,
-                  title: 'AI Preferences',
-                  onTap: () =>
-                      AppSnackBar.show(context, 'AI preferences coming soon.'),
+                  icon: Icons.tune_rounded,
+                  iconColor: AppColors.iconPurple,
+                  title: 'Preferences',
+                  subtitle: 'Language, theme',
+                  onTap: () => context.push('/profile/preferences'),
                 ),
               ],
             ),

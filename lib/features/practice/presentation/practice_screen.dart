@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../models/scenario.dart';
 import '../../../shared/widgets/scenario_card.dart';
 import '../../../shared/widgets/empty_state.dart';
@@ -18,9 +19,10 @@ class PracticeScreen extends ConsumerWidget {
     final selectedCategory = ref.watch(selectedCategoryProvider);
     final scenarios = ref.watch(filteredScenariosProvider);
     final isPremiumUser = ref.watch(userProfileProvider).isPremiumTier;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Practice')),
+      appBar: AppBar(title: Text(l10n.practiceTitle)),
       body: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
@@ -35,7 +37,7 @@ class PracticeScreen extends ConsumerWidget {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
               child: Text(
-                'Choose a skill',
+                l10n.practiceChooseSkill,
                 style: theme.textTheme.titleLarge
                     ?.copyWith(color: context.textOnBrand),
               ),
@@ -49,7 +51,7 @@ class PracticeScreen extends ConsumerWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 children: [
                   _CategoryChip(
-                    label: 'All',
+                    label: l10n.practiceAllCategory,
                     icon: Icons.apps_rounded,
                     selected: selectedCategory == null,
                     onTap: () => ref
@@ -74,12 +76,11 @@ class PracticeScreen extends ConsumerWidget {
           ),
           const SliverToBoxAdapter(child: SizedBox(height: 20)),
           if (scenarios.isEmpty)
-            const SliverToBoxAdapter(
+            SliverToBoxAdapter(
               child: EmptyState(
                 icon: Icons.search_off_rounded,
-                title: 'No scenarios here yet',
-                message:
-                    'Try a different category to find a scenario to practise.',
+                title: l10n.practiceEmptyTitle,
+                message: l10n.practiceEmptyMessage,
               ),
             )
           else
@@ -130,7 +131,7 @@ class _CustomScenarioCta extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: AppColors.primaryLight,
+          color: context.surfaceOnBrand,
           borderRadius: BorderRadius.circular(AppTheme.radiusLg),
         ),
         child: Row(
@@ -149,11 +150,11 @@ class _CustomScenarioCta extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Practice Your Own Scenario',
+                  Text(AppLocalizations.of(context).practiceCustomScenarioTitle,
                       style: theme.textTheme.titleMedium),
                   const SizedBox(height: 2),
                   Text(
-                    'Describe a real situation and we\'ll build it for you.',
+                    AppLocalizations.of(context).practiceCustomScenarioSubtitle,
                     style: theme.textTheme.bodyMedium,
                   ),
                 ],
@@ -192,10 +193,10 @@ class _CategoryChip extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 14),
         decoration: BoxDecoration(
-          color: selected ? AppColors.primary : AppColors.surfaceLight,
+          color: selected ? AppColors.primary : context.surfaceOnBrand,
           borderRadius: BorderRadius.circular(AppTheme.radiusPill),
           border: Border.all(
-            color: selected ? AppColors.primary : AppColors.borderLight,
+            color: selected ? AppColors.primary : context.borderOnBrand,
           ),
         ),
         child: Row(

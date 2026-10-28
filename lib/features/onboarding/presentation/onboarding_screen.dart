@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/skill_color.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../models/scenario.dart';
 import '../../profile/providers/profile_providers.dart';
 import '../providers/onboarding_providers.dart';
@@ -19,14 +20,17 @@ import '../providers/onboarding_providers.dart';
 class OnboardingScreen extends ConsumerWidget {
   const OnboardingScreen({super.key});
 
-  static const _labels = <ManagerSkill, String>{
-    ManagerSkill.clarity: 'Giving Feedback',
-    ManagerSkill.assertiveness: 'Confidence & Assertiveness',
-    ManagerSkill.conflictManagement: 'Conflict Management',
-    ManagerSkill.boundarySetting: 'Setting Boundaries',
-    ManagerSkill.activeListening: 'Active Listening',
-    ManagerSkill.empathy: 'Empathy & Difficult Conversations',
-  };
+  Map<ManagerSkill, String> _labels(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return {
+      ManagerSkill.clarity: l10n.onboardingSkillGivingFeedback,
+      ManagerSkill.assertiveness: l10n.onboardingSkillConfidence,
+      ManagerSkill.conflictManagement: l10n.onboardingSkillConflict,
+      ManagerSkill.boundarySetting: l10n.onboardingSkillBoundaries,
+      ManagerSkill.activeListening: l10n.onboardingSkillActiveListening,
+      ManagerSkill.empathy: l10n.onboardingSkillEmpathy,
+    };
+  }
 
   Future<void> _finish(BuildContext context, WidgetRef ref) async {
     final ranking = ref.read(onboardingSkillRankingProvider);
@@ -52,13 +56,13 @@ class OnboardingScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'What matters most to you?',
+                    AppLocalizations.of(context).onboardingTitle,
                     style: theme.textTheme.headlineSmall
                         ?.copyWith(color: context.textOnBrand),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Drag to rank these in the order you\'d most like to improve. Managely will prioritize scenarios around the top of your list.',
+                    AppLocalizations.of(context).onboardingSubtitle,
                     style: theme.textTheme.bodyMedium
                         ?.copyWith(color: context.textOnBrandMuted),
                   ),
@@ -82,8 +86,8 @@ class OnboardingScreen extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 14, vertical: 12),
                     decoration: BoxDecoration(
-                      color: AppColors.surfaceLight,
-                      border: Border.all(color: AppColors.borderLight),
+                      color: context.surfaceOnBrand,
+                      border: Border.all(color: context.borderOnBrand),
                       borderRadius: BorderRadius.circular(AppTheme.radiusMd),
                     ),
                     child: Row(
@@ -107,7 +111,7 @@ class OnboardingScreen extends ConsumerWidget {
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
-                            _labels[skill] ?? skill.label,
+                            _labels(context)[skill] ?? skill.label,
                             style: theme.textTheme.titleSmall
                                 ?.copyWith(color: context.textOnBrand),
                           ),
@@ -127,7 +131,7 @@ class OnboardingScreen extends ConsumerWidget {
                 child: ElevatedButton(
                   onPressed: () => _finish(context, ref),
                   style: AppTheme.accentPillButtonStyle,
-                  child: const Text('Continue'),
+                  child: Text(AppLocalizations.of(context).commonContinue),
                 ),
               ),
             ),

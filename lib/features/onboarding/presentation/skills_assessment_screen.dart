@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/skill_color.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../models/scenario.dart';
 import '../../../shared/widgets/skill_progress_bar.dart';
 import '../../profile/providers/profile_providers.dart';
@@ -99,13 +100,13 @@ class _QuestionView extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Skills Assessment'),
+        title: Text(AppLocalizations.of(context).assessmentTitle),
         automaticallyImplyLeading: false,
         actions: [
           TextButton(
             onPressed: onSkip,
             child: Text(
-              'Skip for now',
+              AppLocalizations.of(context).assessmentSkipForNow,
               style: theme.textTheme.labelLarge
                   ?.copyWith(color: context.textOnBrandMuted),
             ),
@@ -138,7 +139,8 @@ class _QuestionView extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                          'Question ${currentIndex + 1} of ${questions.length}',
+                          AppLocalizations.of(context).assessmentQuestionProgress(
+                              currentIndex + 1, questions.length),
                           style: theme.textTheme.labelMedium
                               ?.copyWith(color: context.textOnBrandMuted)),
                       Row(
@@ -185,7 +187,7 @@ class _QuestionView extends ConsumerWidget {
                                   : Theme.of(context).cardTheme.color,
                               border: Border.all(
                                 color:
-                                    isSelected ? color : AppColors.borderLight,
+                                    isSelected ? color : context.borderOnBrand,
                                 width: isSelected ? 1.5 : 1,
                               ),
                               borderRadius:
@@ -235,20 +237,20 @@ class _ResultsView extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-          title: const Text('Your Starting Scores'),
+          title: Text(AppLocalizations.of(context).assessmentResultsTitle),
           automaticallyImplyLeading: false),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
             Text(
-              'Here\'s where you\'re starting from.',
+              AppLocalizations.of(context).assessmentResultsHeadline,
               style: theme.textTheme.headlineSmall
                   ?.copyWith(color: context.textOnBrand),
             ),
             const SizedBox(height: 8),
             Text(
-              'Based on how you responded to realistic workplace situations — not a self-rating. Every conversation you practise from here will move these.',
+              AppLocalizations.of(context).assessmentResultsBody,
               style: theme.textTheme.bodyMedium
                   ?.copyWith(color: context.textOnBrandMuted),
             ),
@@ -276,7 +278,7 @@ class _ResultsView extends ConsumerWidget {
             ElevatedButton(
               onPressed: onContinue,
               style: AppTheme.accentPillButtonStyle,
-              child: const Text('Continue to Managely'),
+              child: Text(AppLocalizations.of(context).assessmentContinueButton),
             ),
           ],
         ),
